@@ -2,10 +2,17 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
+  width: 250px;
+  border-right: 1px solid #E2E8F0;
+  transition: width 0.3s ease;
+  overflow-x: hidden;
+}
+
+.sidebar.collapsed {
+  width: 80px;
 }
 
 .sidebar-content {
- padding: 10px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -18,16 +25,22 @@
 }
 
 .sidebar-bottom {
-  margin-top: auto;
+  padding: 20px;
 }
 
 .sidebar-content-header {
- display: flex;
+  display: flex;
   align-items: center;
+  justify-content: flex-start;
+  padding: 20px;
   gap: 10px;
-  padding-bottom: 10px;
-   border-bottom: 1px solid #E2E8F0;
-    margin-bottom: 15px;
+  border-bottom: 1px solid #E2E8F0;
+  transition: justify-content 0.3s ease;
+}
+
+.sidebar.collapsed .sidebar-content-header {
+  justify-content: center;
+  padding: 20px 0;
 }
 
 .sidebar-logo-img {
@@ -35,66 +48,150 @@
   height: 32px;
   object-fit: cover;
   border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-logo-img:hover {
+  transform: scale(1.1);
 }
 
 .sidebar-title {
-  font-size: 14px;
   font-weight: bold;
+  transition: color 0.3s ease, opacity 0.3s ease;
+  white-space: nowrap;
 }
 
-ul li {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+.sidebar.collapsed .sidebar-title {
+  display: none;
 }
 
-ul li a {
-       display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-    color: #94A3B8;
-    font-weight: 500;
-    margin-bottom: 15px;
-    font-size: 14px;
+.sidebar-content-header:hover .sidebar-title {
+  color: #F97316;
+}
+
+.sidebar ul {
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar ul li {
+  list-style: none;
+}
+
+.sidebar ul li a {
+  margin: 8px 20px;
+  padding: 12px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #94A3B8;
+  font-weight: 500;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.sidebar.collapsed ul li a {
+  margin: 8px 12px;
+  padding: 12px;
+  justify-content: center;
+}
+
+.sidebar.collapsed ul li a span {
+  display: none;
+}
+
+.sidebar ul li a:hover {
+  color: #F97316;
+  transform: translateX(5px);
+  background-color: #FEF3C7;
+}
+
+.sidebar.collapsed ul li a:hover {
+  transform: translateX(0);
+}
+
+.sidebar ul li a.active {
+  background-color: #F97316;
+  color: white;
+}
+
+.sidebar ul li a.active:hover {
+  transform: translateX(0);
+}
+
+.sidebar.collapsed ul li a.active {
+  justify-content: center;
 }
 
 .current-location {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    padding: 12px 0;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 0;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  white-space: nowrap;
+}
+
+.current-location-collapsed {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 0;
+  cursor: pointer;
 }
 
 .location-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.location-icon svg {
+    color: #F97316;
 }
 
 .location-text {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .location-city {
-    font-size: 14px;
-    font-weight: 600;
+  font-weight: 600;
+  transition: color 0.3s ease;
 }
 
 .location-label {
-    font-size: 12px;
-    color: #94A3B8;
+  font-size: 14px;
+  color: #94A3B8;
 }
 
 .collapse {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    color: #94A3B8;
-    font-size: 14px;
-    font-weight: 500;
-    padding: 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  color: #94A3B8;
+  font-weight: 500;
+  padding: 8px 0;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.sidebar.collapsed .collapse {
+  justify-content: center;
+  padding: 8px;
+}
+
+.collapse:hover {
+  color: #F97316;
+  transform: translateX(5px);
+}
+
+.sidebar.collapsed .collapse:hover {
+  transform: translateX(0);
 }
