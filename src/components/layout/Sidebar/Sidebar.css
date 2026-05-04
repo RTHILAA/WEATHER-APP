@@ -25,19 +25,19 @@
 }
 
 .sidebar-bottom {
-  padding: 20px;
+  padding: 10px 20px;
 }
 
 .sidebar-content-header {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  padding: 20px;
   gap: 10px;
+  padding: 20px 20px 7.6px 20px;
   border-bottom: 1px solid #E2E8F0;
   transition: justify-content 0.3s ease;
 }
 
+/* Remove padding on sides when collapsed to make border full width */
 .sidebar.collapsed .sidebar-content-header {
   justify-content: center;
   padding: 20px 0;
@@ -69,6 +69,7 @@
   color: #F97316;
 }
 
+/* Added missing ul styling */
 .sidebar ul {
   padding: 0;
   margin: 0;
@@ -79,7 +80,7 @@
 }
 
 .sidebar ul li a {
-  margin: 8px 20px;
+  margin: 10px 20px;
   padding: 12px 10px;
   display: flex;
   align-items: center;
@@ -129,10 +130,12 @@
   display: flex;
   gap: 12px;
   align-items: center;
-  padding: 12px 0;
-  cursor: pointer;
-  transition: opacity 0.3s ease;
+  padding: 12px;
   white-space: nowrap;
+  background-color: #FFFFFF;
+  border-radius: 10px;
+  border: 1px solid #E2E8F0;
+  margin-bottom: 10px;
 }
 
 .current-location-collapsed {
@@ -141,6 +144,7 @@
   align-items: center;
   padding: 12px 0;
   cursor: pointer;
+  margin-bottom: 10px;
 }
 
 .location-icon {
@@ -163,6 +167,7 @@
 .location-city {
   font-weight: 600;
   transition: color 0.3s ease;
+  color: #1E293B;
 }
 
 .location-label {
@@ -177,19 +182,21 @@
   cursor: pointer;
   color: #94A3B8;
   font-weight: 500;
-  padding: 8px 0;
+  padding: 12px;
   transition: all 0.3s ease;
   white-space: nowrap;
-}
-
-.sidebar.collapsed .collapse {
-  justify-content: center;
-  padding: 8px;
+  border-radius: 10px;
 }
 
 .collapse:hover {
   color: #F97316;
   transform: translateX(5px);
+  background-color: #FEF3C7;
+}
+
+.sidebar.collapsed .collapse {
+  justify-content: center;
+  padding: 12px;
 }
 
 .sidebar.collapsed .collapse:hover {
