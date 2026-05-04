@@ -1,0 +1,170 @@
+.notfound-content {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.notfound-card {
+  text-align: center;
+  width: 100%;
+  animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.notfound-icon {
+  margin-bottom: 20px;
+  color: #F97316;
+  animation: shake 0.5s ease;
+}
+
+.notfound-icon svg {
+  color: #F97316;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+.notfound-card h1 {
+  font-size: 120px;
+  font-weight: bold;
+  color: #F97316;
+  margin: 0;
+  line-height: 1;
+}
+
+.notfound-card h2 {
+  font-size: 28px;
+  color: #1E293B;
+  margin: 20px 0 10px;
+}
+
+.notfound-card p {
+  color: #64748B;
+  margin-bottom: 30px;
+}
+
+.notfound-actions {
+  margin-bottom: 30px;
+}
+
+.home-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  background: #F97316;
+  color: white;
+  text-decoration: none;
+  border-radius: 10px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.home-btn svg {
+  color: white;
+}
+
+.home-btn:hover {
+  background: #EA580C;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+}
+
+.suggestions {
+  border-top: 1px solid #E2E8F0;
+  padding-top: 20px;
+}
+
+.suggestions p {
+  font-weight: 500;
+  color: #1E293B;
+  margin-bottom: 10px;
+}
+
+.suggestions ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+}
+
+.suggestions li {
+  padding: 5px 12px;
+  background: #F1F5F9;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+.suggestions li a {
+  color: #1E293B;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.suggestions li a:hover {
+  color: #F97316;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .notfound-card {
+    padding: 30px 20px;
+  }
+  
+  .notfound-card h1 {
+    font-size: 80px;
+  }
+  
+  .notfound-card h2 {
+    font-size: 22px;
+  }
+  
+  .suggestions ul {
+    gap: 10px;
+  }
+  
+  .suggestions li {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .notfound-content {
+    padding: 20px;
+  }
+  
+  .notfound-card {
+    padding: 20px 15px;
+  }
+  
+  .notfound-card h1 {
+    font-size: 60px;
+  }
+  
+  .notfound-card h2 {
+    font-size: 18px;
+  }
+  
+  .home-btn {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
