@@ -18,10 +18,21 @@ body {
 
 .main-content {
   flex: 1;
-  overflow-y: auto;
 }
 
 /* Page container styles */
-.page-container {
+.page-header {
+  border-bottom: 1px solid #E2E8F0;
   padding: 20px;
+}
+
+.page-title {
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.page-title svg {
+  color: #F97316;
 }
