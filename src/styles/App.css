@@ -18,6 +18,16 @@ body {
 
 .main-content {
   flex: 1;
+  margin-left: 250px;
+  transition: margin-left 0.3s ease;
+  width: calc(100% - 250px);
+}
+
+/* When sidebar is collapsed */
+.sidebar.collapsed ~ .main-content,
+.main-content.sidebar-collapsed {
+  margin-left: 80px;
+  width: calc(100% - 80px);
 }
 
 /* Page container styles */
@@ -31,8 +41,17 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+  color: #1E293B;
 }
 
 .page-title svg {
   color: #F97316;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 80px;
+    width: calc(100% - 80px);
+  }
 }
