@@ -11,12 +11,14 @@ import {
   MapPin,
   PanelLeftClose,
   PanelLeftOpen,
+  Search,
 } from "lucide-react";
 
 function Sidebar() {
   const location = useLocation();
   const [activeItem, setActiveItem] = useState("");
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     // Update active item based on current URL
@@ -42,6 +44,12 @@ function Sidebar() {
     setIsCollapsed(!isCollapsed);
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    // Handle search logic here
+    console.log("Searching for:", searchQuery);
+  };
+
   return (
     <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
       <div className="sidebar-content">
@@ -50,6 +58,31 @@ function Sidebar() {
             <img src={LOGO} className="sidebar-logo-img" alt="Logo" />
             {!isCollapsed && <span className="sidebar-title">SkyCast</span>}
           </div>
+          
+          {/* Search Section */}
+          {!isCollapsed && (
+            <div className="search-container">
+              <form onSubmit={handleSearch} className="search-form">
+                <div className="search-input-wrapper">
+                  <Search size={16} className="search-icon" />
+                  <input
+                    type="text"
+                    placeholder="Search location..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="search-input"
+                  />
+                </div>
+              </form>
+            </div>
+          )}
+          
+          {isCollapsed && (
+            <div className="search-collapsed">
+              <Search size={16} />
+            </div>
+          )}
+
           <ul>
             <li>
               <Link
