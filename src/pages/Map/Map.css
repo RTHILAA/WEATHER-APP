@@ -1,0 +1,291 @@
+.map-content {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.map-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.map-control-btn {
+  padding: 8px 12px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "Montserrat", sans-serif;
+  transition: all 0.3s ease;
+  color: #1E293B;
+}
+
+.map-control-btn svg {
+  color: #94A3B8;
+  transition: color 0.3s ease;
+}
+
+.map-control-btn:hover {
+  background: #F97316;
+  color: white;
+  border-color: #F97316;
+}
+
+.map-control-btn:hover svg {
+  color: white;
+}
+
+.map-container {
+  background: transparent;
+  border-radius: 16px;
+  padding: 0;
+}
+
+.layer-selector {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.layer-btn {
+  padding: 10px 20px;
+  background: #F1F5F9;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: "Montserrat", sans-serif;
+  transition: all 0.3s ease;
+  color: #1E293B;
+}
+
+.layer-btn svg {
+  color: #94A3B8;
+  transition: color 0.3s ease;
+}
+
+.layer-btn.active {
+  background: #F97316;
+  color: white;
+}
+
+.layer-btn.active svg {
+  color: white;
+}
+
+.layer-btn:hover:not(.active) {
+  background: #FEF3C7;
+}
+
+.weather-map {
+  background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.map-background {
+  position: relative;
+  min-height: 500px;
+  background: transparent;
+  overflow: hidden;
+}
+
+.map-svg {
+  width: 100%;
+  height: auto;
+  max-height: 500px;
+}
+
+.map-outline {
+  transition: fill 0.3s ease;
+}
+
+.city-marker {
+  position: absolute;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+}
+
+.marker-dot {
+  width: 12px;
+  height: 12px;
+  background: #F97316;
+  border: 2px solid white;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.city-marker:hover .marker-dot {
+  transform: scale(1.5);
+}
+
+.city-info {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.city-marker:hover .city-info {
+  opacity: 1;
+}
+
+.city-info strong {
+  display: block;
+  color: #1E293B;
+}
+
+.city-info span {
+  display: block;
+  color: #F97316;
+  font-weight: bold;
+}
+
+.city-info small {
+  display: block;
+  color: #94A3B8;
+}
+
+.map-legend {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+  backdrop-filter: blur(8px);
+}
+
+.legend-title {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #1E293B;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend-title svg {
+  color: #F97316;
+}
+
+.legend-gradient {
+  margin-top: 5px;
+}
+
+.gradient-bar {
+  height: 20px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.legend-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #94A3B8;
+}
+
+.map-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.feature-card {
+  background: #F8FAFC;
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid #E2E8F0;
+}
+
+.feature-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #1E293B;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.feature-title svg {
+  color: #F97316;
+}
+
+.feature-card p {
+  font-size: 13px;
+  color: #64748B;
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .map-background {
+    min-height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .map-content {
+    padding: 15px;
+  }
+  
+  .map-controls {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .city-info {
+    display: none;
+  }
+  
+  .map-legend {
+    position: static;
+    margin-top: 15px;
+    width: 100%;
+  }
+  
+  .layer-selector {
+    justify-content: center;
+  }
+  
+  .map-features {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .layer-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  
+  .map-control-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
