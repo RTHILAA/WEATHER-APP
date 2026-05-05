@@ -289,3 +289,37 @@
     font-size: 12px;
   }
 }
+
+/* Dark Mode Styles for Map */
+body.dark-mode .map-control-btn {
+  background: #1E293B;
+  border-color: #334155;
+  color: #F1F5F9;
+}
+
+body.dark-mode .layer-btn {
+  background: #334155;
+  color: #F1F5F9;
+}
+
+body.dark-mode .layer-btn svg {
+  color: #94A3B8;
+}
+
+body.dark-mode .layer-btn.active {
+  background: #F97316;
+  color: white;
+}
+
+body.dark-mode .feature-card {
+  background: #1E293B;
+  border-color: #334155;
+}
+
+body.dark-mode .feature-title {
+  color: #F1F5F9;
+}
+
+body.dark-mode .feature-card p {
+  color: #94A3B8;
+}
