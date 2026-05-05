@@ -9,6 +9,12 @@
 body {
   font-family: "Montserrat", sans-serif;
   background-color: #F8FAFC;
+  transition: background-color 0.3s ease;
+}
+
+/* Dark Mode Body */
+body.dark-mode {
+  background-color: #0F172A;
 }
 
 .app-container {
@@ -21,6 +27,7 @@ body {
   margin-left: 250px;
   transition: margin-left 0.3s ease;
   width: calc(100% - 250px);
+  position: relative;
 }
 
 /* When sidebar is collapsed */
@@ -32,8 +39,38 @@ body {
 
 /* Page container styles */
 .page-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 250px;
+  background: #F8FAFC;
   border-bottom: 1px solid #E2E8F0;
   padding: 20px;
+  transition: background-color 0.3s ease, border-color 0.3s ease, left 0.3s ease;
+  z-index: 999;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+body.dark-mode .page-header {
+  background: #1E293B;
+  border-bottom-color: #334155;
+}
+
+/* Adjust page-header when sidebar is collapsed */
+.sidebar.collapsed ~ .main-content .page-header,
+.main-content.sidebar-collapsed .page-header {
+  left: 80px;
+}
+
+/* Page content wrapper */
+.page-content {
+  margin-top: 80px;
+  padding: 0;
+  min-height: calc(100vh - 80px);
 }
 
 .page-title {
@@ -42,10 +79,64 @@ body {
   align-items: center;
   gap: 10px;
   color: #1E293B;
+  transition: color 0.3s ease;
+}
+
+body.dark-mode .page-title {
+  color: #F1F5F9;
 }
 
 .page-title svg {
   color: #F97316;
+}
+
+/* Theme Toggle Button in Header */
+.header-theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 8px 16px;
+  background: #F1F5F9;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  color: #94A3B8;
+  font-weight: 500;
+  font-size: 14px;
+  font-family: "Montserrat", sans-serif;
+  border: none;
+}
+
+.header-theme-toggle svg {
+  color: #94A3B8;
+  transition: color 0.3s ease;
+}
+
+.header-theme-toggle:hover {
+  background: #F97316;
+  color: white;
+}
+
+.header-theme-toggle:hover svg {
+  color: white;
+}
+
+body.dark-mode .header-theme-toggle {
+  background: #334155;
+  color: #F1F5F9;
+}
+
+body.dark-mode .header-theme-toggle svg {
+  color: #94A3B8;
+}
+
+body.dark-mode .header-theme-toggle:hover {
+  background: #F97316;
+  color: white;
+}
+
+body.dark-mode .header-theme-toggle:hover svg {
+  color: white;
 }
 
 /* Responsive */
@@ -53,5 +144,21 @@ body {
   .main-content {
     margin-left: 80px;
     width: calc(100% - 80px);
+  }
+  
+  .page-header {
+    left: 80px;
+  }
+  
+  .header-theme-toggle {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
