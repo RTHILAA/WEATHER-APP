@@ -1,6 +1,7 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './styles/App.css'
+import { ThemeProvider } from './context/ThemeContext';
 import Sidebar from './components/layout/Sidebar/Sidebar'
 import Overview from './pages/Overview/Overview';
 import CurrentWeather from './pages/CurrentWeather/CurrentWeather';
@@ -11,21 +12,23 @@ import PageNotFound from "./pages/PageNotFound/PageNotFound"
 
 function App() {
   return (
-    <BrowserRouter>
-      <div className="app-container">
-        <Sidebar />
-        <div className="main-content">
-          <Routes>
-            <Route path="/" element={<Overview />} />
-            <Route path="/current-weather" element={<CurrentWeather />} />
-            <Route path="/forecast" element={<Forecast />} />
-            <Route path="/map" element={<Map />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="*" element={<PageNotFound />} />
-          </Routes>
+    <ThemeProvider>
+      <BrowserRouter>
+        <div className="app-container">
+          <Sidebar />
+          <div className="main-content">
+            <Routes>
+              <Route path="/" element={<Overview />} />
+              <Route path="/current-weather" element={<CurrentWeather />} />
+              <Route path="/forecast" element={<Forecast />} />
+              <Route path="/map" element={<Map />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="*" element={<PageNotFound />} />
+            </Routes>
+          </div>
         </div>
-      </div>
-    </BrowserRouter>
+      </BrowserRouter>
+    </ThemeProvider>
   )
 }
 
