@@ -78,20 +78,19 @@
 
 .forecast-header {
   background-color: #F97316;
-  color: white;
   padding: 15px;
   text-align: center;
 }
 
 .forecast-day {
   font-size: 18px;
-  color: #1E293B;
   font-weight: bold;
+  color: #1E293B;
 }
 
 .forecast-date {
   font-size: 12px;
-  opacity: 0.9;
+  color: rgba(255, 255, 255, 0.9);
   margin-top: 5px;
 }
 
@@ -268,6 +267,7 @@
 .weekly-summary h4 {
   margin-bottom: 20px;
   color: #1E293B;
+  font-size: 16px;
 }
 
 .week-bars {
@@ -375,4 +375,48 @@
   .forecast-card {
     margin: 0 10px;
   }
+}
+
+/* Dark Mode Styles for Forecast */
+body.dark-mode .summary-card,
+body.dark-mode .forecast-card,
+body.dark-mode .hour-card,
+body.dark-mode .weekly-summary {
+  background: #1E293B;
+}
+
+body.dark-mode .summary-label,
+body.dark-mode .forecast-condition,
+body.dark-mode .hour-condition,
+body.dark-mode .week-day,
+body.dark-mode .week-temp {
+  color: #94A3B8;
+}
+
+body.dark-mode .forecast-day,
+body.dark-mode .forecast-date {
+  color: white;
+}
+
+body.dark-mode .nav-btn {
+  background: #334155;
+  color: #F1F5F9;
+  border-color: #475569;
+}
+
+body.dark-mode .nav-btn svg {
+  color: #94A3B8;
+}
+
+body.dark-mode .hour-card:hover {
+  background: #FEF3C7;
+}
+
+body.dark-mode .hour-card:hover .hour-time,
+body.dark-mode .hour-card:hover .hour-condition {
+  color: #1E293B;
+}
+
+body.dark-mode .weekly-summary h4 {
+  color: #F1F5F9;
 }

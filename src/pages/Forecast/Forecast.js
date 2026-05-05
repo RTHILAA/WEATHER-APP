@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import './Forecast.css';
-import { CalendarDays, Droplets, Wind, ChevronLeft, ChevronRight, Sun, CloudSun, CloudRain, Cloud, CloudSnow, Moon, CloudLightning, Thermometer } from "lucide-react";
+import { CalendarDays, Droplets, Wind, ChevronLeft, ChevronRight, Sun, CloudSun, CloudRain, Cloud, Moon, Sun as SunIcon } from "lucide-react";
+import { useTheme } from "../../context/ThemeContext";
 
 function Forecast() {
-  const [view, setView] = useState('daily'); // 'daily' or 'hourly'
+  const [view, setView] = useState('daily');
+  const { isDarkMode, toggleTheme } = useTheme();
   
   const dailyForecast = [
     { day: "Monday", date: "May 12", high: 74, low: 58, condition: "Sunny", icon: Sun, humidity: 65, wind: 8, rain: 10 },
@@ -68,124 +70,132 @@ function Forecast() {
           <CalendarDays size={18} />
           Forecast
         </span>
-        <div className="view-toggle">
-          <button 
-            className={`toggle-btn ${view === 'daily' ? 'active' : ''}`}
-            onClick={() => setView('daily')}
-          >
-            Daily
-          </button>
-          <button 
-            className={`toggle-btn ${view === 'hourly' ? 'active' : ''}`}
-            onClick={() => setView('hourly')}
-          >
-            Hourly
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <div className="view-toggle">
+            <button 
+              className={`toggle-btn ${view === 'daily' ? 'active' : ''}`}
+              onClick={() => setView('daily')}
+            >
+              Daily
+            </button>
+            <button 
+              className={`toggle-btn ${view === 'hourly' ? 'active' : ''}`}
+              onClick={() => setView('hourly')}
+            >
+              Hourly
+            </button>
+          </div>
+          <button className="header-theme-toggle" onClick={toggleTheme}>
+            {isDarkMode ? <SunIcon size={16} /> : <Moon size={16} />}
+            <span>{isDarkMode ? "Light Mode" : "Dark Mode"}</span>
           </button>
         </div>
       </div>
-      <div className="forecast-content">
-        {view === 'daily' ? (
-          <>
-            <div className="forecast-summary">
-              <div className="summary-card">
-                <div className="summary-value">72°</div>
-                <div className="summary-label">Average High</div>
-              </div>
-              <div className="summary-card">
-                <div className="summary-value">58°</div>
-                <div className="summary-label">Average Low</div>
-              </div>
-              <div className="summary-card">
-                <div className="summary-value">30%</div>
-                <div className="summary-label">Rain Chance</div>
-              </div>
-            </div>
-
-            <div className="daily-forecast">
-              {dailyForecast.map((day, index) => (
-                <div key={index} className="forecast-card">
-                  <div className="forecast-header">
-                    <div className="forecast-day">{day.day}</div>
-                    <div className="forecast-date">{day.date}</div>
-                  </div>
-                  <div className="forecast-body">
-                    <div className="forecast-icon-large">{getWeatherIcon(day.icon, 48)}</div>
-                    <div className="forecast-temp-range">
-                      <span className="high-temp">{day.high}°</span>
-                      <span className="low-temp">{day.low}°</span>
-                    </div>
-                    <div className="forecast-condition">{day.condition}</div>
-                    <div className="forecast-details">
-                      <div className="detail">
-                        <Droplets size={14} />
-                        <span>{day.humidity}%</span>
-                      </div>
-                      <div className="detail">
-                        <Wind size={14} />
-                        <span>{day.wind} mph</span>
-                      </div>
-                    </div>
-                  </div>
+      <div className="page-content">
+        <div className="forecast-content">
+          {view === 'daily' ? (
+            <>
+              <div className="forecast-summary">
+                <div className="summary-card">
+                  <div className="summary-value">72°</div>
+                  <div className="summary-label">Average High</div>
                 </div>
-              ))}
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="hourly-navigation">
-              <button 
-                className="nav-btn" 
-                onClick={prevHours}
-                disabled={hourlyIndex === 0}
-              >
-                <ChevronLeft size={20} />
-              </button>
-              <span className="hourly-range">
-                Showing {hourlyIndex + 1} - {Math.min(hourlyIndex + visibleHours, hourlyForecast.length)} of {hourlyForecast.length} hours
-              </span>
-              <button 
-                className="nav-btn" 
-                onClick={nextHours}
-                disabled={hourlyIndex + visibleHours >= hourlyForecast.length}
-              >
-                <ChevronRight size={20} />
-              </button>
-            </div>
-
-            <div className="hourly-forecast">
-              {hourlyForecast.slice(hourlyIndex, hourlyIndex + visibleHours).map((hour, index) => (
-                <div key={index} className="hour-card">
-                  <div className="hour-time">{hour.time}</div>
-                  <div className="hour-icon">{getWeatherIcon(hour.icon, 28)}</div>
-                  <div className="hour-temp">{hour.temp}°</div>
-                  <div className="hour-condition">{hour.condition}</div>
-                  {hour.rain > 0 && (
-                    <div className="hour-rain">
-                      <Droplets size={12} />
-                      <span>{hour.rain}%</span>
-                    </div>
-                  )}
+                <div className="summary-card">
+                  <div className="summary-value">58°</div>
+                  <div className="summary-label">Average Low</div>
                 </div>
-              ))}
-            </div>
+                <div className="summary-card">
+                  <div className="summary-value">30%</div>
+                  <div className="summary-label">Rain Chance</div>
+                </div>
+              </div>
 
-            <div className="weekly-summary">
-              <h4>Weekly Overview</h4>
-              <div className="week-bars">
-                {dailyForecast.slice(0, 7).map((day, index) => (
-                  <div key={index} className="week-bar-item">
-                    <div className="week-day">{day.day.substring(0, 3)}</div>
-                    <div className="temp-bars">
-                      <div className="temp-bar high" style={{ height: `${(day.high - 50) * 3}px` }}></div>
-                      <div className="temp-bar low" style={{ height: `${(day.low - 50) * 3}px` }}></div>
+              <div className="daily-forecast">
+                {dailyForecast.map((day, index) => (
+                  <div key={index} className="forecast-card">
+                    <div className="forecast-header">
+                      <div className="forecast-day">{day.day}</div>
+                      <div className="forecast-date">{day.date}</div>
                     </div>
-                    <div className="week-temp">{day.high}°</div>
+                    <div className="forecast-body">
+                      <div className="forecast-icon-large">{getWeatherIcon(day.icon, 48)}</div>
+                      <div className="forecast-temp-range">
+                        <span className="high-temp">{day.high}°</span>
+                        <span className="low-temp">{day.low}°</span>
+                      </div>
+                      <div className="forecast-condition">{day.condition}</div>
+                      <div className="forecast-details">
+                        <div className="detail">
+                          <Droplets size={14} />
+                          <span>{day.humidity}%</span>
+                        </div>
+                        <div className="detail">
+                          <Wind size={14} />
+                          <span>{day.wind} mph</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
-            </div>
-          </>
-        )}
+            </>
+          ) : (
+            <>
+              <div className="hourly-navigation">
+                <button 
+                  className="nav-btn" 
+                  onClick={prevHours}
+                  disabled={hourlyIndex === 0}
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <span className="hourly-range">
+                  Showing {hourlyIndex + 1} - {Math.min(hourlyIndex + visibleHours, hourlyForecast.length)} of {hourlyForecast.length} hours
+                </span>
+                <button 
+                  className="nav-btn" 
+                  onClick={nextHours}
+                  disabled={hourlyIndex + visibleHours >= hourlyForecast.length}
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
+
+              <div className="hourly-forecast">
+                {hourlyForecast.slice(hourlyIndex, hourlyIndex + visibleHours).map((hour, index) => (
+                  <div key={index} className="hour-card">
+                    <div className="hour-time">{hour.time}</div>
+                    <div className="hour-icon">{getWeatherIcon(hour.icon, 28)}</div>
+                    <div className="hour-temp">{hour.temp}°</div>
+                    <div className="hour-condition">{hour.condition}</div>
+                    {hour.rain > 0 && (
+                      <div className="hour-rain">
+                        <Droplets size={12} />
+                        <span>{hour.rain}%</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <div className="weekly-summary">
+                <h4>Weekly Overview</h4>
+                <div className="week-bars">
+                  {dailyForecast.slice(0, 7).map((day, index) => (
+                    <div key={index} className="week-bar-item">
+                      <div className="week-day">{day.day.substring(0, 3)}</div>
+                      <div className="temp-bars">
+                        <div className="temp-bar high" style={{ height: `${(day.high - 50) * 3}px` }}></div>
+                        <div className="temp-bar low" style={{ height: `${(day.low - 50) * 3}px` }}></div>
+                      </div>
+                      <div className="week-temp">{day.high}°</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
