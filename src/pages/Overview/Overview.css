@@ -1,3 +1,9 @@
+/* Page Content Wrapper */
+.page-content {
+  margin-top: 80px;
+  padding: 0;
+}
+
 .overview-content {
   padding: 20px;
   max-width: 1400px;
@@ -6,7 +12,7 @@
 
 /* Weather Overview Card */
 .weather-overview-card {
-    background-color: #F97316;
+  background-color: #F97316;
   border-radius: 20px;
   padding: 30px;
   color: white;
@@ -14,6 +20,15 @@
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 30px;
+}
+
+/* Remove the border-left from sun-times and use consistent spacing */
+.sun-times {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-left: 30px;
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .current-weather-large {
@@ -67,14 +82,6 @@
 .detail-item strong {
   font-size: 18px;
   margin-top: 5px;
-}
-
-.sun-times {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding-left: 20px;
-  border-left: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .sun-item {
@@ -285,4 +292,43 @@
     flex-direction: column;
     align-items: center;
   }
+}
+
+/* Dark Mode Styles for Overview */
+body.dark-mode .weekly-forecast,
+body.dark-mode .weather-highlights {
+  background: #1E293B;
+}
+
+body.dark-mode .weekly-forecast h3,
+body.dark-mode .weather-highlights h3 {
+  color: #F1F5F9;
+}
+
+body.dark-mode .forecast-day {
+  background: #334155;
+}
+
+body.dark-mode .forecast-day-name {
+  color: #F1F5F9;
+}
+
+body.dark-mode .forecast-day:hover {
+  background: #FEF3C7;
+}
+
+body.dark-mode .forecast-day:hover .forecast-day-name {
+  color: #1E293B;
+}
+
+body.dark-mode .highlight-card {
+  background: #334155;
+}
+
+body.dark-mode .highlight-value {
+  color: #F1F5F9;
+}
+
+body.dark-mode .highlight-title {
+  color: #94A3B8;
 }
