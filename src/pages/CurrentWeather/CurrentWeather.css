@@ -45,9 +45,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #E2E8F0;
+  margin-bottom: 20px;
 }
 
 .location-header h2 {
@@ -255,4 +253,42 @@
   .current-temp {
     font-size: 48px;
   }
+}
+
+/* Dark Mode Styles for Current Weather */
+body.dark-mode .detail-card,
+body.dark-mode .info-card {
+  background: #1E293B;
+}
+
+body.dark-mode .detail-value,
+body.dark-mode .info-value {
+  color: #F1F5F9;
+}
+
+body.dark-mode .detail-label,
+body.dark-mode .info-label {
+  color: #94A3B8;
+}
+
+body.dark-mode .location-header {
+  border-bottom-color: #334155;
+}
+
+body.dark-mode .location-header h2 {
+  color: #F1F5F9;
+}
+
+body.dark-mode .refresh-btn {
+  background: #334155;
+  color: #F1F5F9;
+}
+
+body.dark-mode .refresh-btn svg {
+  color: #94A3B8;
+}
+
+body.dark-mode .refresh-btn:hover {
+  background: #F97316;
+  color: white;
 }
