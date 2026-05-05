@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./Sidebar.css";
 import LOGO from "../../../assets/images/logo.png";
+import { useTheme } from "../../../context/ThemeContext";
 import {
   LayoutDashboard,
   Sun,
@@ -19,9 +20,9 @@ function Sidebar() {
   const [activeItem, setActiveItem] = useState("");
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const { isDarkMode } = useTheme();
 
   useEffect(() => {
-    // Update active item based on current URL
     const path = location.pathname;
     if (path === "/") {
       setActiveItem("overview");
@@ -46,12 +47,11 @@ function Sidebar() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    // Handle search logic here
     console.log("Searching for:", searchQuery);
   };
 
   return (
-    <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
+    <div className={`sidebar ${isCollapsed ? "collapsed" : ""} ${isDarkMode ? "dark" : ""}`}>
       <div className="sidebar-content">
         <div className="sidebar-top">
           <div className="sidebar-content-header">
@@ -155,6 +155,7 @@ function Sidebar() {
               </div>
             </div>
           )}
+          
           <span className="collapse" onClick={toggleCollapse}>
             {isCollapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
             {!isCollapsed && <span>Collapse</span>}
