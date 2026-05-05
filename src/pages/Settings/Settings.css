@@ -11,12 +11,11 @@
 
 .settings-section {
   margin-bottom: 30px;
-  padding-bottom: 30px;
-  border-bottom: 1px solid #E2E8F0;
 }
 
 .settings-section:last-of-type {
-  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
 .section-header {
@@ -39,8 +38,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 0;
-  border-bottom: 1px solid #F1F5F9;
+  padding: 10px 0;
 }
 
 .setting-item:last-child {
@@ -178,9 +176,6 @@ input:checked + .slider:before {
 .settings-actions {
   display: flex;
   gap: 15px;
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 1px solid #E2E8F0;
 }
 
 .btn-save, .btn-reset {
@@ -318,4 +313,62 @@ input:checked + .slider:before {
     padding: 4px 12px;
     font-size: 12px;
   }
+}
+
+/* Dark Mode Styles for Settings */
+body.dark-mode .settings-section {
+  border-bottom: none;
+}
+
+body.dark-mode .setting-item {
+  border-bottom-color: #334155;
+}
+
+body.dark-mode .setting-label {
+  color: #F1F5F9;
+}
+
+body.dark-mode .section-header h3 {
+  color: #F1F5F9;
+}
+
+body.dark-mode .setting-select {
+  background: #1E293B;
+  border-color: #334155;
+  color: #F1F5F9;
+}
+
+body.dark-mode .toggle-group {
+  background: #334155;
+}
+
+body.dark-mode .toggle-option {
+  color: #94A3B8;
+}
+
+body.dark-mode .toggle-option.active {
+  background: #F97316;
+  color: white;
+}
+
+body.dark-mode .btn-reset {
+  background: #334155;
+  color: #F1F5F9;
+  border-color: #475569;
+}
+
+body.dark-mode .btn-reset:hover {
+  background: #475569;
+}
+
+body.dark-mode .about-section {
+  border-top-color: #334155;
+}
+
+body.dark-mode .about-section h4 {
+  color: #F1F5F9;
+}
+
+body.dark-mode .about-section p {
+  color: #94A3B8;
 }
