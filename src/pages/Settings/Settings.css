@@ -74,9 +74,14 @@
   background: #F8FAFC;
   color: #1E293B;
   transition: all 0.3s ease;
+  outline: none;
 }
 
 .setting-select:hover {
+  border-color: #F97316;
+}
+
+.setting-select:focus {
   border-color: #F97316;
 }
 
@@ -91,7 +96,6 @@
 .toggle-option {
   padding: 6px 16px;
   border: none;
-  background: transparent;
   border-radius: 8px;
   cursor: pointer;
   font-family: "Montserrat", sans-serif;
@@ -101,6 +105,11 @@
   gap: 6px;
   transition: all 0.3s ease;
   color: #1E293B;
+  outline: none;
+}
+
+.toggle-option:focus {
+  outline: none;
 }
 
 .toggle-option svg {
@@ -133,6 +142,7 @@
   opacity: 0;
   width: 0;
   height: 0;
+  outline: none;
 }
 
 .slider {
@@ -186,6 +196,11 @@ input:checked + .slider:before {
   font-family: "Montserrat", sans-serif;
   font-weight: 500;
   transition: all 0.3s ease;
+  outline: none;
+}
+
+.btn-save:focus, .btn-reset:focus {
+  outline: none;
 }
 
 .btn-save {
@@ -196,7 +211,6 @@ input:checked + .slider:before {
 .btn-save:hover {
   background: #EA580C;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
 }
 
 .btn-reset {
@@ -232,6 +246,12 @@ input:checked + .slider:before {
   color: #F97316;
   text-decoration: none;
   transition: color 0.3s ease;
+  outline: none;
+}
+
+.about-section a:focus {
+  outline: none;
+  text-decoration: underline;
 }
 
 .about-section a:hover {
@@ -252,6 +272,12 @@ input:checked + .slider:before {
   color: #F97316;
   text-decoration: none;
   transition: color 0.3s ease;
+  outline: none;
+}
+
+.about-links a:focus {
+  outline: none;
+  text-decoration: underline;
 }
 
 .about-links a:hover {
@@ -336,6 +362,10 @@ body.dark-mode .setting-select {
   background: #1E293B;
   border-color: #334155;
   color: #F1F5F9;
+}
+
+body.dark-mode .setting-select:focus {
+  border-color: #F97316;
 }
 
 body.dark-mode .toggle-group {
