@@ -1,23 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Overview.css';
 import { LayoutDashboard, Droplets, Wind, Gauge, Eye, Sunrise, Sunset, CloudSun, CloudRain, Cloud, Sun, Moon } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
+import LoadingSpinner from "../../components/common/LoadingSpinner/LoadingSpinner";
 
 function Overview() {
-  const [weatherData, setWeatherData] = useState({
-    temp: 72,
-    feelsLike: 70,
-    humidity: 65,
-    windSpeed: 8,
-    pressure: 1012,
-    visibility: 10,
-    uvIndex: 5,
-    condition: "Partly Cloudy",
-    sunrise: "6:42 AM",
-    sunset: "7:15 PM"
-  });
-
+  const [weatherData, setWeatherData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const { isDarkMode, toggleTheme } = useTheme();
+
+  useEffect(() => {
+    const fetchWeatherData = async () => {
+      setIsLoading(true);
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      setWeatherData({
+        temp: 72,
+        feelsLike: 70,
+        humidity: 65,
+        windSpeed: 8,
+        pressure: 1012,
+        visibility: 10,
+        uvIndex: 5,
+        condition: "Partly Cloudy",
+        sunrise: "6:42 AM",
+        sunset: "7:15 PM"
+      });
+      setIsLoading(false);
+    };
+    
+    fetchWeatherData();
+  }, []);
 
   const weeklyForecast = [
     { day: "Mon", high: 74, low: 58, condition: "Sunny", icon: Sun },
@@ -32,6 +46,26 @@ function Overview() {
   const getWeatherIcon = (IconComponent) => {
     return <IconComponent size={28} />;
   };
+
+  if (isLoading) {
+    return (
+      <div className="page-container">
+        <div className="page-header">
+          <span className="page-title">
+            <LayoutDashboard size={18} />
+            Overview
+          </span>
+          <button className="header-theme-toggle" onClick={toggleTheme}>
+            {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
+            <span>{isDarkMode ? "Light Mode" : "Dark Mode"}</span>
+          </button>
+        </div>
+        <div className="page-content">
+          <LoadingSpinner size="large" message="Loading dashboard data..." />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="page-container">
