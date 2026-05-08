@@ -6,6 +6,37 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar styling */
+html::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+html::-webkit-scrollbar-track {
+  background: #F1F5F9;
+  border-radius: 10px;
+}
+
+html::-webkit-scrollbar-thumb {
+  background: #F97316;
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  background: #EA580C;
+}
+
+/* Firefox scrollbar styling */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #F97316 #F1F5F9;
+}
+
 body {
   font-family: "Montserrat", sans-serif;
   background-color: #F8FAFC;
@@ -17,6 +48,24 @@ body.dark-mode {
   background-color: #0F172A;
 }
 
+/* Dark mode scrollbar */
+body.dark-mode html::-webkit-scrollbar-track {
+  background: #1E293B;
+}
+
+body.dark-mode html::-webkit-scrollbar-thumb {
+  background: #F97316;
+}
+
+body.dark-mode html::-webkit-scrollbar-thumb:hover {
+  background: #EA580C;
+}
+
+body.dark-mode html {
+  scrollbar-color: #F97316 #1E293B;
+}
+
+/* App Container */
 .app-container {
   display: flex;
   min-height: 100vh;
@@ -137,28 +186,4 @@ body.dark-mode .header-theme-toggle:hover {
 
 body.dark-mode .header-theme-toggle:hover svg {
   color: white;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .main-content {
-    margin-left: 80px;
-    width: calc(100% - 80px);
-  }
-  
-  .page-header {
-    left: 80px;
-  }
-  
-  .header-theme-toggle {
-    padding: 6px 12px;
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 480px) {
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
 }
