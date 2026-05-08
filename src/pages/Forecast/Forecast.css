@@ -151,6 +151,7 @@
   color: #F97316;
 }
 
+/* Hourly Navigation */
 .hourly-navigation {
   display: flex;
   justify-content: space-between;
@@ -158,6 +159,7 @@
   margin-bottom: 20px;
   flex-wrap: wrap;
   gap: 10px;
+  width: 100%;
 }
 
 .nav-btn {
@@ -168,10 +170,15 @@
   cursor: pointer;
   transition: all 0.3s ease;
   color: #1E293B;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
 }
 
 .nav-btn svg {
   color: #94A3B8;
+  transition: color 0.3s ease;
 }
 
 .nav-btn:hover:not(:disabled) {
@@ -191,13 +198,18 @@
 .hourly-range {
   font-size: 14px;
   color: #94A3B8;
+  flex: 1;
+  text-align: center;
+  padding: 0 15px;
 }
 
+/* Hourly Forecast Grid */
 .hourly-forecast {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: 15px;
   margin-bottom: 30px;
+  justify-content: center;
 }
 
 .hour-card {
@@ -207,6 +219,9 @@
   text-align: center;
   transition: transform 0.3s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin: 0 auto;
+  width: 100%;
+  max-width: 120px;
 }
 
 .hour-card:hover {
@@ -257,6 +272,7 @@
   color: #3B82F6;
 }
 
+/* Weekly Summary */
 .weekly-summary {
   background: white;
   border-radius: 16px;
@@ -320,13 +336,14 @@
   color: #1E293B;
 }
 
-/* Responsive */
+/* Responsive - Large screens */
 @media (max-width: 1024px) {
   .daily-forecast {
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   }
 }
 
+/* Responsive - Tablet */
 @media (max-width: 768px) {
   .forecast-content {
     padding: 15px;
@@ -357,8 +374,27 @@
   .week-bars {
     min-width: 500px;
   }
+  
+  .hourly-navigation {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .hourly-range {
+    order: -1;
+    margin-bottom: 10px;
+    padding: 0;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .nav-btn {
+    justify-content: center;
+    flex: 1;
+  }
 }
 
+/* Responsive - Mobile */
 @media (max-width: 480px) {
   .hourly-forecast {
     grid-template-columns: repeat(2, 1fr);
@@ -375,9 +411,219 @@
   .forecast-card {
     margin: 0 10px;
   }
+  
+  .hourly-range {
+    font-size: 12px;
+  }
+  
+  .nav-btn {
+    padding: 6px 12px;
+  }
+  
+  .nav-btn span {
+    display: none;
+  }
+  
+  .hour-card {
+    max-width: 100%;
+  }
 }
 
-/* Dark Mode Styles for Forecast */
+/* ============================================ */
+/* SIDEBAR COLLAPSED SPECIFIC STYLES           */
+/* ============================================ */
+
+/* When sidebar is collapsed - fix hourly forecast layout */
+.main-content.sidebar-collapsed .forecast-content,
+.sidebar.collapsed ~ .main-content .forecast-content {
+  width: 100%;
+  max-width: 100%;
+  padding: 15px;
+}
+
+/* Daily forecast when sidebar is collapsed */
+.main-content.sidebar-collapsed .daily-forecast,
+.sidebar.collapsed ~ .main-content .daily-forecast {
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+/* Hourly navigation when sidebar is collapsed */
+.main-content.sidebar-collapsed .hourly-navigation,
+.sidebar.collapsed ~ .main-content .hourly-navigation {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: nowrap;
+}
+
+.main-content.sidebar-collapsed .hourly-range,
+.sidebar.collapsed ~ .main-content .hourly-range {
+  flex: 1;
+  text-align: center;
+  white-space: nowrap;
+  padding: 0 15px;
+  font-size: 14px;
+}
+
+/* Hourly forecast grid when sidebar is collapsed */
+.main-content.sidebar-collapsed .hourly-forecast,
+.sidebar.collapsed ~ .main-content .hourly-forecast {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 15px;
+  width: 100%;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.main-content.sidebar-collapsed .hour-card,
+.sidebar.collapsed ~ .main-content .hour-card {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 130px;
+}
+
+/* Forecast summary when sidebar is collapsed */
+.main-content.sidebar-collapsed .forecast-summary,
+.sidebar.collapsed ~ .main-content .forecast-summary {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+/* Weekly summary when sidebar is collapsed */
+.main-content.sidebar-collapsed .weekly-summary,
+.sidebar.collapsed ~ .main-content .weekly-summary {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.main-content.sidebar-collapsed .week-bars,
+.sidebar.collapsed ~ .main-content .week-bars {
+  justify-content: center;
+  min-width: auto;
+  flex-wrap: wrap;
+}
+
+/* Medium screens when sidebar is collapsed */
+@media (min-width: 769px) and (max-width: 1199px) {
+  .main-content.sidebar-collapsed .hourly-forecast,
+  .sidebar.collapsed ~ .main-content .hourly-forecast {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+  
+  .main-content.sidebar-collapsed .hour-card,
+  .sidebar.collapsed ~ .main-content .hour-card {
+    max-width: 110px;
+  }
+  
+  .main-content.sidebar-collapsed .hourly-range,
+  .sidebar.collapsed ~ .main-content .hourly-range {
+    font-size: 12px;
+    padding: 0 10px;
+  }
+}
+
+/* Large screens when sidebar is collapsed */
+@media (min-width: 1200px) {
+  .main-content.sidebar-collapsed .hourly-forecast,
+  .sidebar.collapsed ~ .main-content .hourly-forecast {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+  
+  .main-content.sidebar-collapsed .hour-card,
+  .sidebar.collapsed ~ .main-content .hour-card {
+    max-width: 140px;
+  }
+}
+
+/* Tablet screens when sidebar is collapsed */
+@media (max-width: 768px) {
+  .main-content.sidebar-collapsed .hourly-navigation,
+  .sidebar.collapsed ~ .main-content .hourly-navigation {
+    flex-wrap: wrap;
+  }
+  
+  .main-content.sidebar-collapsed .hourly-range,
+  .sidebar.collapsed ~ .main-content .hourly-range {
+    order: -1;
+    width: 100%;
+    white-space: normal;
+    margin-bottom: 10px;
+  }
+  
+  .main-content.sidebar-collapsed .nav-btn,
+  .sidebar.collapsed ~ .main-content .nav-btn {
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .main-content.sidebar-collapsed .hourly-forecast,
+  .sidebar.collapsed ~ .main-content .hourly-forecast {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  
+  .main-content.sidebar-collapsed .hour-card,
+  .sidebar.collapsed ~ .main-content .hour-card {
+    max-width: 100%;
+  }
+  
+  .main-content.sidebar-collapsed .forecast-summary,
+  .sidebar.collapsed ~ .main-content .forecast-summary {
+    grid-template-columns: 1fr;
+  }
+  
+  .main-content.sidebar-collapsed .daily-forecast,
+  .sidebar.collapsed ~ .main-content .daily-forecast {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mobile screens when sidebar is collapsed */
+@media (max-width: 480px) {
+  .main-content.sidebar-collapsed .hourly-forecast,
+  .sidebar.collapsed ~ .main-content .hourly-forecast {
+    gap: 8px;
+  }
+  
+  .main-content.sidebar-collapsed .hour-card,
+  .sidebar.collapsed ~ .main-content .hour-card {
+    padding: 10px;
+  }
+  
+  .main-content.sidebar-collapsed .hour-temp,
+  .sidebar.collapsed ~ .main-content .hour-temp {
+    font-size: 14px;
+  }
+  
+  .main-content.sidebar-collapsed .hour-time,
+  .sidebar.collapsed ~ .main-content .hour-time {
+    font-size: 11px;
+  }
+  
+  .main-content.sidebar-collapsed .hour-icon svg,
+  .sidebar.collapsed ~ .main-content .hour-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .main-content.sidebar-collapsed .nav-btn,
+  .sidebar.collapsed ~ .main-content .nav-btn {
+    padding: 6px 12px;
+  }
+  
+  .main-content.sidebar-collapsed .nav-btn span,
+  .sidebar.collapsed ~ .main-content .nav-btn span {
+    display: none;
+  }
+}
+
+/* ============================================ */
+/* DARK MODE STYLES                            */
+/* ============================================ */
+
 body.dark-mode .summary-card,
 body.dark-mode .forecast-card,
 body.dark-mode .hour-card,
@@ -386,6 +632,7 @@ body.dark-mode .weekly-summary {
 }
 
 body.dark-mode .summary-label,
+body.dark-mode .hour-time,
 body.dark-mode .forecast-condition,
 body.dark-mode .hour-condition,
 body.dark-mode .week-day,
@@ -393,9 +640,14 @@ body.dark-mode .week-temp {
   color: #94A3B8;
 }
 
+
 body.dark-mode .forecast-day,
 body.dark-mode .forecast-date {
   color: white;
+}
+
+body.dark-mode .forecast-header {
+  background-color: #F97316;
 }
 
 body.dark-mode .nav-btn {
@@ -406,6 +658,15 @@ body.dark-mode .nav-btn {
 
 body.dark-mode .nav-btn svg {
   color: #94A3B8;
+}
+
+body.dark-mode .nav-btn:hover:not(:disabled) {
+  background: #F97316;
+  color: white;
+}
+
+body.dark-mode .nav-btn:hover:not(:disabled) svg {
+  color: white;
 }
 
 body.dark-mode .hour-card:hover {
@@ -419,4 +680,18 @@ body.dark-mode .hour-card:hover .hour-condition {
 
 body.dark-mode .weekly-summary h4 {
   color: #F1F5F9;
+}
+
+/* Dark mode styles when sidebar is collapsed */
+body.dark-mode .main-content.sidebar-collapsed .nav-btn,
+body.dark-mode .sidebar.collapsed ~ .main-content .nav-btn {
+  background: #334155;
+  color: #F1F5F9;
+  border-color: #475569;
+}
+
+body.dark-mode .main-content.sidebar-collapsed .nav-btn:hover:not(:disabled),
+body.dark-mode .sidebar.collapsed ~ .main-content .nav-btn:hover:not(:disabled) {
+  background: #F97316;
+  color: white;
 }

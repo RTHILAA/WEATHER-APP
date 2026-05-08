@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Forecast.css';
 import { CalendarDays, Droplets, Wind, ChevronLeft, ChevronRight, Sun, CloudSun, CloudRain, Cloud, Moon, Sun as SunIcon } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
+import LoadingSpinner from "../../components/common/LoadingSpinner/LoadingSpinner";
 
 function Forecast() {
   const [view, setView] = useState('daily');
+  const [isLoading, setIsLoading] = useState(true);
   const { isDarkMode, toggleTheme } = useTheme();
   
   const dailyForecast = [
@@ -47,6 +49,16 @@ function Forecast() {
   const [hourlyIndex, setHourlyIndex] = useState(0);
   const visibleHours = 8;
 
+  useEffect(() => {
+    const fetchForecast = async () => {
+      setIsLoading(true);
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      setIsLoading(false);
+    };
+    fetchForecast();
+  }, []);
+
   const nextHours = () => {
     if (hourlyIndex + visibleHours < hourlyForecast.length) {
       setHourlyIndex(hourlyIndex + visibleHours);
@@ -62,6 +74,28 @@ function Forecast() {
   const getWeatherIcon = (IconComponent, size = 48) => {
     return <IconComponent size={size} />;
   };
+
+  if (isLoading) {
+    return (
+      <div className="page-container">
+        <div className="page-header">
+          <span className="page-title">
+            <CalendarDays size={18} />
+            Forecast
+          </span>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <button className="header-theme-toggle" onClick={toggleTheme}>
+              {isDarkMode ? <SunIcon size={16} /> : <Moon size={16} />}
+              <span>{isDarkMode ? "Light Mode" : "Dark Mode"}</span>
+            </button>
+          </div>
+        </div>
+        <div className="page-content">
+          <LoadingSpinner size="large" message="Loading forecast data..." />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="page-container">
