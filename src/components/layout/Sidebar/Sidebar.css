@@ -46,7 +46,6 @@
 /* Remove padding on sides when collapsed to make border full width */
 .sidebar.collapsed .sidebar-content-header {
   justify-content: center;
-  padding: 20px 0;
 }
 
 .sidebar-logo-img {
@@ -235,7 +234,6 @@
 .search-input-wrapper:focus-within {
   background-color: #FFFFFF;
   border-color: #F97316;
-  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.1);
 }
 
 .search-icon {
