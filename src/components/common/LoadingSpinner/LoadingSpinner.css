@@ -1,0 +1,128 @@
+.loading-spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  width: 100%;
+  gap: 20px;
+}
+
+.loading-spinner {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner-circle {
+  position: absolute;
+  border: 3px solid transparent;
+  border-radius: 50%;
+  animation: spin var(--duration, 1.5s) linear infinite;
+}
+
+.spinner-circle:nth-child(1) {
+  width: 100%;
+  height: 100%;
+  border-top-color: #F97316;
+  border-right-color: #F97316;
+  --duration: 1s;
+}
+
+.spinner-circle:nth-child(2) {
+  width: 70%;
+  height: 70%;
+  border-bottom-color: #FFD700;
+  border-left-color: #FFD700;
+  --duration: 1.2s;
+}
+
+.spinner-circle:nth-child(3) {
+  width: 40%;
+  height: 40%;
+  border-top-color: #667eea;
+  border-right-color: #667eea;
+  --duration: 0.8s;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-message {
+  color: #94A3B8;
+  font-size: 14px;
+  font-weight: 500;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Dark Mode Styles */
+body.dark-mode .loading-message {
+  color: #94A3B8;
+}
+
+/* Size variations - can be overridden by inline styles */
+.loading-spinner.small {
+  width: 24px;
+  height: 24px;
+}
+
+.loading-spinner.medium {
+  width: 48px;
+  height: 48px;
+}
+
+.loading-spinner.large {
+  width: 64px;
+  height: 64px;
+}
+
+/* Full page loader */
+.loading-spinner-fullpage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(248, 250, 252, 0.95);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+body.dark-mode .loading-spinner-fullpage {
+  background: rgba(15, 23, 42, 0.95);
+}
+
+/* Inline loader */
+.loading-spinner-inline {
+  min-height: 200px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .loading-spinner-container {
+    min-height: 200px;
+  }
+  
+  .loading-message {
+    font-size: 12px;
+  }
+}

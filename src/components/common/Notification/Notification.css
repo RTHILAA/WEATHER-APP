@@ -1,0 +1,148 @@
+/* src/components/common/Notification/Notification.css */
+.notification-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 380px;
+  pointer-events: none;
+}
+
+.notification {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+  pointer-events: auto;
+  animation: slideInRight 0.3s ease forwards;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.notification.slide-out {
+  animation: slideOutRight 0.3s ease forwards;
+}
+
+/* Success notification - using #F97316 */
+.notification-success .notification-icon {
+  color: #F97316;
+}
+
+/* Error notification - darker orange/red variant */
+.notification-error .notification-icon {
+  color: #EA580C;
+}
+
+/* Info notification - using #1E293B */
+.notification-info .notification-icon {
+  color: #1E293B;
+}
+
+.notification-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.notification-content {
+  flex: 1;
+}
+
+.notification-content p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1E293B;
+  line-height: 1.4;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  color: #94A3B8;
+  flex-shrink: 0;
+}
+
+.notification-close:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #1E293B;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Dark Mode */
+body.dark-mode .notification {
+  background: rgba(30, 41, 59, 0.95);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .notification-content p {
+  color: #F1F5F9;
+}
+
+/* Dark mode - Success notification */
+body.dark-mode .notification-success .notification-icon {
+  color: #F97316;
+}
+
+/* Dark mode - Error notification */
+body.dark-mode .notification-error .notification-icon {
+  color: #F97316;
+}
+
+/* Dark mode - Info notification */
+body.dark-mode .notification-info .notification-icon {
+  color: #F1F5F9;
+}
+
+body.dark-mode .notification-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #F1F5F9;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .notification-container {
+    left: 20px;
+    right: 20px;
+    max-width: none;
+  }
+  
+  .notification {
+    width: 100%;
+  }
+}
