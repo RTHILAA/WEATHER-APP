@@ -267,20 +267,21 @@ input:checked + .slider:before {
   flex-wrap: wrap;
 }
 
-.about-links a {
-  font-size: 12px;
+/* Link button styles for accessibility */
+.link-button {
+  background: none;
+  border: none;
   color: #F97316;
+  font-family: "Montserrat", sans-serif;
+  font-size: 12px;
+  cursor: pointer;
   text-decoration: none;
   transition: color 0.3s ease;
+  padding: 0;
   outline: none;
 }
 
-.about-links a:focus {
-  outline: none;
-  text-decoration: underline;
-}
-
-.about-links a:hover {
+.link-button:hover {
   text-decoration: underline;
   color: #EA580C;
 }
@@ -401,4 +402,13 @@ body.dark-mode .about-section h4 {
 
 body.dark-mode .about-section p {
   color: #94A3B8;
+}
+
+/* Dark mode styles for link buttons */
+body.dark-mode .link-button {
+  color: #F97316;
+}
+
+body.dark-mode .link-button:hover {
+  color: #FB923C;
 }

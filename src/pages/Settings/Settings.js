@@ -14,11 +14,16 @@ function Settings() {
   const [settings, setSettings] = useState(() => {
     const savedSettings = localStorage.getItem('skycast_settings');
     if (savedSettings) {
-      return JSON.parse(savedSettings);
+      const parsed = JSON.parse(savedSettings);
+      // Sync theme with actual current theme
+      return {
+        ...parsed,
+        theme: isDarkMode ? "dark" : "light"
+      };
     }
     return {
       temperatureUnit: "celsius",
-      theme: "light",
+      theme: isDarkMode ? "dark" : "light",
       notifications: true,
       dailyForecast: true,
       autoRefresh: true,
@@ -29,27 +34,40 @@ function Settings() {
     };
   });
 
-  // Sync settings.theme with the actual theme from context
+  // Save settings to localStorage whenever they change
   useEffect(() => {
-    const currentTheme = isDarkMode ? "dark" : "light";
-    if (settings.theme !== currentTheme && settings.theme !== "system") {
-      setSettings(prev => ({ ...prev, theme: currentTheme }));
-    }
+    localStorage.setItem('skycast_settings', JSON.stringify(settings));
+  }, [settings]);
+
+  // Update settings.theme when global theme changes
+  useEffect(() => {
+    setSettings(prev => ({
+      ...prev,
+      theme: isDarkMode ? "dark" : "light"
+    }));
   }, [isDarkMode]);
 
-  // Apply theme based on settings
+  // Setup auto-refresh interval
   useEffect(() => {
-    if (settings.theme === "dark") {
-      if (!isDarkMode) toggleTheme();
-    } else if (settings.theme === "light") {
-      if (isDarkMode) toggleTheme();
-    } else if (settings.theme === "system") {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (prefersDark !== isDarkMode) {
-        toggleTheme();
-      }
+    let intervalId;
+    
+    if (settings.autoRefresh) {
+      const intervalMinutes = settings.refreshInterval;
+      const intervalMs = intervalMinutes * 60 * 1000;
+      
+      intervalId = setInterval(() => {
+        // Dispatch event to refresh weather data
+        window.dispatchEvent(new CustomEvent('refreshWeather'));
+        console.log(`Auto-refresh triggered (every ${intervalMinutes} minutes)`);
+      }, intervalMs);
     }
-  }, [settings.theme]);
+    
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [settings.autoRefresh, settings.refreshInterval]);
 
   const handleToggle = (setting) => {
     setSettings(prev => ({ ...prev, [setting]: !prev[setting] }));
@@ -60,11 +78,11 @@ function Settings() {
   };
 
   const handleSave = () => {
-    // Save to localStorage
-    localStorage.setItem('skycast_settings', JSON.stringify(settings));
-    
     showNotification("Settings saved successfully!", "success", 3000);
     console.log("Settings saved:", settings);
+    
+    // Dispatch event to notify other components about settings change
+    window.dispatchEvent(new CustomEvent('settingsChanged'));
   };
 
   const handleReset = () => {
@@ -82,19 +100,33 @@ function Settings() {
     setSettings(defaultSettings);
     localStorage.setItem('skycast_settings', JSON.stringify(defaultSettings));
     
+    // Reset theme to light mode
+    if (isDarkMode) {
+      toggleTheme();
+    }
+    
     showNotification("Settings reset to default", "info", 3000);
+    
+    // Dispatch event to notify other components about settings change
+    window.dispatchEvent(new CustomEvent('settingsChanged'));
   };
 
   // Handle temperature unit change
   const handleTemperatureUnitChange = (unit) => {
     handleChange("temperatureUnit", unit);
     showNotification(`Temperature unit changed to ${unit === 'celsius' ? '°C' : '°F'}`, "info", 2000);
+    
+    // Dispatch event to notify weather components about unit change
+    window.dispatchEvent(new CustomEvent('settingsChanged'));
   };
 
   // Handle units system change
   const handleUnitsChange = (units) => {
     handleChange("units", units);
     showNotification(`Measurement system changed to ${units === 'metric' ? 'Metric' : 'Imperial'}`, "info", 2000);
+    
+    // Dispatch event to notify weather components about unit change
+    window.dispatchEvent(new CustomEvent('settingsChanged'));
   };
 
   // Handle language change
@@ -111,30 +143,47 @@ function Settings() {
     showNotification(`Language changed to ${languageNames[newLanguage]}`, "info", 2000);
   };
 
-  // Handle theme change from dropdown
+  // Handle theme change
   const handleThemeChange = (e) => {
     const newTheme = e.target.value;
+    
+    // Update local state
     handleChange("theme", newTheme);
-    showNotification(`Theme changed to ${newTheme === 'dark' ? 'Dark' : 'Light'} mode`, "info", 2000);
+    
+    // Apply theme globally
+    if (newTheme === "dark" && !isDarkMode) {
+      toggleTheme();
+      showNotification("Dark mode enabled", "info", 2000);
+    } else if (newTheme === "light" && isDarkMode) {
+      toggleTheme();
+      showNotification("Light mode enabled", "info", 2000);
+    }
   };
+  
   // Handle refresh interval change
   const handleRefreshIntervalChange = (e) => {
     const newInterval = parseInt(e.target.value);
     handleChange("refreshInterval", newInterval);
     if (settings.autoRefresh) {
       showNotification(`Refresh interval set to every ${newInterval} minutes`, "info", 2000);
+      // Dispatch event to restart auto-refresh with new interval
+      window.dispatchEvent(new CustomEvent('settingsChanged'));
     }
   };
 
   // Handle location access toggle
   const handleLocationToggle = () => {
+    const newLocationAccess = !settings.locationAccess;
     handleToggle("locationAccess");
-    if (!settings.locationAccess) {
+    
+    if (newLocationAccess) {
       // Request location permission
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
             showNotification("Location access granted! Weather will update for your area.", "success", 3000);
+            // Dispatch event to update weather with new location
+            window.dispatchEvent(new CustomEvent('settingsChanged'));
           },
           (error) => {
             showNotification("Location access denied. Please enable in browser settings.", "error", 3000);
@@ -152,8 +201,10 @@ function Settings() {
 
   // Handle notification toggle
   const handleNotificationToggle = () => {
+    const newNotifications = !settings.notifications;
     handleToggle("notifications");
-    if (!settings.notifications) {
+    
+    if (newNotifications) {
       // Request notification permission
       if ("Notification" in window) {
         if (Notification.permission === "default") {
@@ -182,9 +233,13 @@ function Settings() {
 
   // Handle auto refresh toggle
   const handleAutoRefreshToggle = () => {
+    const newAutoRefresh = !settings.autoRefresh;
     handleToggle("autoRefresh");
-    if (!settings.autoRefresh) {
+    
+    if (newAutoRefresh) {
       showNotification("Auto refresh enabled", "success", 2000);
+      // Dispatch event to start auto-refresh
+      window.dispatchEvent(new CustomEvent('settingsChanged'));
     } else {
       showNotification("Auto refresh disabled", "info", 2000);
     }
@@ -192,18 +247,30 @@ function Settings() {
 
   // Handle daily forecast toggle
   const handleDailyForecastToggle = () => {
+    const newDailyForecast = !settings.dailyForecast;
     handleToggle("dailyForecast");
-    if (!settings.dailyForecast) {
+    
+    if (newDailyForecast) {
       showNotification("Daily forecast summaries enabled", "success", 2000);
     } else {
       showNotification("Daily forecast summaries disabled", "info", 2000);
     }
   };
 
-  // Get current display theme value (for the dropdown)
-  const getDisplayTheme = () => {
-    if (settings.theme === "system") return "system";
-    return isDarkMode ? "dark" : "light";
+  // Handle link clicks for accessibility
+  const handleTermsClick = (e) => {
+    e.preventDefault();
+    showNotification("Terms of Service page coming soon!", "info", 2000);
+  };
+
+  const handlePrivacyClick = (e) => {
+    e.preventDefault();
+    showNotification("Privacy Policy page coming soon!", "info", 2000);
+  };
+
+  const handleSupportClick = (e) => {
+    e.preventDefault();
+    showNotification("Contact support at support@skycast.com", "info", 3000);
   };
 
   return (
@@ -218,7 +285,11 @@ function Settings() {
             <SettingsIcon size={18} />
             Settings
           </span>
-          <button className="header-theme-toggle" onClick={toggleTheme}>
+          <button 
+            className="header-theme-toggle" 
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+          >
             {isDarkMode ? <SunIcon size={16} /> : <Moon size={16} />}
             <span>{isDarkMode ? "Light Mode" : "Dark Mode"}</span>
           </button>
@@ -242,6 +313,7 @@ function Settings() {
                       value={settings.theme}
                       onChange={handleThemeChange}
                       className="setting-select"
+                      aria-label="Select theme"
                     >
                       <option value="light">Light</option>
                       <option value="dark">Dark</option>
@@ -254,10 +326,11 @@ function Settings() {
                     <span className="setting-desc">Display temperature in Celsius or Fahrenheit</span>
                   </div>
                   <div className="setting-control">
-                    <div className="toggle-group">
+                    <div className="toggle-group" role="group" aria-label="Temperature unit toggle">
                       <button 
                         className={`toggle-option ${settings.temperatureUnit === 'celsius' ? 'active' : ''}`}
                         onClick={() => handleTemperatureUnitChange("celsius")}
+                        aria-pressed={settings.temperatureUnit === 'celsius'}
                       >
                         <Thermometer size={14} />
                         °C
@@ -265,6 +338,7 @@ function Settings() {
                       <button 
                         className={`toggle-option ${settings.temperatureUnit === 'fahrenheit' ? 'active' : ''}`}
                         onClick={() => handleTemperatureUnitChange("fahrenheit")}
+                        aria-pressed={settings.temperatureUnit === 'fahrenheit'}
                       >
                         <Thermometer size={14} />
                         °F
@@ -286,16 +360,18 @@ function Settings() {
                     <span className="setting-desc">Choose metric or imperial units</span>
                   </div>
                   <div className="setting-control">
-                    <div className="toggle-group">
+                    <div className="toggle-group" role="group" aria-label="Measurement system toggle">
                       <button 
                         className={`toggle-option ${settings.units === 'metric' ? 'active' : ''}`}
                         onClick={() => handleUnitsChange("metric")}
+                        aria-pressed={settings.units === 'metric'}
                       >
                         Metric
                       </button>
                       <button 
                         className={`toggle-option ${settings.units === 'imperial' ? 'active' : ''}`}
                         onClick={() => handleUnitsChange("imperial")}
+                        aria-pressed={settings.units === 'imperial'}
                       >
                         Imperial
                       </button>
@@ -312,10 +388,13 @@ function Settings() {
                       value={settings.language}
                       onChange={handleLanguageChange}
                       className="setting-select"
+                      aria-label="Select language"
                     >
                       <option value="english">English</option>
                       <option value="french">French</option>
                       <option value="spanish">Spanish</option>
+                      <option value="german">German</option>
+                      <option value="japanese">Japanese</option>
                     </select>
                   </div>
                 </div>
@@ -338,6 +417,7 @@ function Settings() {
                         type="checkbox" 
                         checked={settings.notifications}
                         onChange={handleNotificationToggle}
+                        aria-label="Toggle weather alerts"
                       />
                       <span className="slider round"></span>
                     </label>
@@ -354,6 +434,7 @@ function Settings() {
                         type="checkbox" 
                         checked={settings.dailyForecast}
                         onChange={handleDailyForecastToggle}
+                        aria-label="Toggle daily forecast summary"
                       />
                       <span className="slider round"></span>
                     </label>
@@ -378,6 +459,7 @@ function Settings() {
                         type="checkbox" 
                         checked={settings.autoRefresh}
                         onChange={handleAutoRefreshToggle}
+                        aria-label="Toggle auto refresh"
                       />
                       <span className="slider round"></span>
                     </label>
@@ -394,6 +476,7 @@ function Settings() {
                         value={settings.refreshInterval}
                         onChange={handleRefreshIntervalChange}
                         className="setting-select"
+                        aria-label="Select refresh interval"
                       >
                         <option value="15">Every 15 minutes</option>
                         <option value="30">Every 30 minutes</option>
@@ -422,6 +505,7 @@ function Settings() {
                         type="checkbox" 
                         checked={settings.locationAccess}
                         onChange={handleLocationToggle}
+                        aria-label="Toggle location access"
                       />
                       <span className="slider round"></span>
                     </label>
@@ -431,10 +515,18 @@ function Settings() {
 
               {/* Action Buttons */}
               <div className="settings-actions">
-                <button className="btn-save" onClick={handleSave}>
+                <button 
+                  className="btn-save" 
+                  onClick={handleSave}
+                  aria-label="Save settings"
+                >
                   Save Changes
                 </button>
-                <button className="btn-reset" onClick={handleReset}>
+                <button 
+                  className="btn-reset" 
+                  onClick={handleReset}
+                  aria-label="Reset settings to default"
+                >
                   Reset to Default
                 </button>
               </div>
@@ -446,9 +538,15 @@ function Settings() {
                 <p>&copy; {currentYear} SkyCast Weather App. All rights reserved.</p>
                 <p>Developed by <a href="https://www.instagram.com/a.elharazi/" target="_blank" rel="noopener noreferrer">ANASS EL HARAZI</a></p>
                 <div className="about-links">
-                  <a href="#" onClick={(e) => { e.preventDefault(); showNotification("Terms of Service page coming soon!", "info", 2000); }}>Terms of Service</a>
-                  <a href="#" onClick={(e) => { e.preventDefault(); showNotification("Privacy Policy page coming soon!", "info", 2000); }}>Privacy Policy</a>
-                  <a href="#" onClick={(e) => { e.preventDefault(); showNotification("Contact support at support@skycast.com", "info", 3000); }}>Contact Support</a>
+                  <button onClick={handleTermsClick} className="link-button" aria-label="View terms of service">
+                    Terms of Service
+                  </button>
+                  <button onClick={handlePrivacyClick} className="link-button" aria-label="View privacy policy">
+                    Privacy Policy
+                  </button>
+                  <button onClick={handleSupportClick} className="link-button" aria-label="Contact support">
+                    Contact Support
+                  </button>
                 </div>
               </div>
             </div>
