@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Sidebar.css";
 import LOGO from "../../../assets/images/logo.png";
 import { useTheme } from "../../../context/ThemeContext";
+import { useLocation as useAppLocation } from "../../../context/LocationContext";
 import {
   LayoutDashboard,
   Sun,
@@ -13,14 +14,28 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Search,
+  Loader,
 } from "lucide-react";
 
 function Sidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [activeItem, setActiveItem] = useState("");
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const searchRef = useRef(null);
+  
   const { isDarkMode } = useTheme();
+  const { 
+    currentLocation, 
+    searchLocation, 
+    searchResults, 
+    isSearching, 
+    searchError,
+    selectLocation,
+    clearSearch
+  } = useAppLocation();
 
   useEffect(() => {
     const path = location.pathname;
@@ -37,6 +52,19 @@ function Sidebar() {
     }
   }, [location]);
 
+  // Click outside handler for search results
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowSearchResults(false);
+        clearSearch();
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [clearSearch]);
+
   const handleItemClick = (item) => {
     setActiveItem(item);
   };
@@ -45,9 +73,40 @@ function Sidebar() {
     setIsCollapsed(!isCollapsed);
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    console.log("Searching for:", searchQuery);
+  const handleSearchInput = async (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    
+    if (value.trim().length >= 2) {
+      await searchLocation(value);
+      setShowSearchResults(true);
+    } else {
+      clearSearch();
+      setShowSearchResults(false);
+    }
+  };
+
+  const handleCitySelect = (city) => {
+    const selectedCity = selectLocation(city);
+    setSearchQuery("");
+    setShowSearchResults(false);
+    clearSearch();
+    
+    // Refresh the current page to show new location data
+    window.dispatchEvent(new CustomEvent('locationChanged', { detail: { location: selectedCity } }));
+    
+    // Navigate to current weather page to show the new location
+    navigate('/current-weather');
+  };
+
+  // Remove the unused functions: clearSearchInput and formatLocationDisplay
+
+  // Extract the main city name for display
+  const getDisplayCity = () => {
+    if (currentLocation.includes(',')) {
+      return currentLocation.split(',')[0];
+    }
+    return currentLocation;
   };
 
   return (
@@ -61,24 +120,67 @@ function Sidebar() {
           
           {/* Search Section */}
           {!isCollapsed && (
-            <div className="search-container">
-              <form onSubmit={handleSearch} className="search-form">
+            <div className="search-container" ref={searchRef}>
+              <form onSubmit={(e) => e.preventDefault()} className="search-form">
                 <div className="search-input-wrapper">
                   <Search size={16} className="search-icon" />
                   <input
                     type="text"
-                    placeholder="Search location..."
+                    placeholder="Search for a city..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={handleSearchInput}
+                    onFocus={() => searchQuery.trim().length >= 2 && setShowSearchResults(true)}
                     className="search-input"
+                    autoComplete="off"
                   />
                 </div>
               </form>
+              
+              {/* Search Results Dropdown */}
+              {showSearchResults && (
+                <div className="search-results-dropdown">
+                  {isSearching ? (
+                    <div className="search-loading">
+                      <Loader size={20} className="spin" />
+                      <span>Searching for cities...</span>
+                    </div>
+                  ) : searchError ? (
+                    <div className="search-error">
+                      <span>{searchError}</span>
+                    </div>
+                  ) : searchResults.length > 0 ? (
+                    <div className="search-results-list">
+                      {searchResults.map((city, index) => (
+                        <button
+                          key={`${city.name}-${city.country}-${city.lat}-${city.lon}-${index}`}
+                          className="search-result-item"
+                          onClick={() => handleCitySelect(city)}
+                        >
+                          <MapPin size={16} className="result-pin" />
+                          <div className="result-info">
+                            <div className="result-name">{city.name}</div>
+                            <div className="result-location">
+                              {city.state && <span className="result-state">{city.state}</span>}
+                              {city.state && city.country && <span className="result-separator">, </span>}
+                              <span className="result-country">{city.country}</span>
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  ) : searchQuery.trim().length >= 2 && (
+                    <div className="search-no-results">
+                      <span>No cities found for "{searchQuery}"</span>
+                      <small>Try checking the spelling or try another city name</small>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
           
           {isCollapsed && (
-            <div className="search-collapsed">
+            <div className="search-collapsed" title="Search location">
               <Search size={16} />
             </div>
           )}
@@ -143,13 +245,13 @@ function Sidebar() {
                 <MapPin size={18} />
               </div>
               <div className="location-text">
-                <span className="location-city">New York, US</span>
+                <span className="location-city">{getDisplayCity()}</span>
                 <span className="location-label">Current location</span>
               </div>
             </div>
           )}
           {isCollapsed && (
-            <div className="current-location-collapsed">
+            <div className="current-location-collapsed" title={getDisplayCity()}>
               <div className="location-icon">
                 <MapPin size={18} />
               </div>
