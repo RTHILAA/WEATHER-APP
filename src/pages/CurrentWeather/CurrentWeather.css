@@ -197,6 +197,20 @@
   font-weight: 600;
 }
 
+/* Add to CurrentWeather.css */
+.error-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 160px);
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #EF4444;
+  border-radius: 16px;
+  margin: 20px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .current-weather-content {
@@ -291,4 +305,8 @@ body.dark-mode .refresh-btn svg {
 body.dark-mode .refresh-btn:hover {
   background: #F97316;
   color: white;
+}
+
+body.dark-mode .error-message {
+  color: #F87171;
 }
