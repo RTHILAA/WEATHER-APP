@@ -1,7 +1,15 @@
+/* src/pages/Map/Map.css */
+
 .map-content {
   padding: 20px;
   max-width: 1400px;
   margin: 0 auto;
+}
+
+.map-header-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 .map-controls {
@@ -63,7 +71,7 @@
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   min-width: 160px;
-  z-index: 100;
+  z-index: 1000;
   overflow: hidden;
 }
 
@@ -88,29 +96,24 @@ body.dark-mode .layers-dropdown-menu {
   justify-content: space-between;
 }
 
-/* Layer dropdown icons - set to #94A3B8 */
 .layer-dropdown-item svg {
   color: #94A3B8;
 }
 
-/* When active, the whole item background changes */
 .layer-dropdown-item.active {
   background: #F97316;
   color: white;
 }
 
-/* When active, all icons inside become white */
 .layer-dropdown-item.active svg {
   color: white;
 }
 
-/* The check icon specifically should be white */
 .active-indicator {
   color: white;
   flex-shrink: 0;
 }
 
-/* Ensure check icon stays white in active state */
 .layer-dropdown-item.active .active-indicator {
   color: white;
 }
@@ -164,7 +167,6 @@ body.dark-mode .layer-dropdown-item:hover:not(.active) {
   color: #1E293B;
 }
 
-/* Layer selector icons - set to #94A3B8 */
 .layer-btn svg {
   color: #94A3B8;
   transition: color 0.3s ease;
@@ -194,171 +196,70 @@ body.dark-mode .layer-dropdown-item:hover:not(.active) {
   margin-bottom: 20px;
   position: relative;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  min-height: 500px;
 }
 
 body.dark-mode .weather-map {
   background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
 }
 
-.map-background {
-  position: relative;
-  min-height: 500px;
-  background: transparent;
-  overflow: hidden;
-  transition: transform 0.3s ease;
-  cursor: grab;
-}
-
-.map-background:active {
-  cursor: grabbing;
-}
-
-.map-svg {
-  width: 100%;
-  height: auto;
-  max-height: 500px;
-}
-
-.map-outline {
-  transition: fill 0.3s ease;
-}
-
-.city-marker {
+/* Map Location Info */
+.map-location-info {
   position: absolute;
-  cursor: pointer;
-  transform: translate(-50%, -50%);
-  transition: left 0.3s ease, top 0.3s ease;
-  z-index: 10;
-}
-
-.marker-dot {
-  width: 12px;
-  height: 12px;
-  background: #F97316;
-  border: 2px solid white;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.city-marker:hover .marker-dot {
-  transform: scale(1.5);
-}
-
-.city-info {
-  position: absolute;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: white;
-  padding: 8px 12px;
-  border-radius: 8px;
+  top: 15px;
+  left: 15px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 8px 15px;
+  border-radius: 20px;
   font-size: 12px;
-  white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-  z-index: 20;
-}
-
-.city-marker:hover .city-info {
-  opacity: 1;
-}
-
-.city-info strong {
-  display: block;
-  color: #1E293B;
-}
-
-.city-info span {
-  display: block;
-  color: #F97316;
-  font-weight: bold;
-}
-
-.city-info small {
-  display: block;
-  color: #94A3B8;
-}
-
-/* City Popup */
-.city-popup {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  border-radius: 12px;
-  padding: 15px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  z-index: 200;
-  min-width: 200px;
-  animation: fadeIn 0.2s ease;
-}
-
-body.dark-mode .city-popup {
-  background: #1E293B;
-  border: 1px solid #334155;
-}
-
-.city-popup-close {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #94A3B8;
-  padding: 4px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  transition: all 0.2s ease;
+  gap: 8px;
+  z-index: 10; /* Changed from 1000 to 10 */
+  backdrop-filter: blur(4px);
+  pointer-events: none;
 }
 
-.city-popup-close:hover {
-  background: #F1F5F9;
-  color: #1E293B;
+.map-zoom-info {
+  margin-left: 8px;
+  padding-left: 8px;
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-body.dark-mode .city-popup-close:hover {
-  background: #334155;
-  color: #F1F5F9;
-}
-
-.city-popup-content h4 {
-  margin: 0 0 10px 0;
-  color: #1E293B;
-  font-size: 16px;
-}
-
-body.dark-mode .city-popup-content h4 {
-  color: #F1F5F9;
-}
-
-.city-popup-details {
+/* Map Loading & Error Overlays */
+.map-loading-overlay,
+.map-error-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-}
-
-.popup-detail {
-  display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #1E293B;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  gap: 15px;
+  z-index: 1001;
+  border-radius: 12px;
 }
 
-body.dark-mode .popup-detail {
-  color: #94A3B8;
+.map-error-overlay button {
+  padding: 8px 20px;
+  background: #F97316;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-family: "Montserrat", sans-serif;
+  transition: all 0.3s ease;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
-  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.map-error-overlay button:hover {
+  background: #EA580C;
+  transform: translateY(-2px);
 }
 
 /* Map Legend */
@@ -372,7 +273,7 @@ body.dark-mode .popup-detail {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   min-width: 200px;
   backdrop-filter: blur(8px);
-  z-index: 30;
+  z-index: 1000;
 }
 
 body.dark-mode .map-legend {
@@ -427,11 +328,34 @@ body.dark-mode .legend-description {
   color: #94A3B8;
 }
 
-.last-refresh {
-  margin-top: 8px;
+/* Current Weather Info in Legend */
+.current-weather-info {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #E2E8F0;
   text-align: center;
-  font-size: 10px;
+}
+
+.current-weather-info .weather-temp {
+  font-size: 18px;
+  font-weight: bold;
+  color: #F97316;
+}
+
+.current-weather-info .weather-condition {
+  font-size: 11px;
   color: #94A3B8;
+  text-transform: capitalize;
+}
+
+.current-weather-info .weather-details {
+  font-size: 10px;
+  color: #64748B;
+  margin-top: 5px;
+}
+
+body.dark-mode .current-weather-info {
+  border-top-color: #334155;
 }
 
 /* Map Features */
@@ -492,6 +416,7 @@ body.dark-mode .feature-card p {
   gap: 15px;
   font-size: 12px;
   color: #64748B;
+  flex-wrap: wrap;
 }
 
 .feature-stats .stat-item {
@@ -519,9 +444,208 @@ body.dark-mode .feature-stats {
   font-weight: 600;
 }
 
+/* City Popup Content */
+.city-popup-content {
+  padding: 12px;
+  min-width: 200px;
+}
+
+.city-popup-content h4 {
+  margin: 0 0 10px 0;
+  color: #1E293B;
+  font-size: 16px;
+  font-weight: 600;
+  border-bottom: 1px solid #E2E8F0;
+  padding-bottom: 8px;
+}
+
+body.dark-mode .city-popup-content h4 {
+  color: #F1F5F9;
+  border-bottom-color: #334155;
+}
+
+.city-popup-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.popup-detail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #1E293B;
+}
+
+body.dark-mode .popup-detail {
+  color: #94A3B8;
+}
+
+/* ============================================ */
+/* LEAFlet MAP SPECIFIC STYLES                 */
+/* ============================================ */
+
+/* Leaflet map container overrides */
+.leaflet-container {
+  background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%);
+  font-family: "Montserrat", sans-serif;
+  z-index: 1;
+}
+
+body.dark-mode .leaflet-container {
+  background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+}
+
+/* Custom weather marker - moved from Map.js */
+.custom-weather-marker {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.custom-weather-marker div {
+  transition: transform 0.3s ease;
+  animation: markerPulse 2s ease-in-out infinite;
+}
+
+.custom-weather-marker:hover div {
+  transform: scale(1.1);
+}
+
+/* Custom weather marker inner div styles */
+.custom-weather-marker > div {
+  background-color: #F97316;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Leaflet popup custom styling */
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.leaflet-popup-content {
+  margin: 0;
+  min-width: 220px;
+}
+
+body.dark-mode .leaflet-popup-content-wrapper {
+  background: #1E293B;
+  color: #F1F5F9;
+}
+
+body.dark-mode .leaflet-popup-tip {
+  background: #1E293B;
+}
+
+/* Leaflet controls styling */
+.leaflet-control-zoom {
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.leaflet-control-zoom a {
+  background: white;
+  color: #1E293B;
+  font-family: "Montserrat", sans-serif;
+  transition: all 0.3s ease;
+  width: 34px;
+  height: 34px;
+  line-height: 34px;
+}
+
+.leaflet-control-zoom a:hover {
+  background: #F97316;
+  color: white;
+}
+
+body.dark-mode .leaflet-control-zoom a {
+  background: #1E293B;
+  color: #F1F5F9;
+}
+
+body.dark-mode .leaflet-control-zoom a:hover {
+  background: #F97316;
+  color: white;
+}
+
+/* Leaflet attribution styling */
+.leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.8);
+  font-size: 10px;
+  border-radius: 8px;
+  padding: 2px 8px;
+  bottom: 10px;
+  right: 10px;
+}
+
+body.dark-mode .leaflet-control-attribution {
+  background: rgba(30, 41, 59, 0.8);
+  color: #94A3B8;
+}
+
+body.dark-mode .leaflet-control-attribution a {
+  color: #F97316;
+}
+
+/* Animation for marker */
+@keyframes markerPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Circle animation for weather layer */
+.leaflet-interactive {
+  transition: all 0.5s ease;
+}
+
+/* Leaflet default marker popup close button styling */
+.leaflet-popup-close-button {
+  top: 8px;
+  right: 8px;
+  font-size: 18px;
+  color: #94A3B8;
+  transition: color 0.3s ease;
+}
+
+.leaflet-popup-close-button:hover {
+  color: #F97316;
+}
+
+body.dark-mode .leaflet-popup-close-button {
+  color: #64748B;
+}
+
+body.dark-mode .leaflet-popup-close-button:hover {
+  color: #F97316;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
-  .map-background {
+  .weather-map {
+    min-height: 400px;
+  }
+  
+  .leaflet-container {
     min-height: 400px;
   }
 }
@@ -536,8 +660,9 @@ body.dark-mode .feature-stats {
     justify-content: flex-start;
   }
   
-  .city-info {
-    display: none;
+  .map-header-controls {
+    flex-direction: column;
+    width: 100%;
   }
   
   .map-legend {
@@ -554,15 +679,30 @@ body.dark-mode .feature-stats {
     grid-template-columns: 1fr;
   }
   
-  .city-popup {
-    width: calc(100% - 40px);
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-  
   .feature-stats {
     flex-direction: column;
     gap: 8px;
+  }
+  
+  .map-location-info {
+    font-size: 10px;
+    padding: 5px 10px;
+  }
+  
+  .map-zoom-info {
+    display: none;
+  }
+  
+  .current-weather-info .weather-temp {
+    font-size: 14px;
+  }
+  
+  .leaflet-popup-content {
+    min-width: 180px;
+  }
+  
+  .leaflet-container {
+    min-height: 350px;
   }
 }
 
@@ -576,9 +716,26 @@ body.dark-mode .feature-stats {
     padding: 6px 10px;
     font-size: 12px;
   }
+  
+  .city-popup-content {
+    padding: 8px;
+    min-width: 160px;
+  }
+  
+  .city-popup-content h4 {
+    font-size: 14px;
+  }
+  
+  .popup-detail {
+    font-size: 11px;
+  }
+  
+  .leaflet-popup-content {
+    min-width: 160px;
+  }
 }
 
-/* Dark Mode Styles */
+/* Dark Mode Overrides for Map Components */
 body.dark-mode .map-control-btn {
   background: #1E293B;
   border-color: #334155;
@@ -603,15 +760,48 @@ body.dark-mode .layer-btn.active svg {
   color: white;
 }
 
-body.dark-mode .city-info {
-  background: #1E293B;
-  border: 1px solid #334155;
+body.dark-mode .map-location-info {
+  background: rgba(0, 0, 0, 0.8);
 }
 
-body.dark-mode .city-info strong {
-  color: #F1F5F9;
+/* Loading spinner overlay for map */
+.map-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1001;
+  border-radius: 12px;
 }
 
-body.dark-mode .city-info small {
-  color: #94A3B8;
+.map-loading-overlay .spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Safari/iOS specific fixes */
+@supports (-webkit-touch-callout: none) {
+  .leaflet-container {
+    cursor: pointer;
+  }
+}
+
+/* Print styles */
+@media print {
+  .map-controls,
+  .layer-selector,
+  .map-legend,
+  .map-header-controls,
+  .leaflet-control-zoom {
+    display: none;
+  }
+  
+  .weather-map {
+    break-inside: avoid;
+  }
 }
