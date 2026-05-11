@@ -1,63 +1,74 @@
-import React, { useState, useEffect } from 'react';
+// src/pages/Forecast/Forecast.js
+import React, { useState } from 'react';
 import './Forecast.css';
-import { CalendarDays, Droplets, Wind, ChevronLeft, ChevronRight, Sun, CloudSun, CloudRain, Cloud, Moon, Sun as SunIcon } from "lucide-react";
+import { CalendarDays, Droplets, Wind, ChevronLeft, ChevronRight, Moon, Sun as SunIcon } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
 import LoadingSpinner from "../../components/common/LoadingSpinner/LoadingSpinner";
+import { useWeather } from '../../hooks/useWeather';
+import { getWeatherIconUrl } from '../../services/weatherService';
 
 function Forecast() {
   const [view, setView] = useState('daily');
-  const [isLoading, setIsLoading] = useState(true);
+  const { forecast, isLoading } = useWeather();
   const { isDarkMode, toggleTheme } = useTheme();
   
-  const dailyForecast = [
-    { day: "Monday", date: "May 12", high: 74, low: 58, condition: "Sunny", icon: Sun, humidity: 65, wind: 8, rain: 10 },
-    { day: "Tuesday", date: "May 13", high: 72, low: 60, condition: "Partly Cloudy", icon: CloudSun, humidity: 70, wind: 10, rain: 20 },
-    { day: "Wednesday", date: "May 14", high: 68, low: 55, condition: "Rainy", icon: CloudRain, humidity: 85, wind: 12, rain: 80 },
-    { day: "Thursday", date: "May 15", high: 70, low: 56, condition: "Cloudy", icon: Cloud, humidity: 75, wind: 9, rain: 30 },
-    { day: "Friday", date: "May 16", high: 73, low: 59, condition: "Sunny", icon: Sun, humidity: 60, wind: 7, rain: 5 },
-    { day: "Saturday", date: "May 17", high: 75, low: 61, condition: "Clear", icon: Sun, humidity: 62, wind: 6, rain: 0 },
-    { day: "Sunday", date: "May 18", high: 71, low: 57, condition: "Partly Cloudy", icon: CloudSun, humidity: 68, wind: 11, rain: 15 }
-  ];
-
-  const hourlyForecast = [
-    { time: "12 AM", temp: 58, condition: "Clear", icon: Moon, rain: 0 },
-    { time: "1 AM", temp: 57, condition: "Clear", icon: Moon, rain: 0 },
-    { time: "2 AM", temp: 56, condition: "Clear", icon: Moon, rain: 0 },
-    { time: "3 AM", temp: 55, condition: "Clear", icon: Moon, rain: 0 },
-    { time: "4 AM", temp: 54, condition: "Clear", icon: Moon, rain: 0 },
-    { time: "5 AM", temp: 55, condition: "Sunny", icon: Sun, rain: 0 },
-    { time: "6 AM", temp: 57, condition: "Sunny", icon: Sun, rain: 0 },
-    { time: "7 AM", temp: 60, condition: "Sunny", icon: Sun, rain: 0 },
-    { time: "8 AM", temp: 64, condition: "Sunny", icon: Sun, rain: 0 },
-    { time: "9 AM", temp: 68, condition: "Partly Cloudy", icon: CloudSun, rain: 0 },
-    { time: "10 AM", temp: 70, condition: "Partly Cloudy", icon: CloudSun, rain: 5 },
-    { time: "11 AM", temp: 72, condition: "Partly Cloudy", icon: CloudSun, rain: 5 },
-    { time: "12 PM", temp: 73, condition: "Cloudy", icon: Cloud, rain: 10 },
-    { time: "1 PM", temp: 74, condition: "Cloudy", icon: Cloud, rain: 10 },
-    { time: "2 PM", temp: 74, condition: "Cloudy", icon: Cloud, rain: 15 },
-    { time: "3 PM", temp: 73, condition: "Rainy", icon: CloudRain, rain: 40 },
-    { time: "4 PM", temp: 72, condition: "Rainy", icon: CloudRain, rain: 60 },
-    { time: "5 PM", temp: 70, condition: "Rainy", icon: CloudRain, rain: 80 },
-    { time: "6 PM", temp: 68, condition: "Rainy", icon: CloudRain, rain: 70 },
-    { time: "7 PM", temp: 66, condition: "Cloudy", icon: Cloud, rain: 30 },
-    { time: "8 PM", temp: 64, condition: "Cloudy", icon: Cloud, rain: 20 },
-    { time: "9 PM", temp: 62, condition: "Clear", icon: Moon, rain: 10 },
-    { time: "10 PM", temp: 61, condition: "Clear", icon: Moon, rain: 5 },
-    { time: "11 PM", temp: 60, condition: "Clear", icon: Moon, rain: 0 }
-  ];
-
   const [hourlyIndex, setHourlyIndex] = useState(0);
   const visibleHours = 8;
 
-  useEffect(() => {
-    const fetchForecast = async () => {
-      setIsLoading(true);
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      setIsLoading(false);
-    };
-    fetchForecast();
-  }, []);
+  // Process daily forecast from API data
+  const getDailyForecast = () => {
+    if (!forecast?.list) return [];
+    
+    const dailyMap = new Map();
+    forecast.list.forEach(item => {
+      const date = new Date(item.dt * 1000);
+      const day = date.toLocaleDateString('en-US', { weekday: 'long' });
+      const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      
+      if (!dailyMap.has(day)) {
+        dailyMap.set(day, {
+          day,
+          date: dateStr,
+          high: item.main.temp_max,
+          low: item.main.temp_min,
+          condition: item.weather[0].main,
+          icon: item.weather[0].icon,
+          humidity: item.main.humidity,
+          wind: Math.round(item.wind.speed),
+          rain: item.pop * 100
+        });
+      } else {
+        const existing = dailyMap.get(day);
+        existing.high = Math.max(existing.high, item.main.temp_max);
+        existing.low = Math.min(existing.low, item.main.temp_min);
+      }
+    });
+    
+    return Array.from(dailyMap.values()).slice(0, 7);
+  };
+
+  // Process hourly forecast
+  const getHourlyForecast = () => {
+    if (!forecast?.list) return [];
+    
+    return forecast.list.slice(0, 24).map(item => {
+      const date = new Date(item.dt * 1000);
+      let hours = date.getHours();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      
+      return {
+        time: `${hours} ${ampm}`,
+        temp: Math.round(item.main.temp),
+        condition: item.weather[0].main,
+        icon: item.weather[0].icon,
+        rain: item.pop * 100
+      };
+    });
+  };
+
+  const dailyForecast = getDailyForecast();
+  const hourlyForecast = getHourlyForecast();
 
   const nextHours = () => {
     if (hourlyIndex + visibleHours < hourlyForecast.length) {
@@ -71,9 +82,10 @@ function Forecast() {
     }
   };
 
-  const getWeatherIcon = (IconComponent, size = 48) => {
-    return <IconComponent size={size} />;
-  };
+  // Calculate averages
+  const avgHigh = dailyForecast.reduce((sum, day) => sum + day.high, 0) / dailyForecast.length;
+  const avgLow = dailyForecast.reduce((sum, day) => sum + day.low, 0) / dailyForecast.length;
+  const avgRain = dailyForecast.reduce((sum, day) => sum + day.rain, 0) / dailyForecast.length;
 
   if (isLoading) {
     return (
@@ -131,15 +143,15 @@ function Forecast() {
             <>
               <div className="forecast-summary">
                 <div className="summary-card">
-                  <div className="summary-value">72°</div>
+                  <div className="summary-value">{Math.round(avgHigh)}°</div>
                   <div className="summary-label">Average High</div>
                 </div>
                 <div className="summary-card">
-                  <div className="summary-value">58°</div>
+                  <div className="summary-value">{Math.round(avgLow)}°</div>
                   <div className="summary-label">Average Low</div>
                 </div>
                 <div className="summary-card">
-                  <div className="summary-value">30%</div>
+                  <div className="summary-value">{Math.round(avgRain)}%</div>
                   <div className="summary-label">Rain Chance</div>
                 </div>
               </div>
@@ -152,10 +164,16 @@ function Forecast() {
                       <div className="forecast-date">{day.date}</div>
                     </div>
                     <div className="forecast-body">
-                      <div className="forecast-icon-large">{getWeatherIcon(day.icon, 48)}</div>
+                      <div className="forecast-icon-large">
+                        <img 
+                          src={getWeatherIconUrl(day.icon)} 
+                          alt={day.condition}
+                          style={{ width: 48, height: 48 }}
+                        />
+                      </div>
                       <div className="forecast-temp-range">
-                        <span className="high-temp">{day.high}°</span>
-                        <span className="low-temp">{day.low}°</span>
+                        <span className="high-temp">{Math.round(day.high)}°</span>
+                        <span className="low-temp">{Math.round(day.low)}°</span>
                       </div>
                       <div className="forecast-condition">{day.condition}</div>
                       <div className="forecast-details">
@@ -165,7 +183,7 @@ function Forecast() {
                         </div>
                         <div className="detail">
                           <Wind size={14} />
-                          <span>{day.wind} mph</span>
+                          <span>{day.wind} m/s</span>
                         </div>
                       </div>
                     </div>
@@ -199,13 +217,19 @@ function Forecast() {
                 {hourlyForecast.slice(hourlyIndex, hourlyIndex + visibleHours).map((hour, index) => (
                   <div key={index} className="hour-card">
                     <div className="hour-time">{hour.time}</div>
-                    <div className="hour-icon">{getWeatherIcon(hour.icon, 28)}</div>
-                    <div className="hour-temp">{hour.temp}°</div>
+                    <div className="hour-icon">
+                      <img 
+                        src={getWeatherIconUrl(hour.icon)} 
+                        alt={hour.condition}
+                        style={{ width: 28, height: 28 }}
+                      />
+                    </div>
+                    <div className="hour-temp">{Math.round(hour.temp)}°</div>
                     <div className="hour-condition">{hour.condition}</div>
                     {hour.rain > 0 && (
                       <div className="hour-rain">
                         <Droplets size={12} />
-                        <span>{hour.rain}%</span>
+                        <span>{Math.round(hour.rain)}%</span>
                       </div>
                     )}
                   </div>
@@ -219,10 +243,10 @@ function Forecast() {
                     <div key={index} className="week-bar-item">
                       <div className="week-day">{day.day.substring(0, 3)}</div>
                       <div className="temp-bars">
-                        <div className="temp-bar high" style={{ height: `${(day.high - 50) * 3}px` }}></div>
-                        <div className="temp-bar low" style={{ height: `${(day.low - 50) * 3}px` }}></div>
+                        <div className="temp-bar high" style={{ height: `${Math.max(20, (day.high - 50) * 2)}px` }}></div>
+                        <div className="temp-bar low" style={{ height: `${Math.max(10, (day.low - 50) * 2)}px` }}></div>
                       </div>
-                      <div className="week-temp">{day.high}°</div>
+                      <div className="week-temp">{Math.round(day.high)}°</div>
                     </div>
                   ))}
                 </div>
