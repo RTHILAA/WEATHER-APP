@@ -1,6 +1,6 @@
 // src/pages/Map/Map.js
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Circle, useMap, ZoomControl } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Circle, ZoomControl, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./Map.css";
@@ -53,30 +53,28 @@ const createWeatherIcon = () => {
 };
 
 // Map control component to handle zoom and center changes
-function MapController({ center, zoom, onZoomChange, onMapReady }) {
+function MapController({ center, zoom, onZoomChange, mapRef }) {
   const map = useMap();
 
   useEffect(() => {
-    if (map && onMapReady) {
-      onMapReady(map);
+    if (map && !mapRef.current) {
+      mapRef.current = map;
     }
-  }, [map, onMapReady]);
+  }, [map, mapRef]);
 
   useEffect(() => {
-    if (center && map && map._container) {
+    if (center && map) {
       map.setView(center, zoom);
     }
-  }, [center, map, zoom]);
+  }, [center, zoom, map]);
 
   useEffect(() => {
-    if (!map) return;
-    
     const handleZoomEnd = () => {
-      const newZoom = map.getZoom();
-      onZoomChange?.(newZoom);
+      onZoomChange(map.getZoom());
     };
-    
+
     map.on("zoomend", handleZoomEnd);
+
     return () => {
       map.off("zoomend", handleZoomEnd);
     };
@@ -92,7 +90,6 @@ function Map() {
   const [showLayerMenu, setShowLayerMenu] = useState(false);
   const [mapError, setMapError] = useState(null);
   const [center, setCenter] = useState({ lat: 40.7128, lng: -74.006 }); // Default NYC
-  const [mapInstance, setMapInstance] = useState(null);
   const [isMapReady, setIsMapReady] = useState(false);
   
   // Track previous location to detect city changes
@@ -100,6 +97,8 @@ function Map() {
   const [isUserLocationRequest, setIsUserLocationRequest] = useState(false);
 
   const mapContainerRef = useRef(null);
+  const mapInstanceRef = useRef(null);
+  const invalidateTimeoutRef = useRef(null);
   const { isDarkMode, toggleTheme } = useTheme();
   const { currentWeather, coordinates: weatherCoords, isLoading: weatherLoading } = useWeather();
   const { currentLocation, coordinates: locationCoords } = useAppLocation();
@@ -210,35 +209,54 @@ function Map() {
   };
 
   const handleZoomIn = () => {
-    if (mapInstance && mapInstance._container) {
-      const newZoom = mapInstance.getZoom() + 1;
-      mapInstance.setZoom(newZoom);
-      setZoom(newZoom);
+    const map = mapInstanceRef.current;
+
+    if (!map) return;
+
+    try {
+      map.zoomIn();
+      setZoom(map.getZoom());
+    } catch (error) {
+      console.error("Zoom in error:", error);
     }
   };
 
   const handleZoomOut = () => {
-    if (mapInstance && mapInstance._container) {
-      const newZoom = mapInstance.getZoom() - 1;
-      mapInstance.setZoom(newZoom);
-      setZoom(newZoom);
+    const map = mapInstanceRef.current;
+
+    if (!map) return;
+
+    try {
+      map.zoomOut();
+      setZoom(map.getZoom());
+    } catch (error) {
+      console.error("Zoom out error:", error);
     }
   };
 
   const handleRefresh = () => {
+    const map = mapInstanceRef.current;
+
+    if (!map) return;
+
     const coords = getCurrentCoords();
-    setCenter(coords);
-    // Wait for state update and map readiness before manipulating map
-    setTimeout(() => {
-      if (mapInstance && mapInstance._container && mapInstance._initialized) {
-        try {
-          mapInstance.setView(coords, 12);
-          setZoom(12);
-        } catch (error) {
-          console.error("Error refreshing map:", error);
-        }
-      }
-    }, 100);
+
+    try {
+      setCenter(coords);
+
+      map.flyTo(coords, 12, {
+        animate: true,
+        duration: 1.5,
+      });
+
+      setZoom(12);
+
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 200);
+    } catch (error) {
+      console.error("Refresh error:", error);
+    }
   };
 
   const handleLayerSelect = (layerId) => {
@@ -260,6 +278,7 @@ function Map() {
           };
           setCenter(userCoords);
           setTimeout(() => {
+            const mapInstance = mapInstanceRef.current;
             if (mapInstance && mapInstance._container && mapInstance._initialized) {
               try {
                 mapInstance.setView(userCoords, 12);
@@ -268,7 +287,7 @@ function Map() {
                 console.error("Error setting map view:", error);
               }
             }
-          }, 100);
+          }, 150);
         },
         (error) => {
           console.error("Error getting location:", error);
@@ -280,20 +299,6 @@ function Map() {
     } else {
       setMapError("Geolocation is not supported by your browser.");
       setTimeout(() => setMapError(null), 5000);
-    }
-  };
-
-  // Handle map ready
-  const handleMapReady = (map) => {
-    setMapInstance(map);
-    setIsMapReady(true);
-    setIsLoading(false);
-    
-    // Ensure map container is properly initialized
-    if (map && map._container) {
-      setTimeout(() => {
-        map.invalidateSize();
-      }, 200);
     }
   };
 
@@ -322,14 +327,43 @@ function Map() {
     };
   }, []);
 
-  // Force map to invalidate size when visible
+  // Force map to invalidate size when visible - but with safety checks
   useEffect(() => {
-    if (mapInstance && isMapReady) {
-      setTimeout(() => {
-        mapInstance.invalidateSize();
-      }, 100);
+    const mapInstance = mapInstanceRef.current;
+    if (mapInstance && isMapReady && mapInstance._container && mapInstance._initialized) {
+      // Clear any existing timeout
+      if (invalidateTimeoutRef.current) {
+        clearTimeout(invalidateTimeoutRef.current);
+      }
+      
+      invalidateTimeoutRef.current = setTimeout(() => {
+        const currentMap = mapInstanceRef.current;
+        if (currentMap && currentMap._container && currentMap._initialized && currentMap.invalidateSize) {
+          try {
+            currentMap.invalidateSize();
+          } catch (error) {
+            console.error("Error invalidating map size:", error);
+          }
+        }
+      }, 200);
     }
-  }, [isMapReady, mapInstance]);
+    
+    return () => {
+      if (invalidateTimeoutRef.current) {
+        clearTimeout(invalidateTimeoutRef.current);
+      }
+    };
+  }, [isMapReady]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (invalidateTimeoutRef.current) {
+        clearTimeout(invalidateTimeoutRef.current);
+      }
+      mapInstanceRef.current = null;
+    };
+  }, []);
 
   // Show loading while weather data is being fetched
   if (weatherLoading) {
@@ -445,11 +479,15 @@ function Map() {
                 </div>
               ) : (
                 <MapContainer
-                  key={`map-${center.lat}-${center.lng}-${isDarkMode}`}
+                  key="weather-map"
                   center={center}
                   zoom={zoom}
-                  style={{ height: "500px", width: "100%", borderRadius: "12px" }}
                   zoomControl={false}
+                  style={{ height: "500px", width: "100%", borderRadius: "12px" }}
+                  whenReady={() => {
+                    setIsLoading(false);
+                    setIsMapReady(true);
+                  }}
                 >
                   <TileLayer
                     url={getTileLayer()}
@@ -460,7 +498,7 @@ function Map() {
                     center={center} 
                     zoom={zoom} 
                     onZoomChange={setZoom}
-                    onMapReady={handleMapReady}
+                    mapRef={mapInstanceRef}
                   />
 
                   {/* Weather layer circle */}
