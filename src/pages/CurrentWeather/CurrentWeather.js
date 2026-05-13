@@ -9,13 +9,57 @@ import {
   RefreshCw,
   MapPin,
   Moon,
-  Sun
+  Sun,
+  CloudSun,
+  CloudMoon,
+  Cloud,
+  CloudRain,
+  CloudLightning,
+  CloudSnow,
+  CloudFog,
+  Wind as WindIcon
 } from "lucide-react";
 
 import { useTheme } from "../../context/ThemeContext";
 import LoadingSpinner from "../../components/common/LoadingSpinner/LoadingSpinner";
 import { useWeather } from '../../hooks/useWeather';
-import { getWeatherIconUrl } from '../../services/weatherService';
+import { getWeatherIconComponent } from '../../services/weatherService';
+
+// Component to render the appropriate weather icon
+const WeatherIcon = ({ condition, iconCode, size = 80 }) => {
+  const iconName = getWeatherIconComponent(condition, iconCode);
+  
+  const iconProps = {
+    size,
+    strokeWidth: 1.5,
+    style: { filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2))', color: '#FFD700' }
+  };
+  
+  switch (iconName) {
+    case 'Sun':
+      return <Sun {...iconProps} />;
+    case 'Moon':
+      return <Moon {...iconProps} />;
+    case 'CloudSun':
+      return <CloudSun {...iconProps} />;
+    case 'CloudMoon':
+      return <CloudMoon {...iconProps} />;
+    case 'Cloud':
+      return <Cloud {...iconProps} />;
+    case 'CloudRain':
+      return <CloudRain {...iconProps} />;
+    case 'CloudLightning':
+      return <CloudLightning {...iconProps} />;
+    case 'CloudSnow':
+      return <CloudSnow {...iconProps} />;
+    case 'CloudFog':
+      return <CloudFog {...iconProps} />;
+    case 'Wind':
+      return <WindIcon {...iconProps} />;
+    default:
+      return <CloudSun {...iconProps} />;
+  }
+};
 
 function CurrentWeather() {
   const {
@@ -129,7 +173,8 @@ function CurrentWeather() {
     chanceRain: currentWeather.rain
       ? Math.round(currentWeather.rain['1h'] || 0)
       : 0,
-    icon: currentWeather.weather[0].icon
+    iconCode: currentWeather.weather[0].icon,
+    conditionMain: currentWeather.weather[0].main
   };
 
   return (
@@ -169,10 +214,10 @@ function CurrentWeather() {
 
           <div className="main-weather-card">
             <div className="weather-icon-large">
-              <img
-                src={getWeatherIconUrl(weatherData.icon)}
-                alt={weatherData.condition}
-                style={{ width: 80, height: 80 }}
+              <WeatherIcon 
+                condition={weatherData.conditionMain}
+                iconCode={weatherData.iconCode}
+                size={80}
               />
             </div>
 
