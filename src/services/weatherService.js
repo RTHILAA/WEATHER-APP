@@ -11,9 +11,61 @@ export const convertTemp = (kelvin, unit = 'metric') => {
   }
 };
 
-// Get weather icon URL
+// Get weather icon URL (deprecated - use getWeatherIconComponent instead)
 export const getWeatherIconUrl = (iconCode) => {
   return `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+};
+
+// Map OpenWeather condition to Lucide React icon component name
+export const getWeatherIconComponent = (condition, iconCode = null) => {
+  // Use icon code for more precise mapping if available
+  if (iconCode) {
+    // Map specific icon codes
+    const iconMap = {
+      '01d': 'Sun',      // clear sky day
+      '01n': 'Moon',     // clear sky night
+      '02d': 'CloudSun', // few clouds day
+      '02n': 'CloudMoon', // few clouds night
+      '03d': 'Cloud',    // scattered clouds
+      '03n': 'Cloud',
+      '04d': 'Cloud',    // broken clouds
+      '04n': 'Cloud',
+      '09d': 'CloudRain', // shower rain
+      '09n': 'CloudRain',
+      '10d': 'CloudRain', // rain day
+      '10n': 'CloudRain', // rain night
+      '11d': 'CloudLightning', // thunderstorm
+      '11n': 'CloudLightning',
+      '13d': 'CloudSnow', // snow
+      '13n': 'CloudSnow',
+      '50d': 'CloudFog',  // mist/fog
+      '50n': 'CloudFog',
+    };
+    
+    if (iconMap[iconCode]) {
+      return iconMap[iconCode];
+    }
+  }
+  
+  // Fallback to condition-based mapping
+  const conditionMap = {
+    'Clear': 'Sun',
+    'Clouds': 'Cloud',
+    'Rain': 'CloudRain',
+    'Drizzle': 'CloudRain',
+    'Thunderstorm': 'CloudLightning',
+    'Snow': 'CloudSnow',
+    'Mist': 'CloudFog',
+    'Smoke': 'CloudFog',
+    'Haze': 'CloudFog',
+    'Dust': 'CloudFog',
+    'Fog': 'CloudFog',
+    'Sand': 'CloudFog',
+    'Ash': 'CloudFog',
+    'Squall': 'Wind',
+    'Tornado': 'Wind'
+  };
+  return conditionMap[condition] || 'CloudSun';
 };
 
 // Map OpenWeather condition to your app's icon component
