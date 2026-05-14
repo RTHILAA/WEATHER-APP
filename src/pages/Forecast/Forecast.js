@@ -71,6 +71,7 @@ function Forecast() {
   };
 
   // Process daily forecast from API data - groups 3-hour intervals into daily aggregates
+  // Returns maximum 5 days (since OpenWeather API provides 5-day forecast)
   const getDailyForecast = () => {
     if (!forecast?.list) return [];
     
@@ -122,8 +123,8 @@ function Forecast() {
     const days = Array.from(dailyMap.values());
     days.sort((a, b) => a.sortOrder - b.sortOrder);
     
-    // Return up to 7 days (API usually gives 5 days)
-    return days.slice(0, 7);
+    // Return only 5 days max (API provides 5-day forecast)
+    return days.slice(0, 5);
   };
 
   // Process hourly forecast - one card per 3-hour interval
@@ -280,7 +281,7 @@ function Forecast() {
     setHourlyStartIndex(0);
   }, [forecast]);
 
-  // Calculate averages
+  // Calculate averages (based on actual number of days)
   const avgHigh = dailyForecast.length
     ? dailyForecast.reduce((s, d) => s + d.high, 0) / dailyForecast.length
     : 0;
@@ -493,11 +494,11 @@ function Forecast() {
                 })}
               </div>
 
-              {/* Weekly Summary with Today highlighted */}
+              {/* Weekly Summary with Today highlighted - 5 days only */}
               <div className="weekly-summary">
-                <h4>{dailyForecast.length}-Day Temperature Trend</h4>
+                <h4>5-Day Temperature Trend</h4>
                 <div className="week-bars">
-                  {dailyForecast.slice(0, 5).map((day, index) => (
+                  {dailyForecast.map((day, index) => (
                     <div key={index} className={`week-bar-item ${day.isToday ? 'today-week-item' : ''}`}>
                       <div className="week-day">
                         {day.shortDay || day.day.substring(0, 3)}

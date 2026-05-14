@@ -11,23 +11,23 @@
 
 .toggle-btn {
   padding: 8px 20px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   background: white;
   border-radius: 8px;
   cursor: pointer;
   font-family: "Montserrat", sans-serif;
   transition: all 0.3s ease;
-  color: #1E293B;
+  color: #1e293b;
 }
 
 .toggle-btn.active {
-  background: #F97316;
+  background: #f97316;
   color: white;
-  border-color: #F97316;
+  border-color: #f97316;
 }
 
 .toggle-btn:hover:not(.active) {
-  background: #FEF3C7;
+  background: #fef3c7;
 }
 
 /* Forecast Header with Icon */
@@ -37,23 +37,23 @@
   gap: 12px;
   margin-bottom: 24px;
   padding-bottom: 16px;
-  border-bottom: 2px solid #F1F5F9;
+  border-bottom: 2px solid #f1f5f9;
 }
 
 .forecast-header-with-icon svg {
-  color: #F97316;
+  color: #f97316;
 }
 
 .forecast-header-with-icon h3 {
   font-size: 18px;
-  color: #1E293B;
+  color: #1e293b;
   margin: 0;
   flex: 1;
 }
 
 .forecast-badge {
-  background: #FEF3C7;
-  color: #F97316;
+  background: #fef3c7;
+  color: #f97316;
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
@@ -84,18 +84,19 @@
 .summary-value {
   font-size: 32px;
   font-weight: bold;
-  color: #F97316;
+  color: #f97316;
   margin-bottom: 5px;
 }
 
 .summary-label {
   font-size: 14px;
-  color: #94A3B8;
+  color: #94a3b8;
 }
 
 .daily-forecast {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  border-radius: 16px;
   gap: 20px;
 }
 
@@ -105,6 +106,7 @@
   overflow: hidden;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin: 10px;
 }
 
 .forecast-card:hover {
@@ -114,24 +116,11 @@
 
 /* Today Card Enhanced Styles */
 .forecast-card.today-card {
-  background: linear-gradient(135deg, #F97316, #FB923C);
+  background: linear-gradient(135deg, #f97316, #fb923c);
   border: none;
   color: white;
   position: relative;
   overflow: visible;
-  animation: cardPulse 2s ease-in-out infinite;
-}
-
-@keyframes cardPulse {
-  0% {
-    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.2);
-  }
-  50% {
-    box-shadow: 0 8px 24px rgba(249, 115, 22, 0.4);
-  }
-  100% {
-    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.2);
-  }
 }
 
 .forecast-card.today-card .forecast-header {
@@ -182,7 +171,7 @@
 }
 
 .forecast-header {
-  background-color: #F97316;
+  background-color: #f97316;
   padding: 15px;
   text-align: center;
 }
@@ -190,7 +179,7 @@
 .forecast-day {
   font-size: 18px;
   font-weight: bold;
-  color: #1E293B;
+  color: #1e293b;
 }
 
 .forecast-date {
@@ -211,7 +200,7 @@
 }
 
 .forecast-icon-large svg {
-  color: #F97316;
+  color: #f97316;
   transition: transform 0.3s ease;
 }
 
@@ -229,17 +218,17 @@
 .high-temp {
   font-size: 24px;
   font-weight: bold;
-  color: #F97316;
+  color: #f97316;
 }
 
 .low-temp {
   font-size: 18px;
-  color: #94A3B8;
+  color: #94a3b8;
 }
 
 .forecast-condition {
   font-size: 14px;
-  color: #94A3B8;
+  color: #94a3b8;
   margin-bottom: 15px;
   text-transform: capitalize;
 }
@@ -249,7 +238,7 @@
   justify-content: center;
   gap: 20px;
   font-size: 12px;
-  color: #94A3B8;
+  color: #94a3b8;
 }
 
 .forecast-details .detail {
@@ -259,7 +248,7 @@
 }
 
 .forecast-details .detail svg {
-  color: #F97316;
+  color: #f97316;
 }
 
 /* ============================================ */
@@ -283,24 +272,24 @@
   align-items: center;
   gap: 8px;
   padding: 8px 20px;
-  background: #F1F5F9;
+  background: #f1f5f9;
   border: none;
   border-radius: 40px;
   cursor: pointer;
   font-family: "Montserrat", sans-serif;
   font-size: 14px;
   font-weight: 500;
-  color: #1E293B;
+  color: #1e293b;
   transition: all 0.3s ease;
 }
 
 .nav-btn svg {
-  color: #F97316;
+  color: #f97316;
   transition: all 0.3s ease;
 }
 
 .nav-btn:hover:not(:disabled) {
-  background: #F97316;
+  background: #f97316;
   color: white;
 }
 
@@ -322,7 +311,7 @@
 
 .range-info {
   font-size: 13px;
-  color: #64748B;
+  color: #64748b;
   font-weight: 500;
 }
 
@@ -335,7 +324,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #CBD5E1;
+  background: #cbd5e1;
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -345,20 +334,37 @@
 .page-dot.active {
   width: 24px;
   border-radius: 4px;
-  background: #F97316;
+  background: #f97316;
 }
 
 .page-dot:hover:not(.active) {
-  background: #F97316;
+  background: #f97316;
   opacity: 0.6;
 }
 
 /* Hourly Forecast Grid */
 .hourly-forecast {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  display: flex;
   gap: 16px;
-  margin-bottom: 30px;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.hourly-forecast::-webkit-scrollbar {
+  height: 6px;
+}
+
+.hourly-forecast::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.hourly-forecast::-webkit-scrollbar-thumb {
+  background: #f97316;
+  border-radius: 3px;
 }
 
 /* Hour Card */
@@ -370,7 +376,6 @@
   transition: all 0.3s ease;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
   width: 100%;
-  min-height: 210px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -383,15 +388,15 @@
 
 /* Now Card Styles for Hourly */
 .hour-card.now-card {
-  background: linear-gradient(135deg, #F97316, #FB923C);
+  background: linear-gradient(135deg, #f97316, #fb923c);
   border: none;
   color: white;
-  transform: scale(1.04);
+  transform: scale(1.02);
 }
 
 .hour-card.now-card:hover {
-  transform: translateY(-3px) scale(1.02);
-  background: linear-gradient(135deg, #F97316, #FF8C42);
+  transform: translateY(-3px) scale(1.01);
+  background: linear-gradient(135deg, #f97316, #ff8c42);
 }
 
 .hour-card.now-card .hour-time,
@@ -467,7 +472,7 @@
 
 /* Today Hour Card (non-now) */
 .hour-card.today-hour-card {
-  background: linear-gradient(135deg, #FFF7ED, #FFEDD5);
+  background: linear-gradient(135deg, #fff7ed, #ffedd5);
   position: relative;
   overflow: visible;
 }
@@ -479,7 +484,7 @@
 
 .today-hour-badge {
   display: inline-block;
-  background: #F97316;
+  background: #f97316;
   color: white;
   font-size: 8px;
   font-weight: bold;
@@ -497,7 +502,7 @@
 .hour-time {
   font-size: 15px;
   font-weight: 700;
-  color: #1E293B;
+  color: #1e293b;
   margin-bottom: 6px;
 }
 
@@ -517,7 +522,7 @@
 }
 
 .hour-icon svg {
-  color: #F97316;
+  color: #f97316;
   transition: transform 0.3s ease;
 }
 
@@ -529,14 +534,14 @@
 .hour-temp {
   font-size: 22px;
   font-weight: bold;
-  color: #F97316;
+  color: #f97316;
 }
 
 /* Weather Condition */
 .hour-condition {
   font-size: 12px;
   line-height: 1.4;
-  color: #64748B;
+  color: #64748b;
   min-height: 32px;
   text-transform: capitalize;
 }
@@ -547,11 +552,11 @@
   justify-content: center;
   gap: 4px;
   font-size: 11px;
-  color: #3B82F6;
+  color: #3b82f6;
 }
 
 .hour-rain svg {
-  color: #3B82F6;
+  color: #3b82f6;
 }
 
 /* Details */
@@ -561,9 +566,9 @@
   gap: 10px;
   margin-top: 10px;
   padding-top: 10px;
-  border-top: 1px solid #E2E8F0;
+  border-top: 1px solid #e2e8f0;
   font-size: 11px;
-  color: #64748B;
+  color: #64748b;
 }
 
 .hour-detail {
@@ -573,7 +578,7 @@
 }
 
 .hour-detail svg {
-  color: #F97316;
+  color: #f97316;
 }
 
 /* Weekly Summary */
@@ -586,7 +591,7 @@
 
 .weekly-summary h4 {
   margin-bottom: 20px;
-  color: #1E293B;
+  color: #1e293b;
   font-size: 16px;
 }
 
@@ -601,14 +606,14 @@
 .week-bar-item {
   text-align: center;
   flex: 1;
-  min-width: 40px;
+  min-width: 60px;
   transition: all 0.3s ease;
 }
 
 /* Today Week Item Highlight */
 .week-bar-item.today-week-item {
   position: relative;
-  background: linear-gradient(135deg, #FFF7ED, #FFEDD5);
+  background: linear-gradient(135deg, #fff7ed, #ffedd5);
   border-radius: 12px;
   padding: 12px 8px;
   margin: -8px -4px;
@@ -619,7 +624,7 @@
   font-size: 12px;
   font-weight: 500;
   margin-bottom: 10px;
-  color: #1E293B;
+  color: #1e293b;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -628,7 +633,7 @@
 
 .today-week-badge {
   display: inline-block;
-  background: #F97316;
+  background: #f97316;
   color: white;
   font-size: 9px;
   font-weight: bold;
@@ -654,150 +659,59 @@
 }
 
 .temp-bar.high {
-  background: #F97316;
+  background: #f97316;
 }
 
 .temp-bar.low {
-  background: #94A3B8;
+  background: #94a3b8;
 }
 
 .week-temp {
   font-size: 12px;
   font-weight: 600;
-  color: #1E293B;
+  color: #1e293b;
 }
 
 .week-low-temp {
   font-size: 10px;
-  color: #94A3B8;
+  color: #94a3b8;
   margin-top: 4px;
 }
 
-/* Responsive - Large screens */
-@media (max-width: 1024px) {
-  .daily-forecast {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  }
-}
+/* ============================================ */
+/* RESPONSIVE STYLES - FIXED */
+/* ============================================ */
 
-/* Responsive - Tablet */
-@media (max-width: 768px) {
+/* Tablet (481px - 949px) */
+@media (min-width: 481px) and (max-width: 949px) {
   .forecast-content {
     padding: 15px;
   }
-  
-  .view-toggle {
-    width: 100%;
-    justify-content: center;
+
+  .toggle-btn {
+    padding: 6px 14px;
+    font-size: 13px;
   }
-  
+
   .daily-forecast {
-    grid-template-columns: 1fr;
-  }
-  
-  .hourly-forecast {
-    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-  }
-  
-  .forecast-summary {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-  
-  .weekly-summary {
-    overflow-x: auto;
-  }
-  
-  .week-bars {
-    min-width: 500px;
-  }
-  
-  /* Hourly navigation responsive */
-  .hourly-navigation {
-    flex-direction: column;
-    border-radius: 20px;
-    gap: 12px;
-  }
-  
-  .nav-btn {
-    width: 100%;
-    justify-content: center;
-    padding: 10px 16px;
-  }
-  
-  .nav-btn span {
-    display: inline-block;
-  }
-  
-  .hourly-range {
-    order: -1;
-  }
-  
-  .range-info {
-    font-size: 11px;
-  }
-
-  .hour-details {
-    flex-direction: column;
-    gap: 4px;
-    align-items: center;
-  }
-  
-  .hour-card {
-    padding: 12px;
-  }
-
-  .today-badge {
-    font-size: 8px;
-    padding: 3px 8px;
-  }
-  
-  .now-time {
-    font-size: 12px;
-  }
-  
-  .now-temp {
-    font-size: 16px;
-  }
-  
-  .hour-card.now-card {
-    transform: scale(1.01);
-  }
-  
-  .today-hour-badge {
-    font-size: 7px;
-    padding: 2px 6px;
-    margin-bottom: 6px;
-  }
-  
-  .week-bar-item.today-week-item {
-    padding: 8px 4px;
-    margin: -4px -2px;
-  }
-  
-  .today-week-badge {
-    font-size: 7px;
-    padding: 2px 6px;
-  }
-  
-  .forecast-header-with-icon {
-    flex-direction: column;
-    text-align: center;
-  }
-}
-
-/* Responsive - Mobile */
-@media (max-width: 480px) {
-  .hourly-forecast {
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: 15px;
   }
-  
+
+  .forecast-card {
+    margin: 8px;
+  }
+
+  .hourly-forecast {
+    gap: 12px;
+    padding: 16px;
+  }
+
   .hour-card {
-    min-height: 190px;
     padding: 12px 10px;
+    min-width: 110px;
   }
-  
+
   .hour-temp {
     font-size: 18px;
   }
@@ -805,69 +719,248 @@
   .hour-time {
     font-size: 13px;
   }
-  
-  .forecast-card {
-    margin: 0 10px;
-  }
-  
-  .hour-card {
-    max-width: 100%;
+
+  .forecast-summary {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
   }
 
-  .hour-details {
+  .summary-value {
+    font-size: 28px;
+  }
+
+  .weekly-summary {
+    overflow-x: auto;
+  }
+
+  .week-bars {
+    min-width: 500px;
+  }
+
+  .hourly-navigation {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
+    gap: 10px;
+    border-radius: 20px;
   }
-  
-  .forecast-details .detail {
+
+  .nav-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  .hourly-range {
+    order: 0;
+  }
+
+  .range-info {
+    font-size: 12px;
+  }
+}
+
+/* Mobile (max-width: 480px) */
+@media (max-width: 480px) {
+  .toggle-btn {
+    padding: 6px 15px;
+    font-size: 13px;
+  }
+
+  .forecast-summary {
+    margin-top: 15px;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .summary-card {
+    padding: 15px;
+  }
+
+  .summary-value {
+    font-size: 26px;
+  }
+
+  .daily-forecast {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .forecast-card {
+    margin: 0;
+  }
+
+  .forecast-header {
+    padding: 12px;
+  }
+
+  .forecast-day {
+    font-size: 16px;
+  }
+
+  .forecast-body {
+    padding: 15px;
+  }
+
+  .forecast-temp-range {
+    gap: 12px;
+  }
+
+  .high-temp {
+    font-size: 20px;
+  }
+
+  .low-temp {
+    font-size: 16px;
+  }
+
+  .forecast-condition {
+    font-size: 12px;
+  }
+
+  .forecast-details {
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+
+  /* Hourly styles */
+  .hourly-forecast {
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .hour-card {
+    padding: 12px 8px;
+    min-width: 100px;
+  }
+
+  .hour-time {
+    font-size: 12px;
+  }
+
+  .hour-temp {
+    font-size: 16px;
+  }
+
+  .hour-condition {
+    font-size: 10px;
+    min-height: auto;
+  }
+
+  .hour-details {
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+  }
+
+  .hour-detail {
+    font-size: 9px;
+  }
+
+  .hour-rain {
     font-size: 10px;
   }
 
-  .today-badge {
-    font-size: 7px;
-    padding: 2px 6px;
+  /* Hourly navigation */
+  .hourly-navigation {
+    flex-direction: column;
+    gap: 12px;
+    border-radius: 16px;
+   margin-top: 15px;
   }
-  
+
+  .nav-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .hourly-range {
+    order: -1;
+  }
+
+  .range-info {
+    font-size: 11px;
+  }
+
+  .page-dot {
+    width: 5px;
+    height: 5px;
+  }
+
+  .page-dot.active {
+    width: 18px;
+  }
+
+  /* Weekly summary */
+  .weekly-summary {
+    padding: 15px;
+    overflow-x: auto;
+  }
+
+  .weekly-summary h4 {
+    font-size: 14px;
+  }
+
+  .week-bars {
+    min-width: 420px;
+    gap: 8px;
+  }
+
+  .week-bar-item {
+    min-width: 65px;
+  }
+
+  .week-day {
+    font-size: 10px;
+  }
+
+  .week-temp {
+    font-size: 11px;
+  }
+
+  .week-low-temp {
+    font-size: 9px;
+  }
+
+  .temp-bars {
+    height: 60px;
+  }
+
+  /* Today card adjustments */
+  .forecast-card.today-card {
+    padding: 0;
+  }
+
+  .today-badge {
+    font-size: 8px;
+    padding: 3px 8px;
+  }
+
   .hour-card.now-card {
     transform: scale(1);
   }
-  
-  /* Hourly navigation mobile */
-  .hourly-navigation {
-    padding: 10px 12px;
-  }
-  
-  .nav-btn {
-    padding: 8px 12px;
+
+  .now-time {
     font-size: 12px;
   }
-  
-  .nav-btn svg {
-    width: 16px;
-    height: 16px;
+
+  .now-temp {
+    font-size: 16px;
   }
-  
-  .page-dot {
-    width: 6px;
-    height: 6px;
-  }
-  
-  .page-dot.active {
-    width: 20px;
-  }
-  
+
   .today-hour-badge {
-    font-size: 6px;
-    padding: 2px 5px;
-    margin-bottom: 5px;
+    font-size: 7px;
+    padding: 2px 6px;
   }
-  
-  .today-week-badge {
-    font-size: 6px;
-    padding: 1px 4px;
+
+  .forecast-header-with-icon {
+    flex-direction: column;
+    text-align: center;
   }
 }
+
 
 /* ============================================ */
 /* DARK MODE STYLES                            */
@@ -878,7 +971,7 @@ body.dark-mode .forecast-card:not(.today-card),
 body.dark-mode .hour-card:not(.now-card):not(.today-hour-card),
 body.dark-mode .weekly-summary,
 body.dark-mode .hourly-navigation {
-  background: #1E293B;
+  background: #1e293b;
 }
 
 body.dark-mode .forecast-header-with-icon {
@@ -886,12 +979,12 @@ body.dark-mode .forecast-header-with-icon {
 }
 
 body.dark-mode .forecast-header-with-icon h3 {
-  color: #F1F5F9;
+  color: #f1f5f9;
 }
 
 body.dark-mode .forecast-badge {
   background: #334155;
-  color: #F97316;
+  color: #f97316;
 }
 
 body.dark-mode .summary-label,
@@ -901,7 +994,7 @@ body.dark-mode .hour-condition,
 body.dark-mode .week-day,
 body.dark-mode .week-temp,
 body.dark-mode .week-low-temp {
-  color: #94A3B8;
+  color: #94a3b8;
 }
 
 body.dark-mode .forecast-day,
@@ -911,7 +1004,7 @@ body.dark-mode .forecast-date {
 
 /* Dark mode adjustments for Today card */
 body.dark-mode .forecast-card.today-card {
-  background: linear-gradient(135deg, #F97316, #FB923C);
+  background: linear-gradient(135deg, #f97316, #fb923c);
 }
 
 body.dark-mode .forecast-card.today-card .forecast-header {
@@ -919,7 +1012,7 @@ body.dark-mode .forecast-card.today-card .forecast-header {
 }
 
 body.dark-mode .forecast-header {
-  background-color: #F97316;
+  background-color: #f97316;
 }
 
 body.dark-mode .forecast-card.today-card .forecast-header {
@@ -929,20 +1022,20 @@ body.dark-mode .forecast-card.today-card .forecast-header {
 /* Dark mode styles for hourly navigation */
 body.dark-mode .nav-btn {
   background: #334155;
-  color: #F1F5F9;
+  color: #f1f5f9;
 }
 
 body.dark-mode .nav-btn svg {
-  color: #F97316;
+  color: #f97316;
 }
 
 body.dark-mode .nav-btn:hover:not(:disabled) {
-  background: #F97316;
+  background: #f97316;
   color: white;
 }
 
 body.dark-mode .range-info {
-  color: #94A3B8;
+  color: #94a3b8;
 }
 
 body.dark-mode .page-dot {
@@ -950,50 +1043,52 @@ body.dark-mode .page-dot {
 }
 
 body.dark-mode .page-dot.active {
-  background: #F97316;
+  background: #f97316;
 }
 
 body.dark-mode .page-dot:hover:not(.active) {
-  background: #F97316;
+  background: #f97316;
 }
 
 /* Dark mode for Today Hour Card */
 body.dark-mode .hour-card.today-hour-card {
-  background: linear-gradient(135deg, #2D1B0F, #1E293B);
-  border-color: #F97316;
+  background: linear-gradient(135deg, #2d1b0f, #1e293b);
+  border-color: #f97316;
 }
 
 body.dark-mode .today-hour-badge {
-  background: #F97316;
+  background: #f97316;
   color: white;
 }
 
 /* Dark mode for Today Week Item */
 body.dark-mode .week-bar-item.today-week-item {
-  background: linear-gradient(135deg, #2D1B0F, #1E293B);
+  background: linear-gradient(135deg, #2d1b0f, #1e293b);
 }
 
 body.dark-mode .today-week-badge {
-  background: #F97316;
+  background: #f97316;
   color: white;
 }
 
 body.dark-mode .hour-card:not(.now-card):not(.today-hour-card):hover {
-  background: #FEF3C7;
+  background: #fef3c7;
 }
 
 body.dark-mode .hour-card:not(.now-card):not(.today-hour-card):hover .hour-time,
-body.dark-mode .hour-card:not(.now-card):not(.today-hour-card):hover .hour-condition {
-  color: #1E293B;
+body.dark-mode
+  .hour-card:not(.now-card):not(.today-hour-card):hover
+  .hour-condition {
+  color: #1e293b;
 }
 
 body.dark-mode .weekly-summary h4 {
-  color: #F1F5F9;
+  color: #f1f5f9;
 }
 
 body.dark-mode .hour-details {
   border-top-color: #334155;
-  color: #94A3B8;
+  color: #94a3b8;
 }
 
 body.dark-mode .today-badge {
@@ -1002,7 +1097,7 @@ body.dark-mode .today-badge {
 }
 
 body.dark-mode .hour-card.now-card {
-  background: linear-gradient(135deg, #F97316, #FF8C42);
+  background: linear-gradient(135deg, #f97316, #ff8c42);
 }
 
 body.dark-mode .hour-card.now-card .now-time {
