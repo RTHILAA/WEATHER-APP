@@ -6,6 +6,8 @@
   min-height: 300px;
   width: 100%;
   gap: 20px;
+  /* Prevent layout shifts that might trigger ResizeObserver */
+  contain: layout;
 }
 
 .loading-spinner {
@@ -13,6 +15,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  /* Prevent layout shifts */
+  contain: strict;
 }
 
 .spinner-circle {
