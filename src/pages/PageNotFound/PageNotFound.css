@@ -3,6 +3,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  min-height: calc(100vh - 160px);
 }
 
 .notfound-card {
@@ -23,36 +24,43 @@
 
 .notfound-icon {
   margin-bottom: 20px;
-  color: #F97316;
+  color: #f97316;
   animation: shake 0.5s ease;
 }
 
 .notfound-icon svg {
-  color: #F97316;
+  color: #f97316;
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-10px); }
-  75% { transform: translateX(10px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-10px);
+  }
+  75% {
+    transform: translateX(10px);
+  }
 }
 
 .notfound-card h1 {
   font-size: 120px;
   font-weight: bold;
-  color: #F97316;
+  color: #f97316;
   margin: 0;
   line-height: 1;
 }
 
 .notfound-card h2 {
   font-size: 28px;
-  color: #1E293B;
+  color: #1e293b;
   margin: 20px 0 10px;
 }
 
 .notfound-card p {
-  color: #64748B;
+  color: #64748b;
   margin-bottom: 30px;
 }
 
@@ -65,7 +73,7 @@
   align-items: center;
   gap: 10px;
   padding: 12px 24px;
-  background: #F97316;
+  background: #f97316;
   color: white;
   text-decoration: none;
   border-radius: 10px;
@@ -78,20 +86,20 @@
 }
 
 .home-btn:hover {
-  background: #EA580C;
+  background: #ea580c;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
 }
 
 .suggestions {
-  border-top: 1px solid #E2E8F0;
+  border-top: 1px solid #e2e8f0;
   padding-top: 20px;
   margin-top: 10px;
 }
 
 .suggestions p {
   font-weight: 500;
-  color: #1E293B;
+  color: #1e293b;
   margin-bottom: 10px;
 }
 
@@ -106,71 +114,115 @@
 
 .suggestions li {
   padding: 5px 12px;
-  background: #F1F5F9;
+  background: #f1f5f9;
   border-radius: 20px;
   font-size: 13px;
 }
 
 .suggestions li a {
-  color: #1E293B;
+  color: #1e293b;
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .suggestions li a:hover {
-  color: #F97316;
+  color: #f97316;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* ============================================ */
+/* RESPONSIVE STYLES - FIXED */
+/* ============================================ */
+
+/* Tablet (481px - 949px) */
+@media (min-width: 481px) and (max-width: 949px) {
+  .notfound-content {
+    min-height: calc(100vh - 140px);
+  }
+
+  .notfound-card {
+    padding: 40px;
+  }
+
+  .notfound-card h1 {
+    font-size: 100px;
+  }
+
+  .notfound-card h2 {
+    font-size: 24px;
+  }
+
+  .suggestions ul {
+    gap: 12px;
+  }
+
+  .suggestions li {
+    padding: 5px 12px;
+    font-size: 12px;
+  }
+}
+
+/* Mobile (max-width: 480px) */
+@media (max-width: 480px) {
+  .notfound-content {
+    padding: 20px;
+    min-height: calc(100vh - 120px);
+  }
+
   .notfound-card {
     padding: 30px 20px;
   }
-  
+
+  .notfound-icon svg {
+    width: 60px;
+    height: 60px;
+  }
+
   .notfound-card h1 {
-    font-size: 80px;
+    font-size: 64px;
   }
-  
+
   .notfound-card h2 {
-    font-size: 22px;
+    font-size: 20px;
+    margin: 15px 0 10px;
   }
-  
+
+  .notfound-card p {
+    font-size: 13px;
+    margin-bottom: 25px;
+  }
+
+  .home-btn {
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+
+  .home-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .suggestions {
+    margin-top: 20px;
+    padding-top: 15px;
+  }
+
+  .suggestions p {
+    font-size: 12px;
+  }
+
   .suggestions ul {
     gap: 10px;
   }
-  
+
   .suggestions li {
     padding: 4px 10px;
     font-size: 11px;
   }
 }
 
-@media (max-width: 480px) {
-  .notfound-content {
-    padding: 20px;
-  }
-  
-  .notfound-card {
-    padding: 20px 15px;
-  }
-  
-  .notfound-card h1 {
-    font-size: 60px;
-  }
-  
-  .notfound-card h2 {
-    font-size: 18px;
-  }
-  
-  .home-btn {
-    padding: 10px 20px;
-    font-size: 14px;
-  }
-}
-
 /* Dark Mode Styles for 404 Page */
 body.dark-mode .notfound-card h2 {
-  color: #F1F5F9;
+  color: #f1f5f9;
 }
 
 body.dark-mode .suggestions {
@@ -178,7 +230,7 @@ body.dark-mode .suggestions {
 }
 
 body.dark-mode .suggestions p {
-  color: #F1F5F9;
+  color: #f1f5f9;
 }
 
 body.dark-mode .suggestions li {
@@ -186,9 +238,9 @@ body.dark-mode .suggestions li {
 }
 
 body.dark-mode .suggestions li a {
-  color: #94A3B8;
+  color: #94a3b8;
 }
 
 body.dark-mode .suggestions li a:hover {
-  color: #F97316;
+  color: #f97316;
 }
