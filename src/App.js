@@ -12,14 +12,24 @@ import Map from './pages/Map/Map';
 import Settings from './pages/Settings/Settings';
 import PageNotFound from "./pages/PageNotFound/PageNotFound";
 import FullPageLoader from './components/common/LoadingSpinner/FullPageLoader';
+import { suppressResizeObserverErrors } from './utils/resizeObserverFix';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Suppress ResizeObserver errors
+    suppressResizeObserverErrors();
+    
     setTimeout(() => {
       setIsLoading(false);
     }, 1000);
+
+    // Cleanup
+    return () => {
+      // Optional: remove the error handler if needed
+      // unsuppressResizeObserverErrors();
+    };
   }, []);
 
   if (isLoading) {
