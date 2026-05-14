@@ -1,7 +1,14 @@
 // src/pages/Overview/Overview.js
 import React from 'react';
 import './Overview.css';
-import { LayoutDashboard, Droplets, Wind, Gauge, Eye, Sunrise, Sunset, CloudSun, CloudMoon, Cloud, CloudRain, CloudLightning, CloudSnow, CloudFog, Sun, Moon, Calendar, TrendingUp } from "lucide-react";
+import { 
+  LayoutDashboard, Droplets, Wind, Gauge, Eye, Sunrise, Sunset, 
+  CloudSun, CloudMoon, Cloud, CloudRain, CloudLightning, CloudSnow, 
+  CloudFog, Sun, Moon, CalendarDays, TrendingUp, 
+  SunMedium, CloudRain as CloudRainIcon, CloudSnow as CloudSnowIcon,
+  CloudLightning as CloudLightningIcon, CloudFog as CloudFogIcon,
+  Cloud as CloudIcon, Wind as WindIcon
+} from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
 import LoadingSpinner from "../../components/common/LoadingSpinner/LoadingSpinner";
 import { useWeather } from '../../hooks/useWeather';
@@ -38,6 +45,38 @@ const WeatherIcon = ({ condition, iconCode, size = 32 }) => {
     default:
       return <CloudSun {...iconProps} />;
   }
+};
+
+// Component to get dynamic background icon based on weather condition
+const DynamicBgIcon = ({ condition, iconCode }) => {
+  const iconProps = {
+    size: 100,
+    strokeWidth: 1,
+    className: "bg-icon-svg"
+  };
+  
+  // Use icon code for more precise mapping
+  if (iconCode) {
+    if (iconCode.includes('01')) return <SunMedium {...iconProps} />;
+    if (iconCode.includes('02')) return <CloudSun {...iconProps} />;
+    if (iconCode.includes('03') || iconCode.includes('04')) return <CloudIcon {...iconProps} />;
+    if (iconCode.includes('09') || iconCode.includes('10')) return <CloudRainIcon {...iconProps} />;
+    if (iconCode.includes('11')) return <CloudLightningIcon {...iconProps} />;
+    if (iconCode.includes('13')) return <CloudSnowIcon {...iconProps} />;
+    if (iconCode.includes('50')) return <CloudFogIcon {...iconProps} />;
+  }
+  
+  // Fallback to condition-based mapping
+  const conditionLower = condition?.toLowerCase() || '';
+  if (conditionLower.includes('clear') || conditionLower.includes('sun')) return <SunMedium {...iconProps} />;
+  if (conditionLower.includes('rain') || conditionLower.includes('drizzle')) return <CloudRainIcon {...iconProps} />;
+  if (conditionLower.includes('thunder') || conditionLower.includes('storm')) return <CloudLightningIcon {...iconProps} />;
+  if (conditionLower.includes('snow')) return <CloudSnowIcon {...iconProps} />;
+  if (conditionLower.includes('fog') || conditionLower.includes('mist') || conditionLower.includes('haze')) return <CloudFogIcon {...iconProps} />;
+  if (conditionLower.includes('cloud')) return <CloudIcon {...iconProps} />;
+  if (conditionLower.includes('wind')) return <WindIcon {...iconProps} />;
+  
+  return <SunMedium {...iconProps} />;
 };
 
 function Overview() {
@@ -149,7 +188,9 @@ function Overview() {
     description: currentWeather.weather[0].description,
     sunrise: currentWeather.sys.sunrise,
     sunset: currentWeather.sys.sunset,
-    icon: currentWeather.weather[0].icon
+    icon: currentWeather.weather[0].icon,
+    iconCode: currentWeather.weather[0].icon,
+    conditionMain: currentWeather.weather[0].main
   };
 
   return (
@@ -167,6 +208,13 @@ function Overview() {
       <div className="page-content">
         <div className="overview-content">
           <div className="weather-overview-card">
+            {/* Dynamic SVG Background Icon based on weather */}
+            <div className="bg-icon">
+              <DynamicBgIcon 
+                condition={weatherData.conditionMain}
+                iconCode={weatherData.iconCode}
+              />
+            </div>
             <div className="current-weather-large">
               <div className="weather-main">
                 <div className="weather-temp">{weatherData.temp}°</div>
@@ -218,7 +266,7 @@ function Overview() {
           <div className="timeline-forecast">
             <div className="timeline-header">
               <div className="timeline-title">
-                <Calendar size={18} />
+                <CalendarDays size={18} />
                 <h3>5-Day Forecast</h3>
               </div>
               <div className="timeline-subtitle">
