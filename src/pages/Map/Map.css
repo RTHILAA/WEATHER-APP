@@ -20,8 +20,8 @@
 
 .map-control-btn {
   padding: 8px 12px;
-  background: #F8FAFC;
-  border: 1px solid #E2E8F0;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
   cursor: pointer;
   display: flex;
@@ -29,18 +29,18 @@
   gap: 6px;
   font-family: "Montserrat", sans-serif;
   transition: all 0.3s ease;
-  color: #1E293B;
+  color: #1e293b;
 }
 
 .map-control-btn svg {
-  color: #94A3B8;
+  color: #94a3b8;
   transition: color 0.3s ease;
 }
 
 .map-control-btn:hover {
-  background: #F97316;
+  background: #f97316;
   color: white;
-  border-color: #F97316;
+  border-color: #f97316;
 }
 
 .map-control-btn:hover svg {
@@ -76,7 +76,7 @@
 }
 
 body.dark-mode .layers-dropdown-menu {
-  background: #1E293B;
+  background: #1e293b;
   border: 1px solid #334155;
 }
 
@@ -92,16 +92,16 @@ body.dark-mode .layers-dropdown-menu {
   font-family: "Montserrat", sans-serif;
   font-size: 13px;
   transition: all 0.2s ease;
-  color: #1E293B;
+  color: #1e293b;
   justify-content: space-between;
 }
 
 .layer-dropdown-item svg {
-  color: #94A3B8;
+  color: #94a3b8;
 }
 
 .layer-dropdown-item.active {
-  background: #F97316;
+  background: #f97316;
   color: white;
 }
 
@@ -119,11 +119,11 @@ body.dark-mode .layers-dropdown-menu {
 }
 
 body.dark-mode .layer-dropdown-item {
-  color: #F1F5F9;
+  color: #f1f5f9;
 }
 
 .layer-dropdown-item:hover:not(.active) {
-  background: #FEF3C7;
+  background: #fef3c7;
 }
 
 body.dark-mode .layer-dropdown-item:hover:not(.active) {
@@ -136,8 +136,12 @@ body.dark-mode .layer-dropdown-item:hover:not(.active) {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .map-container {
@@ -155,7 +159,7 @@ body.dark-mode .layer-dropdown-item:hover:not(.active) {
 
 .layer-btn {
   padding: 10px 20px;
-  background: #F1F5F9;
+  background: #f1f5f9;
   border: none;
   border-radius: 10px;
   cursor: pointer;
@@ -164,16 +168,16 @@ body.dark-mode .layer-dropdown-item:hover:not(.active) {
   gap: 10px;
   font-family: "Montserrat", sans-serif;
   transition: all 0.3s ease;
-  color: #1E293B;
+  color: #1e293b;
 }
 
 .layer-btn svg {
-  color: #94A3B8;
+  color: #94a3b8;
   transition: color 0.3s ease;
 }
 
 .layer-btn.active {
-  background: #F97316;
+  background: #f97316;
   color: white;
 }
 
@@ -182,15 +186,15 @@ body.dark-mode .layer-dropdown-item:hover:not(.active) {
 }
 
 .layer-btn:hover:not(.active) {
-  background: #FEF3C7;
+  background: #fef3c7;
 }
 
 .layer-btn:hover:not(.active) svg {
-  color: #F97316;
+  color: #f97316;
 }
 
 .weather-map {
-  background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%);
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 20px;
@@ -200,7 +204,7 @@ body.dark-mode .layer-dropdown-item:hover:not(.active) {
 }
 
 body.dark-mode .weather-map {
-  background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
 }
 
 /* Map Location Info */
@@ -216,7 +220,7 @@ body.dark-mode .weather-map {
   display: flex;
   align-items: center;
   gap: 8px;
-  z-index: 10; /* Changed from 1000 to 10 */
+  z-index: 10;
   backdrop-filter: blur(4px);
   pointer-events: none;
 }
@@ -248,7 +252,7 @@ body.dark-mode .weather-map {
 
 .map-error-overlay button {
   padding: 8px 20px;
-  background: #F97316;
+  background: #f97316;
   border: none;
   border-radius: 8px;
   color: white;
@@ -258,7 +262,7 @@ body.dark-mode .weather-map {
 }
 
 .map-error-overlay button:hover {
-  background: #EA580C;
+  background: #ea580c;
   transform: translateY(-2px);
 }
 
@@ -284,18 +288,18 @@ body.dark-mode .map-legend {
   font-size: 12px;
   font-weight: 600;
   margin-bottom: 10px;
-  color: #1E293B;
+  color: #1e293b;
   display: flex;
   align-items: center;
   gap: 5px;
 }
 
 .legend-title svg {
-  color: #F97316;
+  color: #f97316;
 }
 
 body.dark-mode .legend-title {
-  color: #F1F5F9;
+  color: #f1f5f9;
 }
 
 .legend-gradient {
@@ -312,45 +316,45 @@ body.dark-mode .legend-title {
   display: flex;
   justify-content: space-between;
   font-size: 11px;
-  color: #94A3B8;
+  color: #94a3b8;
 }
 
 .legend-description {
   margin-top: 10px;
   padding-top: 8px;
-  border-top: 1px solid #E2E8F0;
+  border-top: 1px solid #e2e8f0;
   font-size: 11px;
-  color: #64748B;
+  color: #64748b;
 }
 
 body.dark-mode .legend-description {
   border-top-color: #334155;
-  color: #94A3B8;
+  color: #94a3b8;
 }
 
 /* Current Weather Info in Legend */
 .current-weather-info {
   margin-top: 12px;
   padding-top: 10px;
-  border-top: 1px solid #E2E8F0;
+  border-top: 1px solid #e2e8f0;
   text-align: center;
 }
 
 .current-weather-info .weather-temp {
   font-size: 18px;
   font-weight: bold;
-  color: #F97316;
+  color: #f97316;
 }
 
 .current-weather-info .weather-condition {
   font-size: 11px;
-  color: #94A3B8;
+  color: #94a3b8;
   text-transform: capitalize;
 }
 
 .current-weather-info .weather-details {
   font-size: 10px;
-  color: #64748B;
+  color: #64748b;
   margin-top: 5px;
 }
 
@@ -367,10 +371,10 @@ body.dark-mode .current-weather-info {
 }
 
 .feature-card {
-  background: #F8FAFC;
+  background: #f8fafc;
   padding: 15px;
   border-radius: 12px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   transition: transform 0.3s ease;
 }
 
@@ -379,35 +383,35 @@ body.dark-mode .current-weather-info {
 }
 
 body.dark-mode .feature-card {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 
 .feature-title {
   font-weight: 600;
   margin-bottom: 8px;
-  color: #1E293B;
+  color: #1e293b;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
 .feature-title svg {
-  color: #F97316;
+  color: #f97316;
 }
 
 body.dark-mode .feature-title {
-  color: #F1F5F9;
+  color: #f1f5f9;
 }
 
 .feature-card p {
   font-size: 13px;
-  color: #64748B;
+  color: #64748b;
   line-height: 1.5;
 }
 
 body.dark-mode .feature-card p {
-  color: #94A3B8;
+  color: #94a3b8;
 }
 
 .feature-stats {
@@ -415,7 +419,7 @@ body.dark-mode .feature-card p {
   display: flex;
   gap: 15px;
   font-size: 12px;
-  color: #64748B;
+  color: #64748b;
   flex-wrap: wrap;
 }
 
@@ -426,21 +430,21 @@ body.dark-mode .feature-card p {
 }
 
 .feature-stats svg {
-  color: #F97316;
+  color: #f97316;
 }
 
 body.dark-mode .feature-stats {
-  color: #94A3B8;
+  color: #94a3b8;
 }
 
 .layer-info {
   margin-top: 10px;
   font-size: 12px;
-  color: #64748B;
+  color: #64748b;
 }
 
 .current-layer {
-  color: #F97316;
+  color: #f97316;
   font-weight: 600;
 }
 
@@ -452,15 +456,15 @@ body.dark-mode .feature-stats {
 
 .city-popup-content h4 {
   margin: 0 0 10px 0;
-  color: #1E293B;
+  color: #1e293b;
   font-size: 16px;
   font-weight: 600;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid #e2e8f0;
   padding-bottom: 8px;
 }
 
 body.dark-mode .city-popup-content h4 {
-  color: #F1F5F9;
+  color: #f1f5f9;
   border-bottom-color: #334155;
 }
 
@@ -475,11 +479,11 @@ body.dark-mode .city-popup-content h4 {
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: #1E293B;
+  color: #1e293b;
 }
 
 body.dark-mode .popup-detail {
-  color: #94A3B8;
+  color: #94a3b8;
 }
 
 /* ============================================ */
@@ -488,13 +492,13 @@ body.dark-mode .popup-detail {
 
 /* Leaflet map container overrides */
 .leaflet-container {
-  background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%);
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
   font-family: "Montserrat", sans-serif;
   z-index: 1;
 }
 
 body.dark-mode .leaflet-container {
-  background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
 }
 
 /* Custom weather marker - moved from Map.js */
@@ -515,7 +519,7 @@ body.dark-mode .leaflet-container {
 
 /* Custom weather marker inner div styles */
 .custom-weather-marker > div {
-  background-color: #F97316;
+  background-color: #f97316;
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -540,12 +544,12 @@ body.dark-mode .leaflet-container {
 }
 
 body.dark-mode .leaflet-popup-content-wrapper {
-  background: #1E293B;
-  color: #F1F5F9;
+  background: #1e293b;
+  color: #f1f5f9;
 }
 
 body.dark-mode .leaflet-popup-tip {
-  background: #1E293B;
+  background: #1e293b;
 }
 
 /* Leaflet controls styling */
@@ -558,7 +562,7 @@ body.dark-mode .leaflet-popup-tip {
 
 .leaflet-control-zoom a {
   background: white;
-  color: #1E293B;
+  color: #1e293b;
   font-family: "Montserrat", sans-serif;
   transition: all 0.3s ease;
   width: 34px;
@@ -567,17 +571,17 @@ body.dark-mode .leaflet-popup-tip {
 }
 
 .leaflet-control-zoom a:hover {
-  background: #F97316;
+  background: #f97316;
   color: white;
 }
 
 body.dark-mode .leaflet-control-zoom a {
-  background: #1E293B;
-  color: #F1F5F9;
+  background: #1e293b;
+  color: #f1f5f9;
 }
 
 body.dark-mode .leaflet-control-zoom a:hover {
-  background: #F97316;
+  background: #f97316;
   color: white;
 }
 
@@ -593,11 +597,11 @@ body.dark-mode .leaflet-control-zoom a:hover {
 
 body.dark-mode .leaflet-control-attribution {
   background: rgba(30, 41, 59, 0.8);
-  color: #94A3B8;
+  color: #94a3b8;
 }
 
 body.dark-mode .leaflet-control-attribution a {
-  color: #F97316;
+  color: #f97316;
 }
 
 /* Animation for marker */
@@ -623,136 +627,257 @@ body.dark-mode .leaflet-control-attribution a {
   top: 8px;
   right: 8px;
   font-size: 18px;
-  color: #94A3B8;
+  color: #94a3b8;
   transition: color 0.3s ease;
 }
 
 .leaflet-popup-close-button:hover {
-  color: #F97316;
+  color: #f97316;
 }
 
 body.dark-mode .leaflet-popup-close-button {
-  color: #64748B;
+  color: #64748b;
 }
 
 body.dark-mode .leaflet-popup-close-button:hover {
-  color: #F97316;
+  color: #f97316;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .weather-map {
-    min-height: 400px;
-  }
-  
-  .leaflet-container {
-    min-height: 400px;
-  }
-}
+/* ============================================ */
+/* RESPONSIVE STYLES */
+/* ============================================ */
 
-@media (max-width: 768px) {
+/* Tablet (481px - 949px) */
+@media (min-width: 481px) and (max-width: 949px) {
   .map-content {
     padding: 15px;
   }
-  
+
+  .weather-map {
+    min-height: 450px;
+  }
+
+  .leaflet-container {
+    min-height: 450px;
+  }
+
+  .map-controls {
+    flex-wrap: wrap;
+  }
+
   .map-controls {
     width: 100%;
     justify-content: flex-start;
   }
-  
+
+  .map-features {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+
+  .map-legend {
+    bottom: 15px;
+    right: 15px;
+    padding: 12px;
+    min-width: 180px;
+  }
+
+  .map-location-info {
+    font-size: 11px;
+    top: 10px;
+    left: 10px;
+  }
+
+  .layer-selector {
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top:20px;
+  }
+
+  .layer-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+}
+
+/* Mobile (max-width: 480px) */
+@media (max-width: 480px) {
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
   .map-header-controls {
     flex-direction: column;
     width: 100%;
+    gap: 12px;
   }
-  
+
+  .map-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .map-control-btn {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  .map-control-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .layer-selector {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-top: 35px;
+  }
+
+  .layer-btn {
+    padding: 8px 10px;
+    font-size: 12px;
+    justify-content: center;
+  }
+
+  .layer-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .weather-map {
+    min-height: 350px;
+    border-radius: 12px;
+  }
+
+  .leaflet-container {
+    min-height: 350px;
+    border-radius: 12px;
+  }
+
+  .map-location-info {
+    font-size: 9px;
+    padding: 4px 8px;
+    top: 8px;
+    left: 8px;
+  }
+
+  .map-zoom-info {
+    display: none;
+  }
+
   .map-legend {
     position: static;
     margin-top: 15px;
     width: 100%;
+    min-width: auto;
   }
-  
-  .layer-selector {
-    justify-content: center;
-  }
-  
+
   .map-features {
     grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 15px;
   }
-  
+
+  .feature-card {
+    padding: 12px;
+  }
+
+  .feature-title {
+    font-size: 14px;
+  }
+
+  .feature-card p {
+    font-size: 11px;
+  }
+
   .feature-stats {
     flex-direction: column;
-    gap: 8px;
+    gap: 5px;
   }
-  
-  .map-location-info {
-    font-size: 10px;
-    padding: 5px 10px;
-  }
-  
-  .map-zoom-info {
-    display: none;
-  }
-  
-  .current-weather-info .weather-temp {
-    font-size: 14px;
-  }
-  
-  .leaflet-popup-content {
-    min-width: 180px;
-  }
-  
-  .leaflet-container {
-    min-height: 350px;
-  }
-}
 
-@media (max-width: 480px) {
-  .layer-btn {
-    padding: 8px 12px;
-    font-size: 12px;
+  .feature-stats .stat-item {
+    font-size: 11px;
   }
-  
-  .map-control-btn {
-    padding: 6px 10px;
-    font-size: 12px;
+
+  .layers-dropdown-menu {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    border-radius: 20px 20px 0 0;
+    max-height: 60vh;
+    overflow-y: auto;
   }
-  
+
   .city-popup-content {
-    padding: 8px;
+    padding: 10px;
     min-width: 160px;
   }
-  
+
   .city-popup-content h4 {
-    font-size: 14px;
+    font-size: 13px;
   }
-  
+
   .popup-detail {
     font-size: 11px;
   }
-  
+
   .leaflet-popup-content {
-    min-width: 160px;
+    min-width: 150px;
+  }
+
+  .current-weather-info .weather-temp {
+    font-size: 14px;
+  }
+
+  .current-weather-info .weather-condition {
+    font-size: 10px;
+  }
+
+  .current-weather-info .weather-details {
+    font-size: 9px;
+  }
+
+  .legend-title {
+    font-size: 11px;
+  }
+
+  .gradient-bar {
+    height: 15px;
+  }
+
+  .legend-labels {
+    font-size: 9px;
+  }
+
+  .legend-description {
+    font-size: 10px;
   }
 }
 
 /* Dark Mode Overrides for Map Components */
 body.dark-mode .map-control-btn {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
-  color: #F1F5F9;
+  color: #f1f5f9;
 }
 
 body.dark-mode .layer-btn {
   background: #334155;
-  color: #F1F5F9;
+  color: #f1f5f9;
 }
 
 body.dark-mode .layer-btn svg {
-  color: #94A3B8;
+  color: #94a3b8;
 }
 
 body.dark-mode .layer-btn.active {
-  background: #F97316;
+  background: #f97316;
   color: white;
 }
 
@@ -800,7 +925,7 @@ body.dark-mode .map-location-info {
   .leaflet-control-zoom {
     display: none;
   }
-  
+
   .weather-map {
     break-inside: avoid;
   }

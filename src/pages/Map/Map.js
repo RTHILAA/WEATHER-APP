@@ -103,6 +103,26 @@ function Map() {
   const { currentWeather, coordinates: weatherCoords, isLoading: weatherLoading } = useWeather();
   const { currentLocation, coordinates: locationCoords } = useAppLocation();
 
+  // Handle ResizeObserver errors
+  useEffect(() => {
+    const handleResizeObserverError = (e) => {
+      if (e.message === 'ResizeObserver loop completed with undelivered notifications.') {
+        const resizeObserver = e.target;
+        if (resizeObserver && resizeObserver.disconnect) {
+          resizeObserver.disconnect();
+        }
+        e.stopImmediatePropagation();
+        return;
+      }
+    };
+
+    window.addEventListener('error', handleResizeObserverError);
+    
+    return () => {
+      window.removeEventListener('error', handleResizeObserverError);
+    };
+  }, []);
+
   // Get current coordinates for map centering
   const getCurrentCoords = useCallback(() => {
     // First priority: coordinates from weather data
@@ -487,6 +507,13 @@ function Map() {
                   whenReady={() => {
                     setIsLoading(false);
                     setIsMapReady(true);
+                    // Force resize observer to settle
+                    setTimeout(() => {
+                      const map = mapInstanceRef.current;
+                      if (map && map.invalidateSize) {
+                        map.invalidateSize();
+                      }
+                    }, 100);
                   }}
                 >
                   <TileLayer
