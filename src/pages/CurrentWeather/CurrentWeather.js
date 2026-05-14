@@ -1,3 +1,4 @@
+// src/pages/CurrentWeather/CurrentWeather.js
 import React from 'react';
 import './CurrentWeather.css';
 import {
@@ -17,7 +18,13 @@ import {
   CloudLightning,
   CloudSnow,
   CloudFog,
-  Wind as WindIcon
+  Wind as WindIcon,
+  SunMedium,
+  CloudRain as CloudRainIcon,
+  CloudSnow as CloudSnowIcon,
+  CloudLightning as CloudLightningIcon,
+  CloudFog as CloudFogIcon,
+  Cloud as CloudIcon
 } from "lucide-react";
 
 import { useTheme } from "../../context/ThemeContext";
@@ -59,6 +66,38 @@ const WeatherIcon = ({ condition, iconCode, size = 80 }) => {
     default:
       return <CloudSun {...iconProps} />;
   }
+};
+
+// Component to get dynamic background icon based on weather condition
+const DynamicBgIcon = ({ condition, iconCode }) => {
+  const iconProps = {
+    size: 120,
+    strokeWidth: 1,
+    className: "bg-icon-svg"
+  };
+  
+  // Use icon code for more precise mapping
+  if (iconCode) {
+    if (iconCode.includes('01')) return <SunMedium {...iconProps} />;
+    if (iconCode.includes('02')) return <CloudSun {...iconProps} />;
+    if (iconCode.includes('03') || iconCode.includes('04')) return <CloudIcon {...iconProps} />;
+    if (iconCode.includes('09') || iconCode.includes('10')) return <CloudRainIcon {...iconProps} />;
+    if (iconCode.includes('11')) return <CloudLightningIcon {...iconProps} />;
+    if (iconCode.includes('13')) return <CloudSnowIcon {...iconProps} />;
+    if (iconCode.includes('50')) return <CloudFogIcon {...iconProps} />;
+  }
+  
+  // Fallback to condition-based mapping
+  const conditionLower = condition?.toLowerCase() || '';
+  if (conditionLower.includes('clear') || conditionLower.includes('sun')) return <SunMedium {...iconProps} />;
+  if (conditionLower.includes('rain') || conditionLower.includes('drizzle')) return <CloudRainIcon {...iconProps} />;
+  if (conditionLower.includes('thunder') || conditionLower.includes('storm')) return <CloudLightningIcon {...iconProps} />;
+  if (conditionLower.includes('snow')) return <CloudSnowIcon {...iconProps} />;
+  if (conditionLower.includes('fog') || conditionLower.includes('mist') || conditionLower.includes('haze')) return <CloudFogIcon {...iconProps} />;
+  if (conditionLower.includes('cloud')) return <CloudIcon {...iconProps} />;
+  if (conditionLower.includes('wind')) return <WindIcon {...iconProps} />;
+  
+  return <SunMedium {...iconProps} />;
 };
 
 function CurrentWeather() {
@@ -213,6 +252,14 @@ function CurrentWeather() {
           </div>
 
           <div className="main-weather-card">
+            {/* Dynamic SVG Background Icon based on weather */}
+            <div className="bg-icon">
+              <DynamicBgIcon 
+                condition={weatherData.conditionMain}
+                iconCode={weatherData.iconCode}
+              />
+            </div>
+            
             <div className="weather-icon-large">
               <WeatherIcon 
                 condition={weatherData.conditionMain}
