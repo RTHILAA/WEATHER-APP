@@ -1,52 +1,105 @@
 // src/pages/Overview/Overview.js
 import React from 'react';
 import './Overview.css';
-import { LayoutDashboard, Droplets, Wind, Gauge, Eye, Sunrise, Sunset, CloudSun, CloudRain, Cloud, Sun, Moon } from "lucide-react";
+import { LayoutDashboard, Droplets, Wind, Gauge, Eye, Sunrise, Sunset, CloudSun, CloudMoon, Cloud, CloudRain, CloudLightning, CloudSnow, CloudFog, Sun, Moon, Calendar, TrendingUp } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
 import LoadingSpinner from "../../components/common/LoadingSpinner/LoadingSpinner";
 import { useWeather } from '../../hooks/useWeather';
+import { getWeatherIconComponent } from '../../services/weatherService';
+
+// Component to render the appropriate weather icon
+const WeatherIcon = ({ condition, iconCode, size = 32 }) => {
+  const iconName = getWeatherIconComponent(condition, iconCode);
+  
+  const iconProps = {
+    size,
+    strokeWidth: 1.5
+  };
+  
+  switch (iconName) {
+    case 'Sun':
+      return <Sun {...iconProps} />;
+    case 'Moon':
+      return <Moon {...iconProps} />;
+    case 'CloudSun':
+      return <CloudSun {...iconProps} />;
+    case 'CloudMoon':
+      return <CloudMoon {...iconProps} />;
+    case 'Cloud':
+      return <Cloud {...iconProps} />;
+    case 'CloudRain':
+      return <CloudRain {...iconProps} />;
+    case 'CloudLightning':
+      return <CloudLightning {...iconProps} />;
+    case 'CloudSnow':
+      return <CloudSnow {...iconProps} />;
+    case 'CloudFog':
+      return <CloudFog {...iconProps} />;
+    default:
+      return <CloudSun {...iconProps} />;
+  }
+};
 
 function Overview() {
   const { currentWeather, forecast, uvIndex, isLoading } = useWeather();
   const { isDarkMode, toggleTheme } = useTheme();
 
-  // Process weekly forecast for overview
-  const getWeeklyOverview = () => {
+  const isSameCalendarDay = (date) => {
+    const now = new Date();
+    return date.getDate() === now.getDate() &&
+           date.getMonth() === now.getMonth() &&
+           date.getFullYear() === now.getFullYear();
+  };
+
+  // Process daily forecast for Overview - Timeline style
+  const getDailyForecast = () => {
     if (!forecast?.list) return [];
     
     const dailyMap = new Map();
+    
     forecast.list.forEach(item => {
       const date = new Date(item.dt * 1000);
-      const day = date.toLocaleDateString('en-US', { weekday: 'short' });
+      const dateKey = date.toLocaleDateString('en-US');
+      const isToday = isSameCalendarDay(date);
+      const dayName = isToday ? 'Today' : date.toLocaleDateString('en-US', { weekday: 'short' });
+      const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       
-      if (!dailyMap.has(day)) {
-        dailyMap.set(day, {
-          day,
+      if (!dailyMap.has(dateKey)) {
+        dailyMap.set(dateKey, {
+          day: dayName,
+          date: dateStr,
           high: item.main.temp_max,
           low: item.main.temp_min,
           condition: item.weather[0].main,
-          icon: item.weather[0].icon
+          description: item.weather[0].description,
+          iconCode: item.weather[0].icon,
+          isToday: isToday,
+          sortOrder: date.getTime()
         });
       } else {
-        const existing = dailyMap.get(day);
+        const existing = dailyMap.get(dateKey);
         existing.high = Math.max(existing.high, item.main.temp_max);
         existing.low = Math.min(existing.low, item.main.temp_min);
+        if (item.dt_txt && item.dt_txt.includes('12:00:00')) {
+          existing.condition = item.weather[0].main;
+          existing.description = item.weather[0].description;
+          existing.iconCode = item.weather[0].icon;
+        }
       }
     });
     
-    return Array.from(dailyMap.values()).slice(0, 7);
+    const days = Array.from(dailyMap.values());
+    days.sort((a, b) => a.sortOrder - b.sortOrder);
+    return days.slice(0, 5);
   };
 
-  // Format sunrise/sunset times
   const formatTime = (timestamp) => {
     if (!timestamp) return '--:--';
     const date = new Date(timestamp * 1000);
     return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
   };
 
-  // Get UV description - FIXED to accept object or number
   const getUVDescription = (uv) => {
-    // Handle both object and number formats
     const uvValue = typeof uv === 'object' ? uv?.value : uv;
     if (uvValue <= 2) return 'Low';
     if (uvValue <= 5) return 'Moderate';
@@ -55,7 +108,6 @@ function Overview() {
     return 'Extreme';
   };
 
-  // Get UV value - FIXED to handle object format
   const getUVValue = (uv) => {
     if (typeof uv === 'object') {
       return uv?.value || 0;
@@ -63,7 +115,7 @@ function Overview() {
     return uv || 0;
   };
 
-  const weeklyForecast = getWeeklyOverview();
+  const dailyForecast = getDailyForecast();
 
   if (isLoading || !currentWeather) {
     return (
@@ -92,28 +144,12 @@ function Overview() {
     windSpeed: Math.round(currentWeather.wind.speed),
     pressure: currentWeather.main.pressure,
     visibility: (currentWeather.visibility / 1000).toFixed(1),
-    uvIndex: getUVValue(uvIndex), // FIXED: Extract value from object
+    uvIndex: getUVValue(uvIndex),
     condition: currentWeather.weather[0].main,
     description: currentWeather.weather[0].description,
     sunrise: currentWeather.sys.sunrise,
     sunset: currentWeather.sys.sunset,
     icon: currentWeather.weather[0].icon
-  };
-
-  const getWeatherIconComponent = (iconCode) => {
-    const iconMap = {
-      '01d': Sun, '01n': Moon,
-      '02d': CloudSun, '02n': CloudSun,
-      '03d': Cloud, '03n': Cloud,
-      '04d': Cloud, '04n': Cloud,
-      '09d': CloudRain, '09n': CloudRain,
-      '10d': CloudRain, '10n': CloudRain,
-      '11d': CloudRain, '11n': CloudRain,
-      '13d': Cloud, '13n': Cloud,
-      '50d': Cloud, '50n': Cloud
-    };
-    const IconComponent = iconMap[iconCode] || CloudSun;
-    return <IconComponent size={28} />;
   };
 
   return (
@@ -178,16 +214,49 @@ function Overview() {
             </div>
           </div>
 
-          <div className="weekly-forecast">
-            <h3>7-Day Forecast</h3>
-            <div className="forecast-list">
-              {weeklyForecast.map((day, index) => (
-                <div key={index} className="forecast-day">
-                  <div className="forecast-day-name">{day.day}</div>
-                  <div className="forecast-icon">{getWeatherIconComponent(day.icon)}</div>
-                  <div className="forecast-temp">
-                    <span className="high">{Math.round(day.high)}°</span>
-                    <span className="low">{Math.round(day.low)}°</span>
+          {/* Timeline-style 5-Day Forecast for Overview */}
+          <div className="timeline-forecast">
+            <div className="timeline-header">
+              <div className="timeline-title">
+                <Calendar size={18} />
+                <h3>5-Day Forecast</h3>
+              </div>
+              <div className="timeline-subtitle">
+                <TrendingUp size={14} />
+                <span>Temperature trend</span>
+              </div>
+            </div>
+            <div className="timeline-container">
+              {dailyForecast.map((day, index) => (
+                <div key={index} className={`timeline-item ${day.isToday ? 'timeline-today' : ''}`}>
+                  <div className="timeline-day-section">
+                    <span className="timeline-day-name">{day.day}</span>
+                    <span className="timeline-day-date">{day.date}</span>
+                  </div>
+                  <div className="timeline-icon-section">
+                    <div className="timeline-icon-wrapper">
+                      <WeatherIcon 
+                        condition={day.condition}
+                        iconCode={day.iconCode}
+                        size={32}
+                      />
+                    </div>
+                    <span className="timeline-condition">{day.description?.split(' ')[0] || day.condition}</span>
+                  </div>
+                  <div className="timeline-temp-section">
+                    <div className="timeline-temp-bar">
+                      <div 
+                        className="timeline-temp-fill"
+                        style={{ 
+                          width: `${Math.min(100, Math.max(20, ((day.high - 20) / 30) * 100))}%`,
+                          backgroundColor: day.isToday ? '#F97316' : '#10B981'
+                        }}
+                      />
+                    </div>
+                    <div className="timeline-temp-values">
+                      <span className="timeline-high">{Math.round(day.high)}°</span>
+                      <span className="timeline-low">{Math.round(day.low)}°</span>
+                    </div>
                   </div>
                 </div>
               ))}
