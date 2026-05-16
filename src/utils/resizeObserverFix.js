@@ -1,155 +1,182 @@
-// src/utils/resizeObserverFix.js
-
 /**
- * COMPLETE RESIZE OBSERVER ERROR FIX
- * This eliminates the benign ResizeObserver errors in all browsers
+ * DEFINITIVE RESIZE OBSERVER FIX
+ *
+ * Strategy: replace window.ResizeObserver with a version whose callback
+ * is ALWAYS deferred via requestAnimationFrame. When the callback runs
+ * inside rAF the browser never fires the "loop" notification, so the
+ * error is never created — CRA's handleError never gets a chance to show
+ * the overlay because there is nothing to show.
+ *
+ * Secondary belt-and-suspenders: suppress it at every other layer too
+ * (console, window error event, CRA overlay DOM node) so that even if
+ * something else triggers it we are covered.
  */
 
-let originalConsoleError = null;
-let isPatched = false;
-
-// The error messages to filter
-const ERROR_MESSAGES = [
-    'ResizeObserver loop completed with undelivered notifications.',
-    'ResizeObserver loop limit exceeded',
-    'ResizeObserver observer loop limit exceeded'
+const RESIZE_OBSERVER_MSGS = [
+  "ResizeObserver loop completed with undelivered notifications",
+  "ResizeObserver loop limit exceeded",
+  "ResizeObserver observer loop limit exceeded",
+  "ResizeObserver loop completed",
 ];
 
-// Check if error message matches any ResizeObserver error
-const isResizeObserverError = (message) => {
-    if (!message) return false;
-    return ERROR_MESSAGES.some(errMsg => message.includes(errMsg));
-};
+const isROError = (msg) =>
+  typeof msg === "string" && RESIZE_OBSERVER_MSGS.some((m) => msg.includes(m));
 
-// Handler for window errors
-const errorHandler = (event) => {
-    const message = event?.message || event?.reason?.message || '';
-    
-    if (isResizeObserverError(message)) {
-        event.stopImmediatePropagation();
-        event.preventDefault();
-        event.stopPropagation();
-        return false;
-    }
-};
+const noop = () => {};
 
-// Handler for unhandled rejections
-const rejectionHandler = (event) => {
-    const message = event?.reason?.message || event?.reason || '';
-    
-    if (isResizeObserverError(message)) {
-        event.preventDefault();
-        event.stopPropagation();
-        return false;
-    }
-};
+/* ─── 1. Replace ResizeObserver (PRIMARY fix) ──────────────────────────────── */
+const replaceResizeObserver = () => {
+  if (typeof window === "undefined") return;
+  if (!window.ResizeObserver) return;
+  if (window.ResizeObserver.__ro_fixed) return;
 
-// Monkey patch console.error to filter the error
-const patchConsoleError = () => {
-    if (originalConsoleError) return;
-    
-    originalConsoleError = console.error;
-    console.error = function(...args) {
-        const message = args.join(' ');
-        if (isResizeObserverError(message)) {
-            return; // Silently suppress
-        }
-        return originalConsoleError.apply(this, args);
-    };
-};
+  const NativeRO = window.ResizeObserver;
 
-// Restore original console.error
-const restoreConsoleError = () => {
-    if (originalConsoleError) {
-        console.error = originalConsoleError;
-        originalConsoleError = null;
-    }
-};
-
-// Override ResizeObserver to catch errors at source
-const patchResizeObserver = () => {
-    if (typeof window === 'undefined' || !window.ResizeObserver) return;
-    
-    // Prevent double patching
-    if (window.ResizeObserver.__patched) return;
-    
-    const OriginalResizeObserver = window.ResizeObserver;
-    
-    window.ResizeObserver = class PatchedResizeObserver extends OriginalResizeObserver {
-        constructor(callback) {
-            // Wrap callback to catch errors
-            const wrappedCallback = (entries, observer) => {
-                try {
-                    callback(entries, observer);
-                } catch (error) {
-                    if (!isResizeObserverError(error?.message)) {
-                        throw error;
-                    }
-                    // Swallow ResizeObserver errors silently
-                }
-            };
-            super(wrappedCallback);
-        }
-    };
-    
-    // Copy static properties
-    Object.setPrototypeOf(window.ResizeObserver, OriginalResizeObserver);
-    window.ResizeObserver.__patched = true;
-};
-
-// Also patch for React 18+ concurrent features
-const patchReactResizeObserver = () => {
-    if (typeof window === 'undefined') return;
-    
-    // Intercept potential React internal ResizeObserver usage
-    const originalRequestAnimationFrame = window.requestAnimationFrame;
-    window.requestAnimationFrame = function(callback) {
-        return originalRequestAnimationFrame.call(this, (...args) => {
-            try {
-                return callback(...args);
-            } catch (error) {
-                if (!isResizeObserverError(error?.message)) {
-                    throw error;
-                }
-            }
+  window.ResizeObserver = class ResizeObserver {
+    constructor(callback) {
+      this._pending = null;
+      this._inner = new NativeRO((entries, observer) => {
+        // Cancel any previously scheduled call so we only fire once per frame
+        if (this._pending !== null) cancelAnimationFrame(this._pending);
+        this._pending = requestAnimationFrame(() => {
+          this._pending = null;
+          try {
+            callback(entries, observer);
+          } catch (e) {
+            if (!isROError(e?.message)) throw e;
+          }
         });
-    };
+      });
+    }
+
+    observe(target, options) {
+      try {
+        this._inner.observe(target, options);
+      } catch (_) {}
+    }
+    unobserve(target) {
+      try {
+        this._inner.unobserve(target);
+      } catch (_) {}
+    }
+    disconnect() {
+      if (this._pending !== null) {
+        cancelAnimationFrame(this._pending);
+        this._pending = null;
+      }
+      try {
+        this._inner.disconnect();
+      } catch (_) {}
+    }
+  };
+
+  window.ResizeObserver.__ro_fixed = true;
 };
 
-/**
- * Enable full suppression of ResizeObserver errors
- */
+/* ─── 2. Silence console.error / console.warn ──────────────────────────────── */
+const _origError = console.error.bind(console);
+const _origWarn = console.warn.bind(console);
+
+const silenceConsole = () => {
+  console.error = (...a) => {
+    if (!isROError(a.join(" "))) _origError(...a);
+  };
+  console.warn = (...a) => {
+    if (!isROError(a.join(" "))) _origWarn(...a);
+  };
+};
+
+/* ─── 3. Swallow the window 'error' event (capture phase) ─────────────────── */
+const onWindowError = (e) => {
+  if (isROError(e?.message || e?.error?.message)) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    return false;
+  }
+};
+
+/* ─── 4. Nuke the CRA / webpack-dev-server overlay DOM node ────────────────── */
+const OVERLAY_SELECTORS = [
+  "iframe#webpack-dev-server-client-overlay",
+  "div#webpack-dev-server-client-overlay",
+  'body > iframe[src="about:blank"]',
+];
+
+let _overlayObserver = null;
+let _roErrorPending = false;
+let _pendingTimer = null;
+
+const markROErrorPending = () => {
+  _roErrorPending = true;
+  clearTimeout(_pendingTimer);
+  _pendingTimer = setTimeout(() => {
+    _roErrorPending = false;
+  }, 1000);
+};
+
+const nukeOverlayIfRO = () => {
+  if (!_roErrorPending) return;
+  OVERLAY_SELECTORS.forEach((sel) => {
+    document.querySelectorAll(sel).forEach((el) => {
+      const hint = el.getAttribute("title") || el.getAttribute("srcdoc") || "";
+      if (!hint || isROError(hint)) el.remove();
+    });
+  });
+};
+
+const watchForOverlay = () => {
+  if (typeof window === "undefined" || !window.MutationObserver) return;
+  if (_overlayObserver) return;
+
+  window.addEventListener(
+    "error",
+    (e) => {
+      if (isROError(e?.message || e?.error?.message)) markROErrorPending();
+    },
+    true,
+  );
+
+  _overlayObserver = new MutationObserver(nukeOverlayIfRO);
+  _overlayObserver.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+  });
+};
+
+/* ─── 5. Public API ─────────────────────────────────────────────────────────── */
+let _initialized = false;
+
 export const suppressResizeObserverErrors = () => {
-    if (typeof window === 'undefined') return;
-    if (isPatched) return;
-    
-    // 1. Patch console.error
-    patchConsoleError();
-    
-    // 2. Add error event listener (capture phase to catch early)
-    window.addEventListener('error', errorHandler, true);
-    window.addEventListener('unhandledrejection', rejectionHandler);
-    
-    // 3. Patch ResizeObserver at source
-    patchResizeObserver();
-    
-    // 4. Patch requestAnimationFrame for React
-    patchReactResizeObserver();
-    
-    isPatched = true;
+  if (typeof window === "undefined" || _initialized) return noop;
+
+  replaceResizeObserver(); // PRIMARY – stops the error at its source
+  silenceConsole();
+  watchForOverlay();
+
+  window.addEventListener("error", onWindowError, true);
+  window.addEventListener("unhandledrejection", (e) => {
+    if (isROError(e?.reason?.message || String(e?.reason ?? "")))
+      e.preventDefault();
+  });
+
+  _initialized = true;
+
+  return () => {
+    window.removeEventListener("error", onWindowError, true);
+    console.error = _origError;
+    console.warn = _origWarn;
+    _initialized = false;
+  };
 };
 
-/**
- * Disable suppression (for testing)
- */
 export const unsuppressResizeObserverErrors = () => {
-    if (typeof window === 'undefined') return;
-    
-    restoreConsoleError();
-    window.removeEventListener('error', errorHandler, true);
-    window.removeEventListener('unhandledrejection', rejectionHandler);
-    isPatched = false;
+  console.error = _origError;
+  console.warn = _origWarn;
+  window.removeEventListener("error", onWindowError, true);
+  _initialized = false;
 };
 
-// Auto-execute immediately when imported
+// ─── Auto-execute immediately when the module is imported ───────────────────
 suppressResizeObserverErrors();
+
+// Removed the development console log
