@@ -277,3 +277,72 @@ export const getCityFromCoords = async (lat, lon) => {
     return null;
   }
 };
+
+// Get city from IP address using multiple free APIs (with fallbacks)
+export const getCityFromIP = async () => {
+  // List of free IP geolocation APIs (try in order)
+  const apis = [
+    {
+      url: "https://ipapi.co/json/",
+      parser: (data) =>
+        data.city && data.country_code
+          ? `${data.city}, ${data.country_code}`
+          : null,
+    },
+    {
+      url: "https://ip-api.com/json/",
+      parser: (data) =>
+        data.status === "success" && data.city
+          ? `${data.city}, ${data.countryCode}`
+          : null,
+    },
+    {
+      url: "https://api.ipify.org?format=json",
+      parser: null, // This only gives IP, not location
+      needsSecondCall: true,
+    },
+  ];
+
+  // Try each API until one works
+  for (const api of apis) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+      const response = await fetch(api.url, { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (!response.ok) continue;
+
+      const data = await response.json();
+
+      // Handle APIs that only give IP (need a second call)
+      if (api.needsSecondCall && data.ip) {
+        // Use ip-api.com with the IP
+        const secondResponse = await fetch(
+          `http://ip-api.com/json/${data.ip}`,
+          { signal: controller.signal },
+        );
+        if (secondResponse.ok) {
+          const secondData = await secondResponse.json();
+          if (secondData.status === "success" && secondData.city) {
+            return `${secondData.city}, ${secondData.countryCode}`;
+          }
+        }
+        continue;
+      }
+
+      // Parse the response
+      if (api.parser) {
+        const result = api.parser(data);
+        if (result) return result;
+      }
+    } catch (error) {
+      console.warn(`IP geolocation API failed (${api.url}):`, error.message);
+      continue;
+    }
+  }
+
+  console.warn("All IP geolocation APIs failed");
+  return null;
+};
