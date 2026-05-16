@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 
 import {
   getCurrentWeather,
@@ -23,7 +23,6 @@ export const useWeather = () => {
   const [coords, setCoords] = useState(null);
 
   const [unit, setUnit] = useState(() => {
-    // Load unit from localStorage
     const savedSettings = localStorage.getItem("skycast_settings");
     if (savedSettings) {
       const settings = JSON.parse(savedSettings);
@@ -32,7 +31,10 @@ export const useWeather = () => {
     return "metric";
   });
 
-  const { currentLocation, coordinates, useDeviceLocation } = useLocation();
+  const { currentLocation, coordinates, useDeviceLocation, isLoadingLocation } =
+    useLocation();
+
+  const hasInitialFetch = useRef(false);
 
   const fetchWeatherData = useCallback(
     async (city, unitParam = unit) => {
@@ -138,7 +140,6 @@ export const useWeather = () => {
           settings.temperatureUnit === "celsius" ? "metric" : "imperial";
         if (newUnit !== unit) {
           setUnit(newUnit);
-          // Refresh weather with new unit
           if (useDeviceLocation && coordinates) {
             fetchWeatherByCoords(coordinates.lat, coordinates.lon, newUnit);
           } else if (currentLocation) {
@@ -162,14 +163,20 @@ export const useWeather = () => {
     fetchWeatherByCoords,
   ]);
 
+  // Initial fetch - wait for location to be detected before fetching
   useEffect(() => {
-    if (useDeviceLocation && coordinates) {
-      fetchWeatherByCoords(coordinates.lat, coordinates.lon);
-    } else if (currentLocation) {
-      const cityName = currentLocation.split(",")[0];
-      fetchWeatherData(cityName);
+    if (!isLoadingLocation && !hasInitialFetch.current && currentLocation) {
+      hasInitialFetch.current = true;
+
+      if (useDeviceLocation && coordinates) {
+        fetchWeatherByCoords(coordinates.lat, coordinates.lon);
+      } else if (currentLocation) {
+        const cityName = currentLocation.split(",")[0];
+        fetchWeatherData(cityName);
+      }
     }
   }, [
+    isLoadingLocation,
     currentLocation,
     coordinates,
     useDeviceLocation,
