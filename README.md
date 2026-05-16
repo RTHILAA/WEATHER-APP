@@ -1,70 +1,323 @@
-# Getting Started with Create React App
+<div align="center">
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<img src="https://img.shields.io/badge/SkyCast-v1.0.0-f97316?style=for-the-badge&logo=cloud&logoColor=white"/>
+<img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black"/>
+<img src="https://img.shields.io/badge/OpenWeatherMap-API-EB6E4B?style=for-the-badge&logo=openweathermap&logoColor=white"/>
+<img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge"/>
 
-## Available Scripts
+<br/><br/>
 
-In the project directory, you can run:
+# ☁️ SkyCast
 
-### `npm start`
+### Real-time Weather Forecasting — Beautiful, Fast, and Responsive
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+*A modern React weather app with live data, interactive maps, and full customization.*
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+<br/>
 
-### `npm test`
+[🚀 Live Demo](#) · [📖 Docs](#) · [🐛 Report Bug](https://github.com/yourusername/skycast/issues) · [✨ Request Feature](https://github.com/yourusername/skycast/issues)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+</div>
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 📸 Preview
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+<div align="center">
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+> *Screenshot placeholder — replace with actual app screenshot*
 
-### `npm run eject`
+</div>
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## ✨ Features
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 🌤️ Current Weather
+- Real-time temperature, feels-like, humidity, wind speed, and pressure
+- Dynamic weather icons based on conditions
+- UV index with safety recommendations
+- Sunrise & sunset times
+- Cloud cover, precipitation chance, and dew point
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### 📅 5-Day Forecast
+- Daily highs and lows with condition descriptions
+- Hourly forecast at 3-hour intervals
+- Temperature trend visualization
+- Special styling for "Today" and "Now" cards
+- Gradient cards with smooth hover effects
 
-## Learn More
+### 🗺️ Interactive Weather Map
+- Powered by **Leaflet.js**
+- Multiple layers: Temperature, Precipitation, Wind Speed, Cloud Cover
+- Dynamic color-coded visualization
+- Current location marker with weather popup
+- Dark mode support & layer legend
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### 📊 Dashboard Overview
+- At-a-glance weather summary
+- Sunrise/Sunset timeline
+- 5-day forecast with temperature bars
+- Today's highlights: UV Index, Air Quality, Dew Point
+- Dynamic background icons based on weather
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 🔍 Location Management
+- Worldwide city search via OpenWeather Geocoding API
+- Smart search with autocomplete
+- GPS-based current location detection
+- Persistent location storage
+- Mobile-friendly search modal
 
-### Code Splitting
+### ⚙️ Settings & Customization
+- 🌡️ Temperature units: Celsius / Fahrenheit
+- 🌙 Theme: Light / Dark (persistent)
+- 📏 Measurement: Metric / Imperial
+- 🌍 Language preferences (multi-language ready)
+- 🔔 Notification controls
+- ⏱️ Auto-refresh intervals: 15min, 30min, 1hr, 2hr
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### 📱 Responsive Design
+- Desktop: collapsible sidebar layout
+- Tablet (481px–949px): collapsed sidebar
+- Mobile (≤480px): touch-friendly interface
+- Smooth transitions & animations across all modern browsers
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 🛠️ Tech Stack
 
-### Making a Progressive Web App
+| Category | Technologies |
+|---|---|
+| **Frontend** | React 19, React Router DOM 7 |
+| **Styling** | CSS3, CSS Modules, Responsive Design |
+| **Icons** | Lucide React |
+| **Maps** | Leaflet, React-Leaflet |
+| **API** | OpenWeatherMap (Current, Forecast, Geocoding, UV Index) |
+| **State** | React Context API |
+| **Build** | Create React App (react-scripts) |
+| **PWA** | Web App Manifest |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+---
 
-### Advanced Configuration
+## 📋 Prerequisites
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- **Node.js** v14 or higher
+- **npm** or **yarn**
+- An **OpenWeatherMap API key** — [Get one here](https://openweathermap.org/api)
 
-### Deployment
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 🚀 Installation
 
-### `npm run build` fails to minify
+### 1. Clone the repository
+```bash
+git clone https://github.com/yourusername/skycast.git
+cd skycast
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### 2. Install dependencies
+```bash
+npm install
+# or
+yarn install
+```
+
+### 3. Set up environment variables
+Create a `.env` file in the root directory:
+```env
+REACT_APP_OPENWEATHER_API_KEY=your_api_key_here
+```
+
+### 4. Start the development server
+```bash
+npm start
+# or
+yarn start
+```
+
+### 5. Build for production
+```bash
+npm run build
+# or
+yarn build
+```
+
+---
+
+## 📁 Project Structure
+
+```
+skycast/
+├── public/
+│   ├── index.html
+│   ├── manifest.json
+│   └── robots.txt
+├── src/
+│   ├── assets/images/
+│   │   └── logo.png
+│   ├── components/
+│   │   ├── common/
+│   │   │   ├── LoadingSpinner/
+│   │   │   └── Notification/
+│   │   └── layout/
+│   │       └── Sidebar/
+│   ├── context/
+│   │   ├── LocationContext.js
+│   │   └── ThemeContext.js
+│   ├── hooks/
+│   │   └── useWeather.js
+│   ├── pages/
+│   │   ├── Overview/
+│   │   ├── CurrentWeather/
+│   │   ├── Forecast/
+│   │   ├── Map/
+│   │   ├── Settings/
+│   │   └── PageNotFound/
+│   ├── services/
+│   │   └── weatherService.js
+│   ├── styles/
+│   │   └── App.css
+│   ├── utils/
+│   │   └── resizeObserverFix.js
+│   ├── App.js
+│   └── index.js
+├── .env
+├── package.json
+└── README.md
+```
+
+---
+
+## 🔧 Available Scripts
+
+| Command | Description |
+|---|---|
+| `npm start` | Runs the app in development mode |
+| `npm run build` | Builds the app for production |
+| `npm test` | Launches the test runner |
+| `npm eject` | Ejects from Create React App |
+
+---
+
+## 🌐 API Reference
+
+SkyCast uses the [OpenWeatherMap API](https://openweathermap.org/api):
+
+| Endpoint | Purpose |
+|---|---|
+| `weather` | Current weather data |
+| `forecast` | 5-day forecast (3-hour intervals) |
+| `geo/1.0/direct` | City search / geocoding |
+| `geo/1.0/reverse` | Reverse geocoding (coordinates → city) |
+| `uvi` | UV index data |
+| `air_pollution` | Air quality data (optional) |
+
+---
+
+## 🎨 Design System
+
+### Color Palette
+| Role | Value |
+|---|---|
+| Primary | `#f97316` — Orange (Brand) |
+| Gradient | `#f97316` → `#ea580c` → `#c2410c` |
+| Dark Background | `#0f172a` (Slate 900) |
+| Light Background | `#f8fafc` (Slate 50) |
+| Text (Dark) | `#f1f5f9` (Slate 100) |
+| Text (Light) | `#1e293b` (Slate 800) |
+
+### Typography
+- **Font Family:** Montserrat (Google Fonts)
+- **Weights:** 400, 500, 600, 700
+
+### Icons
+- All icons from **Lucide React**
+- Dynamic weather icons based on OpenWeatherMap conditions
+
+---
+
+## 🧪 Browser Support
+
+| Browser | Version |
+|---|---|
+| Chrome | ✅ Latest |
+| Firefox | ✅ Latest |
+| Safari | ✅ Latest |
+| Edge | ✅ Latest |
+| Opera | ✅ Latest |
+
+---
+
+## 🔒 Environment Variables
+
+| Variable | Description | Required |
+|---|---|---|
+| `REACT_APP_OPENWEATHER_API_KEY` | Your OpenWeatherMap API key | ✅ Yes |
+
+---
+
+## 📱 PWA Support
+
+SkyCast includes full PWA support:
+- ✅ Web App Manifest configured
+- ✅ Basic offline caching
+- ✅ Installable on mobile devices
+- ✅ Theme color `#0f172a`
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Follow these steps:
+
+1. Fork the repository
+2. Create your feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add some amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a **Pull Request**
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 👨‍💻 Developer
+
+<div align="center">
+
+**Anass El Harazi**
+
+[![Instagram](https://img.shields.io/badge/Instagram-@a.elharazi-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://instagram.com/a.elharazi)
+[![GitHub](https://img.shields.io/badge/GitHub-yourusername-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/yourusername)
+
+</div>
+
+---
+
+## 🙏 Acknowledgments
+
+- [OpenWeatherMap](https://openweathermap.org/) — Weather data API
+- [Leaflet](https://leafletjs.com/) — Interactive mapping library
+- [Lucide](https://lucide.dev/) — Beautiful open-source icons
+- [Google Fonts](https://fonts.google.com/) — Montserrat typeface
+
+---
+
+## 📧 Contact
+
+For support or inquiries: **support@skycast.com**
+
+---
+
+<div align="center">
+
+⭐ **If you found this project helpful, please give it a star on GitHub!** ⭐
+
+<br/>
+
+*Made with ❤️ and ☀️ by Anass El Harazi*
+
+</div>
