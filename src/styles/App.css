@@ -1,3 +1,6 @@
+/* App.css - Fixed Header and Sidebar Solution */
+
+/* Import Montserrat font */
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 
 * {
@@ -10,6 +13,7 @@ html {
   scroll-behavior: smooth;
   overflow-x: hidden;
   width: 100%;
+  height: 100%;
 }
 
 /* Custom scrollbar styling */
@@ -45,6 +49,7 @@ body {
   transition: background-color 0.3s ease;
   overflow-x: hidden;
   width: 100%;
+  min-height: 100vh;
 }
 
 /* Dark Mode Body */
@@ -69,7 +74,9 @@ body.dark-mode html {
   scrollbar-color: #f97316 #1e293b;
 }
 
-/* App Container */
+/* ============================================
+   APP CONTAINER - Creates the overall layout
+   ============================================ */
 .app-container {
   display: flex;
   min-height: 100vh;
@@ -78,14 +85,22 @@ body.dark-mode html {
   position: relative;
 }
 
+/* ============================================
+   MAIN CONTENT - Offset for fixed sidebar and header
+   ============================================ */
 .main-content {
   flex: 1;
+  /* Offset for fixed sidebar (250px width) */
   margin-left: 250px;
-  transition: margin-left 0.3s ease;
+  /* Prevent horizontal overflow */
   width: calc(100% - 250px);
   position: relative;
   overflow-x: hidden;
   max-width: 100vw;
+  /* Allow vertical scrolling */
+  overflow-y: auto;
+  /* Set height to enable scrolling */
+  height: 100vh;
 }
 
 /* When sidebar is collapsed */
@@ -95,25 +110,28 @@ body.dark-mode html {
   width: calc(100% - 80px);
 }
 
-/* Page container styles */
+/* ============================================
+   PAGE HEADER - Fixed at top, offset for sidebar
+   ============================================ */
 .page-header {
   position: fixed;
   top: 0;
   right: 0;
+  /* Offset for sidebar width - matches main-content margin-left */
   left: 250px;
   background: #f8fafc;
   border-bottom: 1px solid #e2e8f0;
   height: 75px;
   padding: 20px;
-  transition:
-    background-color 0.3s ease,
-    border-color 0.3s ease,
-    left 0.3s ease;
-  z-index: 999;
+  transition: all 0.3s ease;
+  /* High z-index to stay above content */
+  z-index: 100;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 15px;
+  /* Ensure proper box-sizing */
+  box-sizing: border-box;
 }
 
 body.dark-mode .page-header {
@@ -127,14 +145,66 @@ body.dark-mode .page-header {
   left: 80px;
 }
 
-/* Page content wrapper */
+/* ============================================
+   PAGE CONTENT - Wrapper for scrollable content
+   Places content below the fixed header
+   ============================================ */
 .page-content {
-  margin-top: 80px;
-  padding: 0;
-  min-height: calc(100vh - 80px);
+  /* Push content down below the fixed header (75px header height + some spacing) */
+  margin-top: 75px;
+  padding: 20px;
+  /* Ensure content can scroll */
+  min-height: calc(100vh - 75px);
   overflow-x: hidden;
 }
 
+/* ============================================
+   SIDEBAR STYLES (from your existing Sidebar.css)
+   These ensure the sidebar is fixed and full height
+   ============================================ */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+  background-color: #f8fafc;
+  border-right: 1px solid #e2e8f0;
+  transition: width 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+  z-index: 1000;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar.collapsed {
+  width: 80px;
+}
+
+/* Dark mode sidebar */
+.sidebar.dark {
+  background-color: #1e293b;
+  border-right-color: #334155;
+}
+
+/* Hide sidebar scrollbar when not needed (optional) */
+.sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #f97316;
+  border-radius: 4px;
+}
+
+/* ============================================
+   PAGE TITLE STYLES
+   ============================================ */
 .page-title {
   font-weight: bold;
   display: flex;
@@ -142,6 +212,7 @@ body.dark-mode .page-header {
   gap: 10px;
   color: #1e293b;
   transition: color 0.3s ease;
+  white-space: nowrap;
 }
 
 body.dark-mode .page-title {
@@ -152,15 +223,9 @@ body.dark-mode .page-title {
   color: #f97316;
 }
 
-/* Header Actions Container */
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-/* Theme Toggle Button in Header */
+/* ============================================
+   HEADER THEME TOGGLE BUTTON
+   ============================================ */
 .header-theme-toggle {
   display: flex;
   align-items: center;
@@ -209,7 +274,9 @@ body.dark-mode .header-theme-toggle:hover svg {
   color: white;
 }
 
-/* View Toggle Styles */
+/* ============================================
+   VIEW TOGGLE STYLES
+   ============================================ */
 .view-toggle {
   display: flex;
   gap: 10px;
@@ -254,16 +321,57 @@ body.dark-mode .view-toggle .toggle-btn.active {
   color: white;
 }
 
-/* Base styles for header buttons - text visible on desktop/tablet */
-.refresh-btn span,
-.header-theme-toggle span,
-.map-control-btn span,
-.nav-btn span,
-.toggle-btn span {
-  display: inline;
+/* ============================================
+   REFRESH BUTTON STYLES
+   ============================================ */
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  color: #1e293b;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
-/* Prevent ResizeObserver errors by containing layouts */
+.refresh-btn svg {
+  color: #94a3b8;
+  transition: color 0.3s ease;
+}
+
+.refresh-btn:hover {
+  background: #f97316;
+  color: white;
+}
+
+.refresh-btn:hover svg {
+  color: white;
+}
+
+body.dark-mode .refresh-btn {
+  background: #334155;
+  color: #f1f5f9;
+}
+
+body.dark-mode .refresh-btn svg {
+  color: #94a3b8;
+}
+
+body.dark-mode .refresh-btn:hover {
+  background: #f97316;
+  color: white;
+}
+
+/* ============================================
+   Prevent ResizeObserver errors
+   ============================================ */
 .leaflet-container,
 .map-container,
 .weather-map,
@@ -295,145 +403,9 @@ iframe {
   vertical-align: middle;
 }
 
-/* Stabilize Leaflet map */
-.leaflet-container {
-  width: 100%;
-  height: 100%;
-  min-height: 500px;
-  transform: translateZ(0);
-  will-change: transform;
-}
-
-/* Prevent layout thrashing */
-.leaflet-pane,
-.leaflet-tile,
-.leaflet-marker-icon,
-.leaflet-marker-shadow {
-  will-change: transform;
-}
-
-body.dark-mode .leaflet-container {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-}
-
-/* Fix for map loading states */
-.map-loading-overlay,
-.map-error-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.5);
-  color: white;
-  gap: 15px;
-  z-index: 1001;
-  border-radius: 12px;
-  pointer-events: auto;
-}
-
-/* Ensure map container has proper sizing */
-.weather-map {
-  position: relative;
-  min-height: 500px;
-  background: transparent;
-  border-radius: 12px;
-  overflow: hidden;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-/* Stabilize animations that might cause layout shifts */
-@keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes cardPulse {
-  0% {
-    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.2);
-  }
-  50% {
-    box-shadow: 0 8px 24px rgba(249, 115, 22, 0.4);
-  }
-  100% {
-    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.2);
-  }
-}
-
-@keyframes nowPulse {
-  0% {
-    box-shadow: 0 4px 16px rgba(249, 115, 22, 0.3);
-  }
-  50% {
-    box-shadow: 0 6px 24px rgba(249, 115, 22, 0.5);
-  }
-  100% {
-    box-shadow: 0 4px 16px rgba(249, 115, 22, 0.3);
-  }
-}
-
-/* Smooth transitions without observer issues */
-.forecast-card,
-.hour-card,
-.detail-card,
-.summary-card,
-.feature-card {
-  transform: translateZ(0);
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
-}
-
-/* Fix for iOS Safari */
-@supports (-webkit-touch-callout: none) {
-  .leaflet-container {
-    min-height: 450px;
-  }
-}
-
-/* Suppress ResizeObserver errors in production */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* Smooth transitions for responsive changes */
-.sidebar,
-.main-content,
-.page-header,
-.forecast-card,
-.hour-card,
-.detail-card,
-.summary-card,
-.feature-card {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Ensure all containers respect viewport */
-.app-container,
-.main-content,
-.page-container,
-.page-content {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-/* Tablet (481px - 949px) */
+/* ============================================
+   TABLET RESPONSIVE (481px - 949px)
+   ============================================ */
 @media (min-width: 481px) and (max-width: 949px) {
   .main-content {
     margin-left: 80px !important;
@@ -458,7 +430,9 @@ body.dark-mode .leaflet-container {
   }
 }
 
-/* Mobile (max-width: 480px) */
+/* ============================================
+   MOBILE RESPONSIVE (max-width: 480px)
+   ============================================ */
 @media (max-width: 480px) {
   .page-header {
     padding: 8px 12px;
@@ -468,6 +442,7 @@ body.dark-mode .leaflet-container {
     justify-content: space-between;
     gap: 8px;
     min-height: 55px;
+    left: 70px;
   }
 
   .page-header > div {
@@ -480,28 +455,15 @@ body.dark-mode .leaflet-container {
     justify-content: flex-end;
   }
 
+  .main-content {
+    margin-left: 70px !important;
+    width: calc(100% - 70px) !important;
+  }
+
   .page-title {
     font-size: 13px;
     gap: 6px;
     flex-shrink: 0;
-  }
-
-  .map-header-controls {
-    flex-direction: row !important;
-    gap: 6px !important;
-  }
-
-  .map-controls {
-    gap: 4px !important;
-  }
-
-  .map-control-btn {
-    padding: 6px 8px !important;
-  }
-
-  /* Weather map refresh and location buttons */
-  .map-control-btn span {
-    display: none !important;
   }
 
   .page-title svg {
@@ -510,10 +472,11 @@ body.dark-mode .leaflet-container {
   }
 
   .page-content {
-    margin-top: 85px;
+    margin-top: 80px;
     padding: 0 12px;
   }
 
+  /* Hide text on buttons for mobile */
   .header-theme-toggle span,
   .refresh-btn span,
   .map-control-btn span,
@@ -521,7 +484,7 @@ body.dark-mode .leaflet-container {
     display: none !important;
   }
 
-  /* For buttons that only have text (like toggle buttons) */
+  /* Keep text on toggle buttons */
   .toggle-btn span {
     display: inline;
     font-size: 11px;
@@ -536,5 +499,23 @@ body.dark-mode .leaflet-container {
   .view-toggle .toggle-btn {
     padding: 5px 12px;
     font-size: 11px;
+  }
+}
+
+/* ============================================
+   SMALL MOBILE (max-width: 380px)
+   ============================================ */
+@media (max-width: 380px) {
+  .sidebar {
+    width: 65px;
+  }
+  
+  .main-content {
+    margin-left: 65px !important;
+    width: calc(100% - 65px) !important;
+  }
+  
+  .page-header {
+    left: 65px !important;
   }
 }
