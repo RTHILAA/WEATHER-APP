@@ -1,5 +1,6 @@
 .sidebar {
-  height: 100vh;
+ height: 100dvh; /* الأفضل للموبايل */
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   width: 250px;
@@ -12,7 +13,7 @@
   top: 0;
   left: 0;
   background-color: #f8fafc;
-  z-index: 1000;
+  z-index: 2000;
   overflow: hidden;
 }
 
@@ -885,45 +886,6 @@ body.dark-mode .search-results-dropdown::-webkit-scrollbar-thumb {
   }
 }
 
-/* Small mobile (max-width: 380px) */
-@media (max-width: 380px) {
-  .sidebar {
-    width: 65px;
-  }
-
-  .sidebar ul li a {
-    margin: 5px 6px;
-    padding: 8px;
-  }
-
-  .sidebar-logo-img {
-    width: 24px;
-    height: 24px;
-  }
-
-  .sidebar .search-collapsed {
-    padding: 10px 0;
-    margin: 4px 6px;
-  }
-
-  .sidebar .current-location-collapsed {
-    padding: 8px 0;
-  }
-
-  .sidebar .collapse {
-    padding: 8px;
-  }
-
-  .location-city-collapsed {
-    font-size: 9px;
-    max-width: 45px;
-  }
-
-  .current-location-collapsed {
-    gap: 4px;
-    padding: 6px 0;
-  }
-}
 
 /* Mobile search container when sidebar is expanded */
 .search-container-mobile {
@@ -973,23 +935,9 @@ body.dark-mode .search-results-dropdown::-webkit-scrollbar-thumb {
   cursor: pointer;
 }
 
-/* Hide mobile search container on desktop */
-@media (min-width: 950px) {
-  .search-container-mobile {
-    display: none;
-  }
-}
 
-/* Show mobile search container only on mobile/tablet when sidebar is expanded */
-@media (max-width: 949px) {
-  .sidebar:not(.collapsed) .search-container-mobile {
-    display: block;
-  }
 
-  .sidebar:not(.collapsed) .search-container {
-    display: none;
-  }
-}
+
 
 .mobile-search-modal-overlay {
   position: fixed;
