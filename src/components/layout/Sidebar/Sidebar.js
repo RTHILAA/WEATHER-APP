@@ -1,4 +1,3 @@
-// src/components/layout/Sidebar/Sidebar.js
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Sidebar.css";
@@ -35,6 +34,26 @@ const MobileSearchModal = ({ isOpen, onClose, onCitySelect }) => {
       }, 100);
     }
   }, [isOpen]);
+
+  // Close modal on escape key
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === "Escape" && isOpen) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleEscape);
+      // Prevent body scroll when modal is open
+      document.body.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "";
+    };
+  }, [isOpen, onClose]);
 
   useEffect(() => {
     const handleSearch = async () => {
@@ -73,6 +92,15 @@ const MobileSearchModal = ({ isOpen, onClose, onCitySelect }) => {
     onClose();
   };
 
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setSearchResults([]);
+    setSearchError(null);
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -84,7 +112,7 @@ const MobileSearchModal = ({ isOpen, onClose, onCitySelect }) => {
             <X size={20} />
           </button>
         </div>
-        
+
         <div className="mobile-search-input-wrapper">
           <Search size={18} className="mobile-search-icon" />
           <input
@@ -96,6 +124,11 @@ const MobileSearchModal = ({ isOpen, onClose, onCitySelect }) => {
             className="mobile-search-input"
             autoComplete="off"
           />
+          {searchQuery && (
+            <button className="mobile-search-clear" onClick={handleClearSearch}>
+              <X size={16} />
+            </button>
+          )}
         </div>
 
         <div className="mobile-search-results">
@@ -105,13 +138,13 @@ const MobileSearchModal = ({ isOpen, onClose, onCitySelect }) => {
               <span>Searching for cities...</span>
             </div>
           )}
-          
+
           {searchError && !isSearching && (
             <div className="mobile-search-error">
               <span>{searchError}</span>
             </div>
           )}
-          
+
           {!isSearching && !searchError && searchResults.length > 0 && (
             <div className="mobile-search-results-list">
               {searchResults.map((city, index) => (
@@ -133,14 +166,19 @@ const MobileSearchModal = ({ isOpen, onClose, onCitySelect }) => {
               ))}
             </div>
           )}
-          
-          {!isSearching && !searchError && searchQuery.trim().length >= 2 && searchResults.length === 0 && (
-            <div className="mobile-search-no-results">
-              <span>No cities found for "{searchQuery}"</span>
-              <small>Try checking the spelling or try another city name</small>
-            </div>
-          )}
-          
+
+          {!isSearching &&
+            !searchError &&
+            searchQuery.trim().length >= 2 &&
+            searchResults.length === 0 && (
+              <div className="mobile-search-no-results">
+                <span>No cities found for "{searchQuery}"</span>
+                <small>
+                  Try checking the spelling or try another city name
+                </small>
+              </div>
+            )}
+
           {searchQuery.trim().length < 2 && searchQuery.trim().length > 0 && (
             <div className="mobile-search-hint">
               <span>Type at least 2 characters to search</span>
@@ -162,16 +200,16 @@ function Sidebar() {
   const [isMobileOrTablet, setIsMobileOrTablet] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const searchRef = useRef(null);
-  
+
   const { isDarkMode } = useTheme();
-  const { 
-    currentLocation, 
-    searchLocation, 
-    searchResults, 
-    isSearching, 
+  const {
+    currentLocation,
+    searchLocation,
+    searchResults,
+    isSearching,
     searchError,
     selectLocation,
-    clearSearch
+    clearSearch,
   } = useAppLocation();
 
   // Check if device is mobile or tablet
@@ -180,11 +218,11 @@ function Sidebar() {
       const width = window.innerWidth;
       setIsMobileOrTablet(width <= 949);
     };
-    
+
     checkDevice();
-    window.addEventListener('resize', checkDevice);
-    
-    return () => window.removeEventListener('resize', checkDevice);
+    window.addEventListener("resize", checkDevice);
+
+    return () => window.removeEventListener("resize", checkDevice);
   }, []);
 
   // Auto-collapse sidebar on mobile/tablet
@@ -212,14 +250,18 @@ function Sidebar() {
   // Click outside handler for search results (desktop only)
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (!isMobileOrTablet && searchRef.current && !searchRef.current.contains(event.target)) {
+      if (
+        !isMobileOrTablet &&
+        searchRef.current &&
+        !searchRef.current.contains(event.target)
+      ) {
         setShowSearchResults(false);
         clearSearch();
       }
     };
-    
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [clearSearch, isMobileOrTablet]);
 
   const handleItemClick = (item) => {
@@ -233,7 +275,7 @@ function Sidebar() {
   const handleSearchInput = async (e) => {
     const value = e.target.value;
     setSearchQuery(value);
-    
+
     if (value.trim().length >= 2) {
       await searchLocation(value);
       setShowSearchResults(true);
@@ -248,26 +290,34 @@ function Sidebar() {
     setSearchQuery("");
     setShowSearchResults(false);
     clearSearch();
-    
+
     // Refresh the current page to show new location data
-    window.dispatchEvent(new CustomEvent('locationChanged', { detail: { location: selectedCity } }));
-    
+    window.dispatchEvent(
+      new CustomEvent("locationChanged", {
+        detail: { location: selectedCity },
+      }),
+    );
+
     // Navigate to current weather page to show the new location
-    navigate('/current-weather');
+    navigate("/current-weather");
   };
 
   const handleMobileCitySelect = (city) => {
     const selectedCity = selectLocation(city);
     // Refresh the current page to show new location data
-    window.dispatchEvent(new CustomEvent('locationChanged', { detail: { location: selectedCity } }));
+    window.dispatchEvent(
+      new CustomEvent("locationChanged", {
+        detail: { location: selectedCity },
+      }),
+    );
     // Navigate to current weather page to show the new location
-    navigate('/current-weather');
+    navigate("/current-weather");
   };
 
   // Extract the main city name for display
   const getDisplayCity = () => {
-    if (currentLocation.includes(',')) {
-      return currentLocation.split(',')[0];
+    if (currentLocation.includes(",")) {
+      return currentLocation.split(",")[0];
     }
     return currentLocation;
   };
@@ -279,18 +329,23 @@ function Sidebar() {
 
   return (
     <>
-      <div className={`sidebar ${isCollapsed ? "collapsed" : ""} ${isDarkMode ? "dark" : ""}`}>
+      <div
+        className={`sidebar ${isCollapsed ? "collapsed" : ""} ${isDarkMode ? "dark" : ""}`}
+      >
         <div className="sidebar-content">
           <div className="sidebar-top">
             <div className="sidebar-content-header">
               <img src={LOGO} className="sidebar-logo-img" alt="Logo" />
               {!isCollapsed && <span className="sidebar-title">SkyCast</span>}
             </div>
-            
+
             {/* Desktop Search Section - Only show on desktop (non-mobile/tablet) */}
             {!isMobileOrTablet && !isCollapsed && (
               <div className="search-container" ref={searchRef}>
-                <form onSubmit={(e) => e.preventDefault()} className="search-form">
+                <form
+                  onSubmit={(e) => e.preventDefault()}
+                  className="search-form"
+                >
                   <div className="search-input-wrapper">
                     <Search size={16} className="search-icon" />
                     <input
@@ -298,13 +353,16 @@ function Sidebar() {
                       placeholder="Search for a city..."
                       value={searchQuery}
                       onChange={handleSearchInput}
-                      onFocus={() => searchQuery.trim().length >= 2 && setShowSearchResults(true)}
+                      onFocus={() =>
+                        searchQuery.trim().length >= 2 &&
+                        setShowSearchResults(true)
+                      }
                       className="search-input"
                       autoComplete="off"
                     />
                   </div>
                 </form>
-                
+
                 {/* Search Results Dropdown (Desktop) */}
                 {showSearchResults && (
                   <div className="search-results-dropdown">
@@ -329,29 +387,41 @@ function Sidebar() {
                             <div className="result-info">
                               <div className="result-name">{city.name}</div>
                               <div className="result-location">
-                                {city.state && <span className="result-state">{city.state}</span>}
-                                {city.state && city.country && <span className="result-separator">, </span>}
-                                <span className="result-country">{city.country}</span>
+                                {city.state && (
+                                  <span className="result-state">
+                                    {city.state}
+                                  </span>
+                                )}
+                                {city.state && city.country && (
+                                  <span className="result-separator">, </span>
+                                )}
+                                <span className="result-country">
+                                  {city.country}
+                                </span>
                               </div>
                             </div>
                           </button>
                         ))}
                       </div>
-                    ) : searchQuery.trim().length >= 2 && (
-                      <div className="search-no-results">
-                        <span>No cities found for "{searchQuery}"</span>
-                        <small>Try checking the spelling or try another city name</small>
-                      </div>
+                    ) : (
+                      searchQuery.trim().length >= 2 && (
+                        <div className="search-no-results">
+                          <span>No cities found for "{searchQuery}"</span>
+                          <small>
+                            Try checking the spelling or try another city name
+                          </small>
+                        </div>
+                      )
                     )}
                   </div>
                 )}
               </div>
             )}
-            
+
             {/* Collapsed Search Icon - For mobile/tablet OR collapsed desktop */}
             {(isMobileOrTablet || isCollapsed) && (
-              <div 
-                className="search-collapsed" 
+              <div
+                className="search-collapsed"
                 title="Search location"
                 onClick={handleMobileSearchClick}
               >
@@ -425,23 +495,32 @@ function Sidebar() {
               </div>
             )}
             {isCollapsed && (
-              <div className="current-location-collapsed" title={getDisplayCity()}>
+              <div
+                className="current-location-collapsed"
+                title={getDisplayCity()}
+              >
                 <div className="location-icon">
                   <MapPin size={18} />
                 </div>
                 {/* Display city name on mobile/tablet */}
                 {isMobileOrTablet && (
                   <div className="location-text-collapsed">
-                    <span className="location-city-collapsed">{getDisplayCity()}</span>
+                    <span className="location-city-collapsed">
+                      {getDisplayCity()}
+                    </span>
                   </div>
                 )}
               </div>
             )}
-            
+
             {/* Only show collapse button on PC (width > 949px) */}
             {!isMobileOrTablet && (
               <span className="collapse" onClick={toggleCollapse}>
-                {isCollapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
+                {isCollapsed ? (
+                  <PanelLeftOpen size={18} />
+                ) : (
+                  <PanelLeftClose size={18} />
+                )}
                 {!isCollapsed && <span>Collapse</span>}
               </span>
             )}
@@ -450,7 +529,7 @@ function Sidebar() {
       </div>
 
       {/* Mobile Search Modal */}
-      <MobileSearchModal 
+      <MobileSearchModal
         isOpen={showMobileSearch}
         onClose={() => setShowMobileSearch(false)}
         onCitySelect={handleMobileCitySelect}
