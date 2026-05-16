@@ -1,40 +1,26 @@
-// src/App.js
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import './styles/App.css'
-import { ThemeProvider } from './context/ThemeContext';
-import { LocationProvider } from './context/LocationContext';
-import Sidebar from './components/layout/Sidebar/Sidebar'
-import Overview from './pages/Overview/Overview';
-import CurrentWeather from './pages/CurrentWeather/CurrentWeather';
-import Forecast from './pages/Forecast/Forecast';
-import Map from './pages/Map/Map';
-import Settings from './pages/Settings/Settings';
+import "./styles/App.css";
+import { ThemeProvider } from "./context/ThemeContext";
+import { LocationProvider } from "./context/LocationContext";
+import Sidebar from "./components/layout/Sidebar/Sidebar";
+import Overview from "./pages/Overview/Overview";
+import CurrentWeather from "./pages/CurrentWeather/CurrentWeather";
+import Forecast from "./pages/Forecast/Forecast";
+import Map from "./pages/Map/Map";
+import Settings from "./pages/Settings/Settings";
 import PageNotFound from "./pages/PageNotFound/PageNotFound";
-import FullPageLoader from './components/common/LoadingSpinner/FullPageLoader';
-import { suppressResizeObserverErrors } from './utils/resizeObserverFix';
+import FullPageLoader from "./components/common/LoadingSpinner/FullPageLoader";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Suppress ResizeObserver errors
-    suppressResizeObserverErrors();
-    
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-
-    // Cleanup
-    return () => {
-      // Optional: remove the error handler if needed
-      // unsuppressResizeObserverErrors();
-    };
+    const timer = setTimeout(() => setIsLoading(false), 1000);
+    return () => clearTimeout(timer);
   }, []);
 
-  if (isLoading) {
-    return <FullPageLoader />;
-  }
+  if (isLoading) return <FullPageLoader />;
 
   return (
     <ThemeProvider>
@@ -56,7 +42,7 @@ function App() {
         </BrowserRouter>
       </LocationProvider>
     </ThemeProvider>
-  )
+  );
 }
 
 export default App;
