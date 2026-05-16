@@ -1,6 +1,13 @@
-// src/pages/Map/Map.js
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Circle, ZoomControl, useMap } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Circle,
+  ZoomControl,
+  useMap,
+} from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./Map.css";
@@ -17,10 +24,9 @@ import {
   Cloud,
   Sun,
   Moon,
-  Check,
   Navigation,
   Gauge,
-  Loader
+  Loader,
 } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
 import LoadingSpinner from "../../components/common/LoadingSpinner/LoadingSpinner";
@@ -31,9 +37,12 @@ import { useLocation as useAppLocation } from "../../context/LocationContext";
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconRetinaUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+  iconUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
 // Custom weather marker icon
@@ -87,11 +96,10 @@ function Map() {
   const [mapLayer, setMapLayer] = useState("temperature");
   const [zoom, setZoom] = useState(12);
   const [isLoading, setIsLoading] = useState(true);
-  const [showLayerMenu, setShowLayerMenu] = useState(false);
   const [mapError, setMapError] = useState(null);
   const [center, setCenter] = useState({ lat: 40.7128, lng: -74.006 }); // Default NYC
   const [isMapReady, setIsMapReady] = useState(false);
-  
+
   // Track previous location to detect city changes
   const [previousLocation, setPreviousLocation] = useState(null);
   const [isUserLocationRequest, setIsUserLocationRequest] = useState(false);
@@ -100,13 +108,20 @@ function Map() {
   const mapInstanceRef = useRef(null);
   const invalidateTimeoutRef = useRef(null);
   const { isDarkMode, toggleTheme } = useTheme();
-  const { currentWeather, coordinates: weatherCoords, isLoading: weatherLoading } = useWeather();
+  const {
+    currentWeather,
+    coordinates: weatherCoords,
+    isLoading: weatherLoading,
+  } = useWeather();
   const { currentLocation, coordinates: locationCoords } = useAppLocation();
 
   // Handle ResizeObserver errors
   useEffect(() => {
     const handleResizeObserverError = (e) => {
-      if (e.message === 'ResizeObserver loop completed with undelivered notifications.') {
+      if (
+        e.message ===
+        "ResizeObserver loop completed with undelivered notifications."
+      ) {
         const resizeObserver = e.target;
         if (resizeObserver && resizeObserver.disconnect) {
           resizeObserver.disconnect();
@@ -116,10 +131,10 @@ function Map() {
       }
     };
 
-    window.addEventListener('error', handleResizeObserverError);
-    
+    window.addEventListener("error", handleResizeObserverError);
+
     return () => {
-      window.removeEventListener('error', handleResizeObserverError);
+      window.removeEventListener("error", handleResizeObserverError);
     };
   }, []);
 
@@ -137,8 +152,8 @@ function Map() {
     if (currentWeather?.coord?.lat && currentWeather?.coord?.lon) {
       return { lat: currentWeather.coord.lat, lng: currentWeather.coord.lon };
     }
-    // Default: New York City coordinates
-    return { lat: 40.7128, lng: -74.0060 };
+    // Default: Rabat City coordinates
+    return { lat: 34.0209, lng: -6.8416 };
   }, [weatherCoords, locationCoords, currentWeather]);
 
   // Get display location name
@@ -157,10 +172,11 @@ function Map() {
     if (!weatherLoading) {
       const newCoords = getCurrentCoords();
       const newLocation = getDisplayLocation();
-      
+
       // Check if city has changed
-      const cityChanged = previousLocation !== null && previousLocation !== newLocation;
-      
+      const cityChanged =
+        previousLocation !== null && previousLocation !== newLocation;
+
       // Set zoom based on what triggered the change - both use level 12
       if (cityChanged) {
         // City changed via search - zoom to 12
@@ -172,25 +188,58 @@ function Map() {
         console.log("User location requested, setting zoom to 12");
         setIsUserLocationRequest(false); // Reset the flag
       }
-      
+
       setCenter(newCoords);
       setPreviousLocation(newLocation);
-      
+
       // Reset loading state after coordinates are set
       setTimeout(() => {
         setIsLoading(false);
       }, 500);
     }
-  }, [getCurrentCoords, getDisplayLocation, currentWeather, weatherCoords, locationCoords, weatherLoading, previousLocation, isUserLocationRequest]);
+  }, [
+    getCurrentCoords,
+    getDisplayLocation,
+    currentWeather,
+    weatherCoords,
+    locationCoords,
+    weatherLoading,
+    previousLocation,
+    isUserLocationRequest,
+  ]);
 
   const layers = [
-    { id: "temperature", name: "Temperature", icon: Thermometer, description: "Shows current temperature across regions", color: "#F97316" },
-    { id: "precipitation", name: "Precipitation", icon: Droplets, description: "Shows rain, snow, and precipitation intensity", color: "#3B82F6" },
-    { id: "wind", name: "Wind Speed", icon: Wind, description: "Shows wind speed and direction patterns", color: "#10B981" },
-    { id: "clouds", name: "Cloud Cover", icon: Cloud, description: "Shows cloud coverage percentage", color: "#64748B" },
+    {
+      id: "temperature",
+      name: "Temperature",
+      icon: Thermometer,
+      description: "Shows current temperature across regions",
+      color: "#F97316",
+    },
+    {
+      id: "precipitation",
+      name: "Precipitation",
+      icon: Droplets,
+      description: "Shows rain, snow, and precipitation intensity",
+      color: "#3B82F6",
+    },
+    {
+      id: "wind",
+      name: "Wind Speed",
+      icon: Wind,
+      description: "Shows wind speed and direction patterns",
+      color: "#10B981",
+    },
+    {
+      id: "clouds",
+      name: "Cloud Cover",
+      icon: Cloud,
+      description: "Shows cloud coverage percentage",
+      color: "#64748B",
+    },
   ];
 
-  const currentLayer = layers.find(l => l.id === mapLayer);
+  const currentLayer = layers.find((l) => l.id === mapLayer);
   const LayerIcon = currentLayer?.icon || Thermometer;
 
   // Get weather info for popup
@@ -279,17 +328,12 @@ function Map() {
     }
   };
 
-  const handleLayerSelect = (layerId) => {
-    setMapLayer(layerId);
-    setShowLayerMenu(false);
-  };
-
   // Get user's current location
   const getUserLocation = () => {
     if (navigator.geolocation) {
       // Set flag to indicate this is a user location request
       setIsUserLocationRequest(true);
-      
+
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const userCoords = {
@@ -299,7 +343,11 @@ function Map() {
           setCenter(userCoords);
           setTimeout(() => {
             const mapInstance = mapInstanceRef.current;
-            if (mapInstance && mapInstance._container && mapInstance._initialized) {
+            if (
+              mapInstance &&
+              mapInstance._container &&
+              mapInstance._initialized
+            ) {
               try {
                 mapInstance.setView(userCoords, 12);
                 setZoom(12);
@@ -314,7 +362,7 @@ function Map() {
           setMapError("Unable to get your location. Please check permissions.");
           setIsUserLocationRequest(false);
           setTimeout(() => setMapError(null), 5000);
-        }
+        },
       );
     } else {
       setMapError("Geolocation is not supported by your browser.");
@@ -341,24 +389,34 @@ function Map() {
       console.log("Location change detected from sidebar");
     };
 
-    window.addEventListener('locationChanged', handleLocationChange);
+    window.addEventListener("locationChanged", handleLocationChange);
     return () => {
-      window.removeEventListener('locationChanged', handleLocationChange);
+      window.removeEventListener("locationChanged", handleLocationChange);
     };
   }, []);
 
   // Force map to invalidate size when visible - but with safety checks
   useEffect(() => {
     const mapInstance = mapInstanceRef.current;
-    if (mapInstance && isMapReady && mapInstance._container && mapInstance._initialized) {
+    if (
+      mapInstance &&
+      isMapReady &&
+      mapInstance._container &&
+      mapInstance._initialized
+    ) {
       // Clear any existing timeout
       if (invalidateTimeoutRef.current) {
         clearTimeout(invalidateTimeoutRef.current);
       }
-      
+
       invalidateTimeoutRef.current = setTimeout(() => {
         const currentMap = mapInstanceRef.current;
-        if (currentMap && currentMap._container && currentMap._initialized && currentMap.invalidateSize) {
+        if (
+          currentMap &&
+          currentMap._container &&
+          currentMap._initialized &&
+          currentMap.invalidateSize
+        ) {
           try {
             currentMap.invalidateSize();
           } catch (error) {
@@ -367,7 +425,7 @@ function Map() {
         }
       }, 200);
     }
-    
+
     return () => {
       if (invalidateTimeoutRef.current) {
         clearTimeout(invalidateTimeoutRef.current);
@@ -413,63 +471,19 @@ function Map() {
           <MapIcon size={18} />
           Weather Map
         </span>
-        <div className="map-header-controls">
-          <div className="map-controls">
-            <div className="layers-dropdown">
-              <button
-                className="map-control-btn"
-                onClick={() => setShowLayerMenu(!showLayerMenu)}
-              >
-                <Layers size={16} />
-                Layers
-              </button>
-              {showLayerMenu && (
-                <div className="layers-dropdown-menu">
-                  {layers.map(layer => (
-                    <button
-                      key={layer.id}
-                      className={`layer-dropdown-item ${mapLayer === layer.id ? 'active' : ''}`}
-                      onClick={() => handleLayerSelect(layer.id)}
-                    >
-                      <layer.icon size={14} />
-                      <span>{layer.name}</span>
-                      {mapLayer === layer.id && <Check size={14} className="active-indicator" />}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <button className="map-control-btn" onClick={handleZoomIn}>
-              <ZoomIn size={16} />
-            </button>
-
-            <button className="map-control-btn" onClick={handleZoomOut}>
-              <ZoomOut size={16} />
-            </button>
-
-            <button className="map-control-btn" onClick={handleRefresh}>
-              <RefreshCw size={16} />
-            </button>
-
-            <button className="map-control-btn" onClick={getUserLocation}>
-              <Navigation size={16} />
-            </button>
-          </div>
-          <button className="header-theme-toggle" onClick={toggleTheme}>
-            {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
-            <span>{isDarkMode ? "Light Mode" : "Dark Mode"}</span>
-          </button>
-        </div>
+        <button className="header-theme-toggle" onClick={toggleTheme}>
+          {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
+          <span>{isDarkMode ? "Light Mode" : "Dark Mode"}</span>
+        </button>
       </div>
       <div className="page-content">
         <div className="map-content">
           <div className="map-container">
             <div className="layer-selector">
-              {layers.map(layer => (
+              {layers.map((layer) => (
                 <button
                   key={layer.id}
-                  className={`layer-btn ${mapLayer === layer.id ? 'active' : ''}`}
+                  className={`layer-btn ${mapLayer === layer.id ? "active" : ""}`}
                   onClick={() => setMapLayer(layer.id)}
                 >
                   <layer.icon size={16} />
@@ -483,6 +497,38 @@ function Map() {
                 <MapPin size={14} />
                 <span>{getDisplayLocation()}</span>
                 <span className="map-zoom-info">Zoom: {zoom}</span>
+              </div>
+
+              {/* Map Control Buttons - Now inside the map */}
+              <div className="map-overlay-controls">
+                <button
+                  className="map-overlay-btn"
+                  onClick={handleZoomIn}
+                  title="Zoom In"
+                >
+                  <ZoomIn size={18} />
+                </button>
+                <button
+                  className="map-overlay-btn"
+                  onClick={handleZoomOut}
+                  title="Zoom Out"
+                >
+                  <ZoomOut size={18} />
+                </button>
+                <button
+                  className="map-overlay-btn"
+                  onClick={getUserLocation}
+                  title="My Location"
+                >
+                  <Navigation size={18} />
+                </button>
+                <button
+                  className="map-overlay-btn"
+                  onClick={handleRefresh}
+                  title="Refresh"
+                >
+                  <RefreshCw size={18} />
+                </button>
               </div>
 
               {mapError ? (
@@ -503,7 +549,11 @@ function Map() {
                   center={center}
                   zoom={zoom}
                   zoomControl={false}
-                  style={{ height: "500px", width: "100%", borderRadius: "12px" }}
+                  style={{
+                    height: "500px",
+                    width: "100%",
+                    borderRadius: "12px",
+                  }}
                   whenReady={() => {
                     setIsLoading(false);
                     setIsMapReady(true);
@@ -521,9 +571,9 @@ function Map() {
                     attribution={getTileAttribution()}
                   />
                   <ZoomControl position="bottomright" />
-                  <MapController 
-                    center={center} 
-                    zoom={zoom} 
+                  <MapController
+                    center={center}
+                    zoom={zoom}
                     onZoomChange={setZoom}
                     mapRef={mapInstanceRef}
                   />
@@ -544,10 +594,7 @@ function Map() {
 
                   {/* Main location marker */}
                   {center && (
-                    <Marker
-                      position={center}
-                      icon={createWeatherIcon()}
-                    >
+                    <Marker position={center} icon={createWeatherIcon()}>
                       <Popup>
                         <div className="city-popup-content">
                           <h4>{getDisplayLocation()}</h4>
@@ -555,7 +602,10 @@ function Map() {
                             <div className="city-popup-details">
                               <div className="popup-detail">
                                 <Thermometer size={14} />
-                                <span>{weatherInfo.temp}°C (Feels like {weatherInfo.feelsLike}°C)</span>
+                                <span>
+                                  {weatherInfo.temp}°C (Feels like{" "}
+                                  {weatherInfo.feelsLike}°C)
+                                </span>
                               </div>
                               <div className="popup-detail">
                                 <Cloud size={14} />
@@ -588,16 +638,17 @@ function Map() {
                   Weather Layer: {currentLayer?.name}
                 </div>
                 <div className="legend-gradient">
-                  <div 
-                    className="gradient-bar" 
-                    style={{ 
-                      background: mapLayer === "temperature" 
-                        ? "linear-gradient(90deg, #3B82F6, #10B981, #FBBF24, #F97316, #EF4444)"
-                        : mapLayer === "precipitation"
-                        ? "linear-gradient(90deg, #93C5FD, #60A5FA, #3B82F6, #1E3A8A)"
-                        : mapLayer === "wind"
-                        ? "linear-gradient(90deg, #A7F3D0, #34D399, #10B981, #047857)"
-                        : "linear-gradient(90deg, #E2E8F0, #94A3B8, #64748B, #1E293B)"
+                  <div
+                    className="gradient-bar"
+                    style={{
+                      background:
+                        mapLayer === "temperature"
+                          ? "linear-gradient(90deg, #3B82F6, #10B981, #FBBF24, #F97316, #EF4444)"
+                          : mapLayer === "precipitation"
+                            ? "linear-gradient(90deg, #93C5FD, #60A5FA, #3B82F6, #1E3A8A)"
+                            : mapLayer === "wind"
+                              ? "linear-gradient(90deg, #A7F3D0, #34D399, #10B981, #047857)"
+                              : "linear-gradient(90deg, #E2E8F0, #94A3B8, #64748B, #1E293B)",
                     }}
                   ></div>
                   <div className="legend-labels">
@@ -607,19 +658,20 @@ function Map() {
                   </div>
                 </div>
                 <div className="legend-description">
-                  <small>{currentLayer?.description} for {getDisplayLocation()}</small>
+                  <small>
+                    {currentLayer?.description} for {getDisplayLocation()}
+                  </small>
                 </div>
                 <div className="current-weather-info">
                   {weatherInfo && (
                     <>
-                      <div className="weather-temp">
-                        {weatherInfo.temp}°C
-                      </div>
+                      <div className="weather-temp">{weatherInfo.temp}°C</div>
                       <div className="weather-condition">
                         {weatherInfo.condition}
                       </div>
                       <div className="weather-details">
-                        Humidity: {weatherInfo.humidity}% | Wind: {weatherInfo.windSpeed} m/s
+                        Humidity: {weatherInfo.humidity}% | Wind:{" "}
+                        {weatherInfo.windSpeed} m/s
                       </div>
                     </>
                   )}
@@ -633,7 +685,12 @@ function Map() {
                   <MapPin size={16} />
                   Interactive Weather Map
                 </div>
-                <p>This map shows real-time weather data for <strong>{getDisplayLocation()}</strong>. Switch between different layers to view temperature, precipitation, wind speed, and cloud cover.</p>
+                <p>
+                  This map shows real-time weather data for{" "}
+                  <strong>{getDisplayLocation()}</strong>. Switch between
+                  different layers to view temperature, precipitation, wind
+                  speed, and cloud cover.
+                </p>
                 <div className="feature-stats">
                   <span className="stat-item">
                     <MapPin size={14} />
@@ -650,12 +707,22 @@ function Map() {
                   <Layers size={16} />
                   Map Layers
                 </div>
-                <p>• <strong>Temperature</strong> - Color-coded temperature distribution<br />
-                   • <strong>Precipitation</strong> - Rain and snow intensity<br />
-                   • <strong>Wind Speed</strong> - Wind patterns and strength<br />
-                   • <strong>Cloud Cover</strong> - Cloud coverage percentage</p>
+                <p>
+                  • <strong>Temperature</strong> - Color-coded temperature
+                  distribution
+                  <br />• <strong>Precipitation</strong> - Rain and snow
+                  intensity
+                  <br />• <strong>Wind Speed</strong> - Wind patterns and
+                  strength
+                  <br />• <strong>Cloud Cover</strong> - Cloud coverage
+                  percentage
+                </p>
                 <div className="layer-info">
-                  Current: <strong className="current-layer">{currentLayer?.name}</strong> for {getDisplayLocation()}
+                  Current:{" "}
+                  <strong className="current-layer">
+                    {currentLayer?.name}
+                  </strong>{" "}
+                  for {getDisplayLocation()}
                 </div>
               </div>
             </div>

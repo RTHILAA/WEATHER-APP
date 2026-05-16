@@ -1,7 +1,7 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Home, AlertTriangle, Sun, Moon } from 'lucide-react';
-import './PageNotFound.css';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Home, AlertTriangle, Sun, Moon } from "lucide-react";
+import "./PageNotFound.css";
 import { useTheme } from "../../context/ThemeContext";
 
 function PageNotFound() {
@@ -27,7 +27,9 @@ function PageNotFound() {
             </div>
             <h1>404</h1>
             <h2>Page Not Found</h2>
-            <p>Oops! The page you're looking for doesn't exist or has been moved.</p>
+            <p>
+              Oops! The page you're looking for doesn't exist or has been moved.
+            </p>
             <div className="notfound-actions">
               <Link to="/" className="home-btn">
                 <Home size={18} />
@@ -37,10 +39,18 @@ function PageNotFound() {
             <div className="suggestions">
               <p>You might want to check:</p>
               <ul>
-                <li><Link to="/current-weather">Current Weather</Link></li>
-                <li><Link to="/forecast">Weather Forecast</Link></li>
-                <li><Link to="/map">Interactive Map</Link></li>
-                <li><Link to="/settings">Settings</Link></li>
+                <li>
+                  <Link to="/current-weather">Current Weather</Link>
+                </li>
+                <li>
+                  <Link to="/forecast">Weather Forecast</Link>
+                </li>
+                <li>
+                  <Link to="/map">Interactive Map</Link>
+                </li>
+                <li>
+                  <Link to="/settings">Settings</Link>
+                </li>
               </ul>
             </div>
           </div>

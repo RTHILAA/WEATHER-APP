@@ -1,46 +1,64 @@
-// src/pages/Overview/Overview.js
-import React from 'react';
-import './Overview.css';
-import { 
-  LayoutDashboard, Droplets, Wind, Gauge, Eye, Sunrise, Sunset, 
-  CloudSun, CloudMoon, Cloud, CloudRain, CloudLightning, CloudSnow, 
-  CloudFog, Sun, Moon, CalendarDays, TrendingUp, 
-  SunMedium, CloudRain as CloudRainIcon, CloudSnow as CloudSnowIcon,
-  CloudLightning as CloudLightningIcon, CloudFog as CloudFogIcon,
-  Cloud as CloudIcon, Wind as WindIcon
+import React from "react";
+import "./Overview.css";
+import {
+  LayoutDashboard,
+  Droplets,
+  Wind,
+  Gauge,
+  Eye,
+  Sunrise,
+  Sunset,
+  CloudSun,
+  CloudMoon,
+  Cloud,
+  CloudRain,
+  CloudLightning,
+  CloudSnow,
+  CloudFog,
+  Sun,
+  Moon,
+  CalendarDays,
+  TrendingUp,
+  SunMedium,
+  CloudRain as CloudRainIcon,
+  CloudSnow as CloudSnowIcon,
+  CloudLightning as CloudLightningIcon,
+  CloudFog as CloudFogIcon,
+  Cloud as CloudIcon,
+  Wind as WindIcon,
 } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
 import LoadingSpinner from "../../components/common/LoadingSpinner/LoadingSpinner";
-import { useWeather } from '../../hooks/useWeather';
-import { getWeatherIconComponent } from '../../services/weatherService';
+import { useWeather } from "../../hooks/useWeather";
+import { getWeatherIconComponent } from "../../services/weatherService";
 
 // Component to render the appropriate weather icon
 const WeatherIcon = ({ condition, iconCode, size = 32 }) => {
   const iconName = getWeatherIconComponent(condition, iconCode);
-  
+
   const iconProps = {
     size,
-    strokeWidth: 1.5
+    strokeWidth: 1.5,
   };
-  
+
   switch (iconName) {
-    case 'Sun':
+    case "Sun":
       return <Sun {...iconProps} />;
-    case 'Moon':
+    case "Moon":
       return <Moon {...iconProps} />;
-    case 'CloudSun':
+    case "CloudSun":
       return <CloudSun {...iconProps} />;
-    case 'CloudMoon':
+    case "CloudMoon":
       return <CloudMoon {...iconProps} />;
-    case 'Cloud':
+    case "Cloud":
       return <Cloud {...iconProps} />;
-    case 'CloudRain':
+    case "CloudRain":
       return <CloudRain {...iconProps} />;
-    case 'CloudLightning':
+    case "CloudLightning":
       return <CloudLightning {...iconProps} />;
-    case 'CloudSnow':
+    case "CloudSnow":
       return <CloudSnow {...iconProps} />;
-    case 'CloudFog':
+    case "CloudFog":
       return <CloudFog {...iconProps} />;
     default:
       return <CloudSun {...iconProps} />;
@@ -52,30 +70,40 @@ const DynamicBgIcon = ({ condition, iconCode }) => {
   const iconProps = {
     size: 100,
     strokeWidth: 1,
-    className: "bg-icon-svg"
+    className: "bg-icon-svg",
   };
-  
+
   // Use icon code for more precise mapping
   if (iconCode) {
-    if (iconCode.includes('01')) return <SunMedium {...iconProps} />;
-    if (iconCode.includes('02')) return <CloudSun {...iconProps} />;
-    if (iconCode.includes('03') || iconCode.includes('04')) return <CloudIcon {...iconProps} />;
-    if (iconCode.includes('09') || iconCode.includes('10')) return <CloudRainIcon {...iconProps} />;
-    if (iconCode.includes('11')) return <CloudLightningIcon {...iconProps} />;
-    if (iconCode.includes('13')) return <CloudSnowIcon {...iconProps} />;
-    if (iconCode.includes('50')) return <CloudFogIcon {...iconProps} />;
+    if (iconCode.includes("01")) return <SunMedium {...iconProps} />;
+    if (iconCode.includes("02")) return <CloudSun {...iconProps} />;
+    if (iconCode.includes("03") || iconCode.includes("04"))
+      return <CloudIcon {...iconProps} />;
+    if (iconCode.includes("09") || iconCode.includes("10"))
+      return <CloudRainIcon {...iconProps} />;
+    if (iconCode.includes("11")) return <CloudLightningIcon {...iconProps} />;
+    if (iconCode.includes("13")) return <CloudSnowIcon {...iconProps} />;
+    if (iconCode.includes("50")) return <CloudFogIcon {...iconProps} />;
   }
-  
+
   // Fallback to condition-based mapping
-  const conditionLower = condition?.toLowerCase() || '';
-  if (conditionLower.includes('clear') || conditionLower.includes('sun')) return <SunMedium {...iconProps} />;
-  if (conditionLower.includes('rain') || conditionLower.includes('drizzle')) return <CloudRainIcon {...iconProps} />;
-  if (conditionLower.includes('thunder') || conditionLower.includes('storm')) return <CloudLightningIcon {...iconProps} />;
-  if (conditionLower.includes('snow')) return <CloudSnowIcon {...iconProps} />;
-  if (conditionLower.includes('fog') || conditionLower.includes('mist') || conditionLower.includes('haze')) return <CloudFogIcon {...iconProps} />;
-  if (conditionLower.includes('cloud')) return <CloudIcon {...iconProps} />;
-  if (conditionLower.includes('wind')) return <WindIcon {...iconProps} />;
-  
+  const conditionLower = condition?.toLowerCase() || "";
+  if (conditionLower.includes("clear") || conditionLower.includes("sun"))
+    return <SunMedium {...iconProps} />;
+  if (conditionLower.includes("rain") || conditionLower.includes("drizzle"))
+    return <CloudRainIcon {...iconProps} />;
+  if (conditionLower.includes("thunder") || conditionLower.includes("storm"))
+    return <CloudLightningIcon {...iconProps} />;
+  if (conditionLower.includes("snow")) return <CloudSnowIcon {...iconProps} />;
+  if (
+    conditionLower.includes("fog") ||
+    conditionLower.includes("mist") ||
+    conditionLower.includes("haze")
+  )
+    return <CloudFogIcon {...iconProps} />;
+  if (conditionLower.includes("cloud")) return <CloudIcon {...iconProps} />;
+  if (conditionLower.includes("wind")) return <WindIcon {...iconProps} />;
+
   return <SunMedium {...iconProps} />;
 };
 
@@ -85,24 +113,31 @@ function Overview() {
 
   const isSameCalendarDay = (date) => {
     const now = new Date();
-    return date.getDate() === now.getDate() &&
-           date.getMonth() === now.getMonth() &&
-           date.getFullYear() === now.getFullYear();
+    return (
+      date.getDate() === now.getDate() &&
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear()
+    );
   };
 
   // Process daily forecast for Overview - Timeline style
   const getDailyForecast = () => {
     if (!forecast?.list) return [];
-    
+
     const dailyMap = new Map();
-    
-    forecast.list.forEach(item => {
+
+    forecast.list.forEach((item) => {
       const date = new Date(item.dt * 1000);
-      const dateKey = date.toLocaleDateString('en-US');
+      const dateKey = date.toLocaleDateString("en-US");
       const isToday = isSameCalendarDay(date);
-      const dayName = isToday ? 'Today' : date.toLocaleDateString('en-US', { weekday: 'short' });
-      const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      
+      const dayName = isToday
+        ? "Today"
+        : date.toLocaleDateString("en-US", { weekday: "short" });
+      const dateStr = date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
+
       if (!dailyMap.has(dateKey)) {
         dailyMap.set(dateKey, {
           day: dayName,
@@ -113,42 +148,46 @@ function Overview() {
           description: item.weather[0].description,
           iconCode: item.weather[0].icon,
           isToday: isToday,
-          sortOrder: date.getTime()
+          sortOrder: date.getTime(),
         });
       } else {
         const existing = dailyMap.get(dateKey);
         existing.high = Math.max(existing.high, item.main.temp_max);
         existing.low = Math.min(existing.low, item.main.temp_min);
-        if (item.dt_txt && item.dt_txt.includes('12:00:00')) {
+        if (item.dt_txt && item.dt_txt.includes("12:00:00")) {
           existing.condition = item.weather[0].main;
           existing.description = item.weather[0].description;
           existing.iconCode = item.weather[0].icon;
         }
       }
     });
-    
+
     const days = Array.from(dailyMap.values());
     days.sort((a, b) => a.sortOrder - b.sortOrder);
     return days.slice(0, 5);
   };
 
   const formatTime = (timestamp) => {
-    if (!timestamp) return '--:--';
+    if (!timestamp) return "--:--";
     const date = new Date(timestamp * 1000);
-    return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    return date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
   };
 
   const getUVDescription = (uv) => {
-    const uvValue = typeof uv === 'object' ? uv?.value : uv;
-    if (uvValue <= 2) return 'Low';
-    if (uvValue <= 5) return 'Moderate';
-    if (uvValue <= 7) return 'High';
-    if (uvValue <= 10) return 'Very High';
-    return 'Extreme';
+    const uvValue = typeof uv === "object" ? uv?.value : uv;
+    if (uvValue <= 2) return "Low";
+    if (uvValue <= 5) return "Moderate";
+    if (uvValue <= 7) return "High";
+    if (uvValue <= 10) return "Very High";
+    return "Extreme";
   };
 
   const getUVValue = (uv) => {
-    if (typeof uv === 'object') {
+    if (typeof uv === "object") {
       return uv?.value || 0;
     }
     return uv || 0;
@@ -190,7 +229,7 @@ function Overview() {
     sunset: currentWeather.sys.sunset,
     icon: currentWeather.weather[0].icon,
     iconCode: currentWeather.weather[0].icon,
-    conditionMain: currentWeather.weather[0].main
+    conditionMain: currentWeather.weather[0].main,
   };
 
   return (
@@ -210,7 +249,7 @@ function Overview() {
           <div className="weather-overview-card">
             {/* Dynamic SVG Background Icon based on weather */}
             <div className="bg-icon">
-              <DynamicBgIcon 
+              <DynamicBgIcon
                 condition={weatherData.conditionMain}
                 iconCode={weatherData.iconCode}
               />
@@ -218,8 +257,12 @@ function Overview() {
             <div className="current-weather-large">
               <div className="weather-main">
                 <div className="weather-temp">{weatherData.temp}°</div>
-                <div className="weather-condition">{weatherData.description || weatherData.condition}</div>
-                <div className="feels-like">Feels like {weatherData.feelsLike}°</div>
+                <div className="weather-condition">
+                  {weatherData.description || weatherData.condition}
+                </div>
+                <div className="feels-like">
+                  Feels like {weatherData.feelsLike}°
+                </div>
               </div>
               <div className="weather-details-grid">
                 <div className="detail-item">
@@ -276,34 +319,43 @@ function Overview() {
             </div>
             <div className="timeline-container">
               {dailyForecast.map((day, index) => (
-                <div key={index} className={`timeline-item ${day.isToday ? 'timeline-today' : ''}`}>
+                <div
+                  key={index}
+                  className={`timeline-item ${day.isToday ? "timeline-today" : ""}`}
+                >
                   <div className="timeline-day-section">
                     <span className="timeline-day-name">{day.day}</span>
                     <span className="timeline-day-date">{day.date}</span>
                   </div>
                   <div className="timeline-icon-section">
                     <div className="timeline-icon-wrapper">
-                      <WeatherIcon 
+                      <WeatherIcon
                         condition={day.condition}
                         iconCode={day.iconCode}
                         size={32}
                       />
                     </div>
-                    <span className="timeline-condition">{day.description?.split(' ')[0] || day.condition}</span>
+                    <span className="timeline-condition">
+                      {day.description?.split(" ")[0] || day.condition}
+                    </span>
                   </div>
                   <div className="timeline-temp-section">
                     <div className="timeline-temp-bar">
-                      <div 
+                      <div
                         className="timeline-temp-fill"
-                        style={{ 
+                        style={{
                           width: `${Math.min(100, Math.max(20, ((day.high - 20) / 30) * 100))}%`,
-                          backgroundColor: day.isToday ? '#F97316' : '#10B981'
+                          backgroundColor: day.isToday ? "#F97316" : "#10B981",
                         }}
                       />
                     </div>
                     <div className="timeline-temp-values">
-                      <span className="timeline-high">{Math.round(day.high)}°</span>
-                      <span className="timeline-low">{Math.round(day.low)}°</span>
+                      <span className="timeline-high">
+                        {Math.round(day.high)}°
+                      </span>
+                      <span className="timeline-low">
+                        {Math.round(day.low)}°
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -317,9 +369,14 @@ function Overview() {
               <div className="highlight-card">
                 <div className="highlight-title">UV Index</div>
                 <div className="highlight-value">{weatherData.uvIndex}</div>
-                <div className="highlight-desc">{getUVDescription(uvIndex)}</div>
+                <div className="highlight-desc">
+                  {getUVDescription(uvIndex)}
+                </div>
                 <div className="uv-bar">
-                  <div className="uv-progress" style={{ width: `${(weatherData.uvIndex / 11) * 100}%` }}></div>
+                  <div
+                    className="uv-progress"
+                    style={{ width: `${(weatherData.uvIndex / 11) * 100}%` }}
+                  ></div>
                 </div>
               </div>
               <div className="highlight-card">
@@ -329,7 +386,13 @@ function Overview() {
               </div>
               <div className="highlight-card">
                 <div className="highlight-title">Dew Point</div>
-                <div className="highlight-value">{Math.round(currentWeather.main.temp - (100 - currentWeather.main.humidity) / 5)}°</div>
+                <div className="highlight-value">
+                  {Math.round(
+                    currentWeather.main.temp -
+                      (100 - currentWeather.main.humidity) / 5,
+                  )}
+                  °
+                </div>
                 <div className="highlight-desc">Comfortable</div>
               </div>
             </div>

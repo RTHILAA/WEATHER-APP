@@ -1,5 +1,3 @@
-/* src/pages/Map/Map.css */
-
 .map-content {
   padding: 20px;
   max-width: 1400px;
@@ -55,29 +53,6 @@
 .map-control-btn.refreshing {
   opacity: 0.7;
   cursor: wait;
-}
-
-/* Layers Dropdown */
-.layers-dropdown {
-  position: relative;
-}
-
-.layers-dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 5px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  min-width: 160px;
-  z-index: 1000;
-  overflow: hidden;
-}
-
-body.dark-mode .layers-dropdown-menu {
-  background: #1e293b;
-  border: 1px solid #334155;
 }
 
 .layer-dropdown-item {
@@ -231,6 +206,66 @@ body.dark-mode .weather-map {
   border-left: 1px solid rgba(255, 255, 255, 0.3);
 }
 
+/* Map Overlay Controls - Positioned inside the map */
+.map-overlay-controls {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1000;
+  background: transparent;
+}
+
+.map-overlay-btn {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  color: #1e293b;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.map-overlay-btn svg {
+  color: #1e293b;
+  transition: color 0.3s ease;
+}
+
+.map-overlay-btn:hover {
+  background: #f97316;
+  border-color: #f97316;
+}
+
+.map-overlay-btn:hover svg {
+  color: white;
+}
+
+/* Dark mode for overlay buttons */
+body.dark-mode .map-overlay-btn {
+  background: rgba(30, 41, 59, 0.95);
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+body.dark-mode .map-overlay-btn svg {
+  color: #94a3b8;
+}
+
+body.dark-mode .map-overlay-btn:hover {
+  background: #f97316;
+}
+
+body.dark-mode .map-overlay-btn:hover svg {
+  color: white;
+}
+
 /* Map Loading & Error Overlays */
 .map-loading-overlay,
 .map-error-overlay {
@@ -269,8 +304,8 @@ body.dark-mode .weather-map {
 /* Map Legend */
 .map-legend {
   position: absolute;
-  bottom: 20px;
-  right: 20px;
+  bottom: 10px;
+  right: 10px;
   background: rgba(255, 255, 255, 0.95);
   padding: 15px;
   border-radius: 12px;
@@ -486,10 +521,6 @@ body.dark-mode .popup-detail {
   color: #94a3b8;
 }
 
-/* ============================================ */
-/* LEAFlet MAP SPECIFIC STYLES                 */
-/* ============================================ */
-
 /* Leaflet map container overrides */
 .leaflet-container {
   background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
@@ -643,9 +674,61 @@ body.dark-mode .leaflet-popup-close-button:hover {
   color: #f97316;
 }
 
-/* ============================================ */
-/* RESPONSIVE STYLES */
-/* ============================================ */
+/* Dark Mode Overrides for Map Components */
+body.dark-mode .map-control-btn {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+body.dark-mode .layer-btn {
+  background: #334155;
+  color: #f1f5f9;
+}
+
+body.dark-mode .layer-btn svg {
+  color: #94a3b8;
+}
+
+body.dark-mode .layer-btn.active {
+  background: #f97316;
+  color: white;
+}
+
+body.dark-mode .layer-btn.active svg {
+  color: white;
+}
+
+body.dark-mode .map-location-info {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* Loading spinner overlay for map */
+.map-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1001;
+  border-radius: 12px;
+}
+
+.map-loading-overlay .spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Safari/iOS specific fixes */
+@supports (-webkit-touch-callout: none) {
+  .leaflet-container {
+    cursor: pointer;
+  }
+}
 
 /* Tablet (481px - 949px) */
 @media (min-width: 481px) and (max-width: 949px) {
@@ -679,7 +762,11 @@ body.dark-mode .leaflet-popup-close-button:hover {
     bottom: 15px;
     right: 15px;
     padding: 12px;
-    min-width: 180px;
+  }
+
+  .weather-details {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .map-location-info {
@@ -691,49 +778,77 @@ body.dark-mode .leaflet-popup-close-button:hover {
   .layer-selector {
     flex-wrap: wrap;
     justify-content: center;
-    margin-top:20px;
   }
 
   .layer-btn {
     padding: 8px 12px;
     font-size: 13px;
   }
+
+  .map-overlay-controls {
+    top: 10px;
+    right: 10px;
+    gap: 6px;
+  }
+
+  .map-overlay-btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .map-overlay-btn svg {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 /* Mobile (max-width: 480px) */
 @media (max-width: 480px) {
-  .page-header {
-    flex-direction: column;
-    align-items: stretch;
+  .map-content {
+    padding: 12px;
   }
 
-  .map-header-controls {
-    flex-direction: column;
-    width: 100%;
-    gap: 12px;
+ .map-header-controls {
+    flex-direction: row !important;
+    width: auto;
+    gap: 6px;
   }
 
   .map-controls {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    gap: 4px;
   }
 
   .map-control-btn {
-    padding: 6px 10px;
-    font-size: 11px;
+    padding: 8px 8px;
+    font-size: 0;
+    gap: 0;
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    justify-content: center;
   }
 
-  .map-control-btn svg {
-    width: 14px;
-    height: 14px;
+   .map-control-btn svg {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+  }
+
+   .map-control-btn span {
+    display: none !important;
+  }
+
+  .weather-details {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .layer-selector {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
-    margin-top: 35px;
   }
 
   .layer-btn {
@@ -802,18 +917,6 @@ body.dark-mode .leaflet-popup-close-button:hover {
     font-size: 11px;
   }
 
-  .layers-dropdown-menu {
-    position: fixed;
-    top: auto;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    border-radius: 20px 20px 0 0;
-    max-height: 60vh;
-    overflow-y: auto;
-  }
-
   .city-popup-content {
     padding: 10px;
     min-width: 160px;
@@ -858,75 +961,21 @@ body.dark-mode .leaflet-popup-close-button:hover {
   .legend-description {
     font-size: 10px;
   }
-}
 
-/* Dark Mode Overrides for Map Components */
-body.dark-mode .map-control-btn {
-  background: #1e293b;
-  border-color: #334155;
-  color: #f1f5f9;
-}
-
-body.dark-mode .layer-btn {
-  background: #334155;
-  color: #f1f5f9;
-}
-
-body.dark-mode .layer-btn svg {
-  color: #94a3b8;
-}
-
-body.dark-mode .layer-btn.active {
-  background: #f97316;
-  color: white;
-}
-
-body.dark-mode .layer-btn.active svg {
-  color: white;
-}
-
-body.dark-mode .map-location-info {
-  background: rgba(0, 0, 0, 0.8);
-}
-
-/* Loading spinner overlay for map */
-.map-loading-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1001;
-  border-radius: 12px;
-}
-
-.map-loading-overlay .spin {
-  animation: spin 1s linear infinite;
-}
-
-/* Safari/iOS specific fixes */
-@supports (-webkit-touch-callout: none) {
-  .leaflet-container {
-    cursor: pointer;
-  }
-}
-
-/* Print styles */
-@media print {
-  .map-controls,
-  .layer-selector,
-  .map-legend,
-  .map-header-controls,
-  .leaflet-control-zoom {
-    display: none;
+  /* Mobile styles for map overlay controls */
+  .map-overlay-controls {
+    top: 8px;
+    right: 8px;
+    gap: 5px;
   }
 
-  .weather-map {
-    break-inside: avoid;
+  .map-overlay-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .map-overlay-btn svg {
+    width: 14px;
+    height: 14px;
   }
 }

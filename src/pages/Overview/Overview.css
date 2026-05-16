@@ -1,4 +1,3 @@
-/* Page Content Wrapper */
 .page-content {
   margin-top: 80px;
   padding: 0;
@@ -141,10 +140,7 @@
   margin-top: 2px;
 }
 
-/* ============================================ */
-/* TIMELINE FORECAST STYLES - Overview Page    */
-/* ============================================ */
-
+/* Timeline Forecast */
 .timeline-forecast {
   background: white;
   border-radius: 24px;
@@ -386,9 +382,78 @@
   border-radius: 3px;
 }
 
-/* ============================================ */
-/* RESPONSIVE STYLES - FIXED */
-/* ============================================ */
+/* Dark Mode Styles for Overview */
+body.dark-mode .timeline-forecast,
+body.dark-mode .weather-highlights {
+  background: #1e293b;
+}
+
+body.dark-mode .timeline-header {
+  border-bottom-color: #334155;
+}
+
+body.dark-mode .timeline-title h3,
+body.dark-mode .weather-highlights h3 {
+  color: #f1f5f9;
+}
+
+body.dark-mode .timeline-item {
+  background: #334155;
+}
+
+body.dark-mode .timeline-item:hover {
+  background: #fef3c7;
+}
+
+body.dark-mode .timeline-item:hover .timeline-day-name {
+  color: #1e293b;
+}
+
+body.dark-mode .timeline-day-name {
+  color: #f1f5f9;
+}
+
+body.dark-mode .timeline-icon-wrapper {
+  background: #1e293b;
+}
+
+/* Dark mode icon colors - matching Forecast page */
+body.dark-mode .timeline-icon-wrapper svg {
+  color: #f97316;
+}
+
+body.dark-mode .timeline-today .timeline-icon-wrapper {
+  background: #f97316;
+}
+
+body.dark-mode .timeline-today .timeline-icon-wrapper svg {
+  color: white !important;
+}
+
+body.dark-mode .timeline-temp-bar {
+  background: #475569;
+}
+
+body.dark-mode .highlight-card {
+  background: #334155;
+}
+
+body.dark-mode .highlight-value {
+  color: #f1f5f9;
+}
+
+body.dark-mode .highlight-title {
+  color: #94a3b8;
+}
+
+body.dark-mode .weather-overview-card {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #c2410c 100%);
+  background-size: 200% 200%;
+}
+
+body.dark-mode .uv-bar {
+  background: #475569;
+}
 
 /* Tablet (481px - 949px) */
 @media (min-width: 481px) and (max-width: 949px) {
@@ -497,6 +562,10 @@
 
 /* Mobile (max-width: 480px) */
 @media (max-width: 480px) {
+  .overview-content {
+    padding: 12px;
+  }
+
   .weather-overview-card {
     padding: 20px 16px;
     grid-template-columns: 1fr;
@@ -719,77 +788,4 @@
     margin-top: 12px;
     width: 100%;
   }
-}
-
-/* Dark Mode Styles for Overview */
-body.dark-mode .timeline-forecast,
-body.dark-mode .weather-highlights {
-  background: #1e293b;
-}
-
-body.dark-mode .timeline-header {
-  border-bottom-color: #334155;
-}
-
-body.dark-mode .timeline-title h3,
-body.dark-mode .weather-highlights h3 {
-  color: #f1f5f9;
-}
-
-body.dark-mode .timeline-item {
-  background: #334155;
-}
-
-body.dark-mode .timeline-item:hover {
-  background: #fef3c7;
-}
-
-body.dark-mode .timeline-item:hover .timeline-day-name {
-  color: #1e293b;
-}
-
-body.dark-mode .timeline-day-name {
-  color: #f1f5f9;
-}
-
-body.dark-mode .timeline-icon-wrapper {
-  background: #1e293b;
-}
-
-/* Dark mode icon colors - matching Forecast page */
-body.dark-mode .timeline-icon-wrapper svg {
-  color: #f97316;
-}
-
-body.dark-mode .timeline-today .timeline-icon-wrapper {
-  background: #f97316;
-}
-
-body.dark-mode .timeline-today .timeline-icon-wrapper svg {
-  color: white !important;
-}
-
-body.dark-mode .timeline-temp-bar {
-  background: #475569;
-}
-
-body.dark-mode .highlight-card {
-  background: #334155;
-}
-
-body.dark-mode .highlight-value {
-  color: #f1f5f9;
-}
-
-body.dark-mode .highlight-title {
-  color: #94a3b8;
-}
-
-body.dark-mode .weather-overview-card {
-  background: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #c2410c 100%);
-  background-size: 200% 200%;
-}
-
-body.dark-mode .uv-bar {
-  background: #475569;
 }

@@ -1,6 +1,5 @@
-// src/pages/CurrentWeather/CurrentWeather.js
-import React from 'react';
-import './CurrentWeather.css';
+import React from "react";
+import "./CurrentWeather.css";
 import {
   Droplets,
   Wind,
@@ -24,44 +23,47 @@ import {
   CloudSnow as CloudSnowIcon,
   CloudLightning as CloudLightningIcon,
   CloudFog as CloudFogIcon,
-  Cloud as CloudIcon
+  Cloud as CloudIcon,
 } from "lucide-react";
 
 import { useTheme } from "../../context/ThemeContext";
 import LoadingSpinner from "../../components/common/LoadingSpinner/LoadingSpinner";
-import { useWeather } from '../../hooks/useWeather';
-import { getWeatherIconComponent } from '../../services/weatherService';
+import { useWeather } from "../../hooks/useWeather";
+import { getWeatherIconComponent } from "../../services/weatherService";
 
 // Component to render the appropriate weather icon
 const WeatherIcon = ({ condition, iconCode, size = 80 }) => {
   const iconName = getWeatherIconComponent(condition, iconCode);
-  
+
   const iconProps = {
     size,
     strokeWidth: 1.5,
-    style: { filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2))', color: '#FFD700' }
+    style: {
+      filter: "drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2))",
+      color: "#FFD700",
+    },
   };
-  
+
   switch (iconName) {
-    case 'Sun':
+    case "Sun":
       return <Sun {...iconProps} />;
-    case 'Moon':
+    case "Moon":
       return <Moon {...iconProps} />;
-    case 'CloudSun':
+    case "CloudSun":
       return <CloudSun {...iconProps} />;
-    case 'CloudMoon':
+    case "CloudMoon":
       return <CloudMoon {...iconProps} />;
-    case 'Cloud':
+    case "Cloud":
       return <Cloud {...iconProps} />;
-    case 'CloudRain':
+    case "CloudRain":
       return <CloudRain {...iconProps} />;
-    case 'CloudLightning':
+    case "CloudLightning":
       return <CloudLightning {...iconProps} />;
-    case 'CloudSnow':
+    case "CloudSnow":
       return <CloudSnow {...iconProps} />;
-    case 'CloudFog':
+    case "CloudFog":
       return <CloudFog {...iconProps} />;
-    case 'Wind':
+    case "Wind":
       return <WindIcon {...iconProps} />;
     default:
       return <CloudSun {...iconProps} />;
@@ -73,42 +75,46 @@ const DynamicBgIcon = ({ condition, iconCode }) => {
   const iconProps = {
     size: 120,
     strokeWidth: 1,
-    className: "bg-icon-svg"
+    className: "bg-icon-svg",
   };
-  
+
   // Use icon code for more precise mapping
   if (iconCode) {
-    if (iconCode.includes('01')) return <SunMedium {...iconProps} />;
-    if (iconCode.includes('02')) return <CloudSun {...iconProps} />;
-    if (iconCode.includes('03') || iconCode.includes('04')) return <CloudIcon {...iconProps} />;
-    if (iconCode.includes('09') || iconCode.includes('10')) return <CloudRainIcon {...iconProps} />;
-    if (iconCode.includes('11')) return <CloudLightningIcon {...iconProps} />;
-    if (iconCode.includes('13')) return <CloudSnowIcon {...iconProps} />;
-    if (iconCode.includes('50')) return <CloudFogIcon {...iconProps} />;
+    if (iconCode.includes("01")) return <SunMedium {...iconProps} />;
+    if (iconCode.includes("02")) return <CloudSun {...iconProps} />;
+    if (iconCode.includes("03") || iconCode.includes("04"))
+      return <CloudIcon {...iconProps} />;
+    if (iconCode.includes("09") || iconCode.includes("10"))
+      return <CloudRainIcon {...iconProps} />;
+    if (iconCode.includes("11")) return <CloudLightningIcon {...iconProps} />;
+    if (iconCode.includes("13")) return <CloudSnowIcon {...iconProps} />;
+    if (iconCode.includes("50")) return <CloudFogIcon {...iconProps} />;
   }
-  
+
   // Fallback to condition-based mapping
-  const conditionLower = condition?.toLowerCase() || '';
-  if (conditionLower.includes('clear') || conditionLower.includes('sun')) return <SunMedium {...iconProps} />;
-  if (conditionLower.includes('rain') || conditionLower.includes('drizzle')) return <CloudRainIcon {...iconProps} />;
-  if (conditionLower.includes('thunder') || conditionLower.includes('storm')) return <CloudLightningIcon {...iconProps} />;
-  if (conditionLower.includes('snow')) return <CloudSnowIcon {...iconProps} />;
-  if (conditionLower.includes('fog') || conditionLower.includes('mist') || conditionLower.includes('haze')) return <CloudFogIcon {...iconProps} />;
-  if (conditionLower.includes('cloud')) return <CloudIcon {...iconProps} />;
-  if (conditionLower.includes('wind')) return <WindIcon {...iconProps} />;
-  
+  const conditionLower = condition?.toLowerCase() || "";
+  if (conditionLower.includes("clear") || conditionLower.includes("sun"))
+    return <SunMedium {...iconProps} />;
+  if (conditionLower.includes("rain") || conditionLower.includes("drizzle"))
+    return <CloudRainIcon {...iconProps} />;
+  if (conditionLower.includes("thunder") || conditionLower.includes("storm"))
+    return <CloudLightningIcon {...iconProps} />;
+  if (conditionLower.includes("snow")) return <CloudSnowIcon {...iconProps} />;
+  if (
+    conditionLower.includes("fog") ||
+    conditionLower.includes("mist") ||
+    conditionLower.includes("haze")
+  )
+    return <CloudFogIcon {...iconProps} />;
+  if (conditionLower.includes("cloud")) return <CloudIcon {...iconProps} />;
+  if (conditionLower.includes("wind")) return <WindIcon {...iconProps} />;
+
   return <SunMedium {...iconProps} />;
 };
 
 function CurrentWeather() {
-  const {
-    currentWeather,
-    isLoading,
-    error,
-    refreshWeather,
-    unit,
-    uvIndex
-  } = useWeather();
+  const { currentWeather, isLoading, error, refreshWeather, unit, uvIndex } =
+    useWeather();
 
   const { isDarkMode, toggleTheme } = useTheme();
 
@@ -121,15 +127,20 @@ function CurrentWeather() {
             Current Weather
           </span>
 
-          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-            <button className="refresh-btn" disabled>
+          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+            <button
+              className="refresh-btn"
+              onClick={refreshWeather}
+              data-tooltip="Refresh"
+            >
               <RefreshCw size={16} />
-              Refresh
+              <span>Refresh</span>
             </button>
 
             <button
               className="header-theme-toggle"
               onClick={toggleTheme}
+              data-tooltip={isDarkMode ? "Light Mode" : "Dark Mode"}
             >
               {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
               <span>{isDarkMode ? "Light Mode" : "Dark Mode"}</span>
@@ -138,10 +149,7 @@ function CurrentWeather() {
         </div>
 
         <div className="page-content">
-          <LoadingSpinner
-            size="large"
-            message="Fetching weather data..."
-          />
+          <LoadingSpinner size="large" message="Fetching weather data..." />
         </div>
       </div>
     );
@@ -156,19 +164,14 @@ function CurrentWeather() {
             Current Weather
           </span>
 
-          <button
-            className="header-theme-toggle"
-            onClick={toggleTheme}
-          >
+          <button className="header-theme-toggle" onClick={toggleTheme}>
             {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
             <span>{isDarkMode ? "Light Mode" : "Dark Mode"}</span>
           </button>
         </div>
 
         <div className="page-content">
-          <div className="error-message">
-            Error: {error}
-          </div>
+          <div className="error-message">Error: {error}</div>
         </div>
       </div>
     );
@@ -177,7 +180,7 @@ function CurrentWeather() {
   if (!currentWeather) return null;
 
   function getWindDirection(degrees) {
-    const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+    const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
     const index = Math.round(degrees / 45) % 8;
     return directions[index];
   }
@@ -186,9 +189,7 @@ function CurrentWeather() {
     const A = 17.27;
     const B = 237.7;
 
-    const alpha =
-      ((A * temp) / (B + temp)) +
-      Math.log(humidity / 100);
+    const alpha = (A * temp) / (B + temp) + Math.log(humidity / 100);
 
     return Math.round((B * alpha) / (A - alpha));
   }
@@ -206,14 +207,14 @@ function CurrentWeather() {
     visibility: (currentWeather.visibility / 1000).toFixed(1),
     dewPoint: calculateDewPoint(
       currentWeather.main.temp,
-      currentWeather.main.humidity
+      currentWeather.main.humidity,
     ),
     cloudCover: currentWeather.clouds?.all || 0,
     chanceRain: currentWeather.rain
-      ? Math.round(currentWeather.rain['1h'] || 0)
+      ? Math.round(currentWeather.rain["1h"] || 0)
       : 0,
     iconCode: currentWeather.weather[0].icon,
-    conditionMain: currentWeather.weather[0].main
+    conditionMain: currentWeather.weather[0].main,
   };
 
   return (
@@ -224,18 +225,20 @@ function CurrentWeather() {
           Current Weather
         </span>
 
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
           <button
             className="refresh-btn"
             onClick={refreshWeather}
+            data-tooltip="Refresh"
           >
             <RefreshCw size={16} />
-            Refresh
+            <span>Refresh</span>
           </button>
 
           <button
             className="header-theme-toggle"
             onClick={toggleTheme}
+            data-tooltip={isDarkMode ? "Light Mode" : "Dark Mode"}
           >
             {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
             <span>{isDarkMode ? "Light Mode" : "Dark Mode"}</span>
@@ -245,7 +248,6 @@ function CurrentWeather() {
 
       <div className="page-content">
         <div className="current-weather-content">
-
           <div className="location-header">
             <MapPin size={24} />
             <h2>{weatherData.location}</h2>
@@ -254,14 +256,14 @@ function CurrentWeather() {
           <div className="main-weather-card">
             {/* Dynamic SVG Background Icon based on weather */}
             <div className="bg-icon">
-              <DynamicBgIcon 
+              <DynamicBgIcon
                 condition={weatherData.conditionMain}
                 iconCode={weatherData.iconCode}
               />
             </div>
-            
+
             <div className="weather-icon-large">
-              <WeatherIcon 
+              <WeatherIcon
                 condition={weatherData.conditionMain}
                 iconCode={weatherData.iconCode}
                 size={80}
@@ -270,23 +272,19 @@ function CurrentWeather() {
 
             <div className="temperature-display">
               <div className="current-temp">
-                {weatherData.temp}°
-                {unit === 'celsius' ? 'C' : 'F'}
+                {weatherData.temp}°{unit === "celsius" ? "C" : "F"}
               </div>
 
-              <div className="current-condition">
-                {weatherData.description}
-              </div>
+              <div className="current-condition">{weatherData.description}</div>
 
               <div className="feels-like-temp">
                 Feels like {weatherData.feelsLike}°
-                {unit === 'celsius' ? 'C' : 'F'}
+                {unit === "celsius" ? "C" : "F"}
               </div>
             </div>
           </div>
 
           <div className="weather-details">
-
             <div className="detail-card">
               <Droplets size={24} className="detail-icon" />
 
@@ -306,12 +304,10 @@ function CurrentWeather() {
 
                 <strong className="detail-value">
                   {weatherData.windSpeed}
-                  {unit === 'celsius' ? ' m/s' : ' mph'}
+                  {unit === "celsius" ? " m/s" : " mph"}
                 </strong>
 
-                <span className="detail-sub">
-                  {weatherData.windDir}
-                </span>
+                <span className="detail-sub">{weatherData.windDir}</span>
               </div>
             </div>
 
@@ -357,56 +353,42 @@ function CurrentWeather() {
               <div className="detail-info">
                 <span className="detail-label">UV Index</span>
 
-                <strong className="detail-value">
-                  {uvIndex?.value || 0}
-                </strong>
+                <strong className="detail-value">{uvIndex?.value || 0}</strong>
               </div>
             </div>
-
           </div>
 
           <div className="additional-info">
-
             <div className="info-card">
-              <span className="info-label">
-                Cloud Cover
-              </span>
+              <span className="info-label">Cloud Cover</span>
 
               <div className="info-bar">
                 <div
                   className="info-progress"
                   style={{
-                    width: `${weatherData.cloudCover}%`
+                    width: `${weatherData.cloudCover}%`,
                   }}
                 ></div>
               </div>
 
-              <span className="info-value">
-                {weatherData.cloudCover}%
-              </span>
+              <span className="info-value">{weatherData.cloudCover}%</span>
             </div>
 
             <div className="info-card">
-              <span className="info-label">
-                Chance of Rain
-              </span>
+              <span className="info-label">Chance of Rain</span>
 
               <div className="info-bar">
                 <div
                   className="info-progress rain"
                   style={{
-                    width: `${weatherData.chanceRain}%`
+                    width: `${weatherData.chanceRain}%`,
                   }}
                 ></div>
               </div>
 
-              <span className="info-value">
-                {weatherData.chanceRain}%
-              </span>
+              <span className="info-value">{weatherData.chanceRain}%</span>
             </div>
-
           </div>
-
         </div>
       </div>
     </div>
