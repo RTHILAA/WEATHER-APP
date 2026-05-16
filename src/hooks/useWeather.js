@@ -1,14 +1,14 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from "react";
 
 import {
   getCurrentWeather,
   getCurrentWeatherByCoords,
   getForecast,
   getAirPollution,
-  getUVIndex
-} from '../services/weatherService';
+  getUVIndex,
+} from "../services/weatherService";
 
-import { useLocation } from '../context/LocationContext';
+import { useLocation } from "../context/LocationContext";
 
 export const useWeather = () => {
   const [currentWeather, setCurrentWeather] = useState(null);
@@ -19,24 +19,20 @@ export const useWeather = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [location, setLocation] = useState('');
+  const [location, setLocation] = useState("");
   const [coords, setCoords] = useState(null);
 
   const [unit, setUnit] = useState(() => {
     // Load unit from localStorage
-    const savedSettings = localStorage.getItem('skycast_settings');
+    const savedSettings = localStorage.getItem("skycast_settings");
     if (savedSettings) {
       const settings = JSON.parse(savedSettings);
-      return settings.temperatureUnit === 'celsius' ? 'metric' : 'imperial';
+      return settings.temperatureUnit === "celsius" ? "metric" : "imperial";
     }
-    return 'metric';
+    return "metric";
   });
 
-  const {
-    currentLocation,
-    coordinates,
-    useDeviceLocation
-  } = useLocation();
+  const { currentLocation, coordinates, useDeviceLocation } = useLocation();
 
   const fetchWeatherData = useCallback(
     async (city, unitParam = unit) => {
@@ -49,7 +45,7 @@ export const useWeather = () => {
         setLocation(weather.name);
         setCoords({
           lat: weather.coord.lat,
-          lon: weather.coord.lon
+          lon: weather.coord.lon,
         });
 
         const forecastData = await getForecast(city, unitParam);
@@ -57,24 +53,20 @@ export const useWeather = () => {
 
         const airPollution = await getAirPollution(
           weather.coord.lat,
-          weather.coord.lon
+          weather.coord.lon,
         );
         setAirQuality(airPollution);
 
-        const uv = await getUVIndex(
-          weather.coord.lat,
-          weather.coord.lon
-        );
+        const uv = await getUVIndex(weather.coord.lat, weather.coord.lon);
         setUvIndex(uv);
-
       } catch (err) {
         setError(err.message);
-        console.error('Failed to fetch weather data:', err);
+        console.error("Failed to fetch weather data:", err);
       } finally {
         setIsLoading(false);
       }
     },
-    [unit]
+    [unit],
   );
 
   const fetchWeatherByCoords = useCallback(
@@ -96,22 +88,21 @@ export const useWeather = () => {
 
         const uv = await getUVIndex(lat, lon);
         setUvIndex(uv);
-
       } catch (err) {
         setError(err.message);
-        console.error('Failed to fetch weather data:', err);
+        console.error("Failed to fetch weather data:", err);
       } finally {
         setIsLoading(false);
       }
     },
-    [unit]
+    [unit],
   );
 
   const refreshWeather = useCallback(() => {
     if (useDeviceLocation && coordinates) {
       fetchWeatherByCoords(coordinates.lat, coordinates.lon);
     } else if (currentLocation) {
-      const cityName = currentLocation.split(',')[0];
+      const cityName = currentLocation.split(",")[0];
       fetchWeatherData(cityName);
     }
   }, [
@@ -119,55 +110,63 @@ export const useWeather = () => {
     coordinates,
     currentLocation,
     fetchWeatherData,
-    fetchWeatherByCoords
+    fetchWeatherByCoords,
   ]);
 
   // Listen for location changes from sidebar search
   useEffect(() => {
     const handleLocationChange = (event) => {
       if (event.detail?.location) {
-        const cityName = event.detail.location.split(',')[0];
+        const cityName = event.detail.location.split(",")[0];
         fetchWeatherData(cityName);
       }
     };
 
-    window.addEventListener('locationChanged', handleLocationChange);
+    window.addEventListener("locationChanged", handleLocationChange);
     return () => {
-      window.removeEventListener('locationChanged', handleLocationChange);
+      window.removeEventListener("locationChanged", handleLocationChange);
     };
   }, [fetchWeatherData]);
 
   // Listen for settings changes (temperature unit)
   useEffect(() => {
     const handleSettingsChange = () => {
-      const savedSettings = localStorage.getItem('skycast_settings');
+      const savedSettings = localStorage.getItem("skycast_settings");
       if (savedSettings) {
         const settings = JSON.parse(savedSettings);
-        const newUnit = settings.temperatureUnit === 'celsius' ? 'metric' : 'imperial';
+        const newUnit =
+          settings.temperatureUnit === "celsius" ? "metric" : "imperial";
         if (newUnit !== unit) {
           setUnit(newUnit);
           // Refresh weather with new unit
           if (useDeviceLocation && coordinates) {
             fetchWeatherByCoords(coordinates.lat, coordinates.lon, newUnit);
           } else if (currentLocation) {
-            const cityName = currentLocation.split(',')[0];
+            const cityName = currentLocation.split(",")[0];
             fetchWeatherData(cityName, newUnit);
           }
         }
       }
     };
 
-    window.addEventListener('settingsChanged', handleSettingsChange);
+    window.addEventListener("settingsChanged", handleSettingsChange);
     return () => {
-      window.removeEventListener('settingsChanged', handleSettingsChange);
+      window.removeEventListener("settingsChanged", handleSettingsChange);
     };
-  }, [unit, useDeviceLocation, coordinates, currentLocation, fetchWeatherData, fetchWeatherByCoords]);
+  }, [
+    unit,
+    useDeviceLocation,
+    coordinates,
+    currentLocation,
+    fetchWeatherData,
+    fetchWeatherByCoords,
+  ]);
 
   useEffect(() => {
     if (useDeviceLocation && coordinates) {
       fetchWeatherByCoords(coordinates.lat, coordinates.lon);
     } else if (currentLocation) {
-      const cityName = currentLocation.split(',')[0];
+      const cityName = currentLocation.split(",")[0];
       fetchWeatherData(cityName);
     }
   }, [
@@ -175,17 +174,17 @@ export const useWeather = () => {
     coordinates,
     useDeviceLocation,
     fetchWeatherData,
-    fetchWeatherByCoords
+    fetchWeatherByCoords,
   ]);
 
   const changeUnit = (newUnit) => {
-    const unitParam = newUnit === 'celsius' ? 'metric' : 'imperial';
+    const unitParam = newUnit === "celsius" ? "metric" : "imperial";
     setUnit(unitParam);
 
     if (useDeviceLocation && coordinates) {
       fetchWeatherByCoords(coordinates.lat, coordinates.lon, unitParam);
     } else if (currentLocation) {
-      const cityName = currentLocation.split(',')[0];
+      const cityName = currentLocation.split(",")[0];
       fetchWeatherData(cityName, unitParam);
     }
   };
@@ -199,11 +198,11 @@ export const useWeather = () => {
     error,
     location,
     coords,
-    unit: unit === 'metric' ? 'celsius' : 'fahrenheit',
+    unit: unit === "metric" ? "celsius" : "fahrenheit",
     fetchWeatherData,
     fetchWeatherByCoords,
     refreshWeather,
     setLocation,
-    changeUnit
+    changeUnit,
   };
 };
