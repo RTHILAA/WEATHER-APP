@@ -43,6 +43,7 @@
   color: white;
 }
 
+/* Location Header - Enhanced with city and country */
 .location-header {
   display: flex;
   align-items: center;
@@ -50,13 +51,28 @@
   margin-bottom: 20px;
 }
 
+.location-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .location-header h2 {
   font-size: 24px;
   color: #1e293b;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.location-country {
+  font-size: 13px;
+  color: #94a3b8;
+  font-weight: 400;
 }
 
 .location-header svg {
   color: #f97316;
+  flex-shrink: 0;
 }
 
 /* Main Weather Card - Professional Gradient with #F97316 */
@@ -136,6 +152,7 @@
   font-size: 24px;
   margin: 10px 0;
   opacity: 0.9;
+  text-transform: capitalize;
 }
 
 .feels-like-temp {
@@ -279,6 +296,10 @@ body.dark-mode .location-header h2 {
   color: #f1f5f9;
 }
 
+body.dark-mode .location-country {
+  color: #64748b;
+}
+
 body.dark-mode .refresh-btn {
   background: #334155;
   color: #f1f5f9;
@@ -302,8 +323,6 @@ body.dark-mode .main-weather-card {
   background-size: 200% 200%;
 }
 
-
-
 /* Tablet */
 @media (min-width: 481px) and (max-width: 949px) {
   .current-weather-content {
@@ -316,6 +335,10 @@ body.dark-mode .main-weather-card {
 
   .location-header h2 {
     font-size: 20px;
+  }
+
+  .location-country {
+    font-size: 12px;
   }
 
   .main-weather-card {
@@ -369,7 +392,7 @@ body.dark-mode .main-weather-card {
 
   .location-header {
     margin-bottom: 16px;
-    gap: 8px;
+    gap: 10px;
   }
 
   .location-header svg {
@@ -379,6 +402,10 @@ body.dark-mode .main-weather-card {
 
   .location-header h2 {
     font-size: 18px;
+  }
+
+  .location-country {
+    font-size: 11px;
   }
 
   .main-weather-card {

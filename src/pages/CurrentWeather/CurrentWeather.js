@@ -29,6 +29,7 @@ import {
 import { useTheme } from "../../context/ThemeContext";
 import LoadingSpinner from "../../components/common/LoadingSpinner/LoadingSpinner";
 import { useWeather } from "../../hooks/useWeather";
+import { useLocation } from "../../context/LocationContext";
 import { getWeatherIconComponent } from "../../services/weatherService";
 
 // Component to render the appropriate weather icon
@@ -117,6 +118,25 @@ function CurrentWeather() {
     useWeather();
 
   const { isDarkMode, toggleTheme } = useTheme();
+  const { currentCity, currentCountry, currentLocation } = useLocation();
+
+  const getDisplayCity = () => {
+    if (currentCity) return currentCity;
+    if (currentWeather?.name) return currentWeather.name;
+    if (currentLocation) return currentLocation.split(",")[0];
+    return "Loading...";
+  };
+
+  const getDisplayCountry = () => {
+    if (currentCountry) return currentCountry;
+    if (currentLocation && currentLocation.includes(",")) {
+      const parts = currentLocation.split(",");
+      if (parts.length > 1) {
+        return parts[parts.length - 1].trim();
+      }
+    }
+    return "";
+  };
 
   if (isLoading) {
     return (
@@ -250,7 +270,12 @@ function CurrentWeather() {
         <div className="current-weather-content">
           <div className="location-header">
             <MapPin size={24} />
-            <h2>{weatherData.location}</h2>
+            <div className="location-header-text">
+              <h2>{getDisplayCity()}</h2>
+              {getDisplayCountry() && (
+                <span className="location-country">{getDisplayCountry()}</span>
+              )}
+            </div>
           </div>
 
           <div className="main-weather-card">
