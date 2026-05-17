@@ -7,8 +7,8 @@ import React, {
 } from "react";
 import {
   searchCities,
-  getCityFromCoords,
-  getCityFromIP,
+  getCityFromCoordsWithDetails,
+  getCityFromIPWithDetails,
 } from "../services/weatherService";
 
 const LocationContext = createContext();
@@ -23,6 +23,8 @@ export const useLocation = () => {
 
 export const LocationProvider = ({ children }) => {
   const [currentLocation, setCurrentLocation] = useState("");
+  const [currentCity, setCurrentCity] = useState("");
+  const [currentCountry, setCurrentCountry] = useState("");
   const [coordinates, setCoordinates] = useState(null);
   const [useDeviceLocation, setUseDeviceLocation] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
@@ -33,11 +35,15 @@ export const LocationProvider = ({ children }) => {
 
   const fallbackToIPLocation = useCallback(async () => {
     try {
-      const ipCity = await getCityFromIP();
-      if (ipCity) {
-        setCurrentLocation(ipCity);
+      const locationInfo = await getCityFromIPWithDetails();
+      if (locationInfo) {
+        setCurrentLocation(locationInfo.displayName);
+        setCurrentCity(locationInfo.city);
+        setCurrentCountry(locationInfo.country);
         setUseDeviceLocation(false);
-        localStorage.setItem("skycast_location", ipCity);
+        localStorage.setItem("skycast_location", locationInfo.displayName);
+        localStorage.setItem("skycast_city", locationInfo.city);
+        localStorage.setItem("skycast_country", locationInfo.country);
         localStorage.setItem("skycast_use_device_location", "false");
         setIsLoadingLocation(false);
         return;
@@ -46,10 +52,14 @@ export const LocationProvider = ({ children }) => {
       console.warn("IP location failed:", error);
     }
 
-    // Final fallback: Casablanca
+    // Final fallback: Casablanca, Morocco
     setCurrentLocation("Casablanca, MA");
+    setCurrentCity("Casablanca");
+    setCurrentCountry("Morocco");
     setUseDeviceLocation(false);
     localStorage.setItem("skycast_location", "Casablanca, MA");
+    localStorage.setItem("skycast_city", "Casablanca");
+    localStorage.setItem("skycast_country", "Morocco");
     localStorage.setItem("skycast_use_device_location", "false");
     setIsLoadingLocation(false);
   }, []);
@@ -58,7 +68,6 @@ export const LocationProvider = ({ children }) => {
     setIsLoadingLocation(true);
     setLocationError(null);
 
-    // First try: Device geolocation (most accurate)
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
@@ -68,26 +77,27 @@ export const LocationProvider = ({ children }) => {
           };
           setCoordinates(coords);
 
-          const cityName = await getCityFromCoords(coords.lat, coords.lon);
-          if (cityName) {
-            setCurrentLocation(cityName);
+          const locationInfo = await getCityFromCoordsWithDetails(coords.lat, coords.lon);
+          if (locationInfo) {
+            setCurrentLocation(locationInfo.displayName);
+            setCurrentCity(locationInfo.city);
+            setCurrentCountry(locationInfo.country);
             setUseDeviceLocation(true);
-            localStorage.setItem("skycast_location", cityName);
+            localStorage.setItem("skycast_location", locationInfo.displayName);
+            localStorage.setItem("skycast_city", locationInfo.city);
+            localStorage.setItem("skycast_country", locationInfo.country);
             localStorage.setItem("skycast_use_device_location", "true");
             setIsLoadingLocation(false);
             return;
           }
-          // Fallback to IP if reverse geocoding fails
           fallbackToIPLocation();
         },
         (error) => {
           console.warn("Geolocation error:", error.message);
-          // Second try: IP-based location
           fallbackToIPLocation();
         },
       );
     } else {
-      // Geolocation not supported, use IP-based
       fallbackToIPLocation();
     }
   }, [fallbackToIPLocation]);
@@ -102,10 +112,14 @@ export const LocationProvider = ({ children }) => {
           };
           setCoordinates(coords);
 
-          const cityName = await getCityFromCoords(coords.lat, coords.lon);
-          if (cityName) {
-            setCurrentLocation(cityName);
-            localStorage.setItem("skycast_location", cityName);
+          const locationInfo = await getCityFromCoordsWithDetails(coords.lat, coords.lon);
+          if (locationInfo) {
+            setCurrentLocation(locationInfo.displayName);
+            setCurrentCity(locationInfo.city);
+            setCurrentCountry(locationInfo.country);
+            localStorage.setItem("skycast_location", locationInfo.displayName);
+            localStorage.setItem("skycast_city", locationInfo.city);
+            localStorage.setItem("skycast_country", locationInfo.country);
           }
 
           localStorage.setItem("skycast_use_device_location", "true");
@@ -121,19 +135,20 @@ export const LocationProvider = ({ children }) => {
 
   useEffect(() => {
     const savedLocation = localStorage.getItem("skycast_location");
+    const savedCity = localStorage.getItem("skycast_city");
+    const savedCountry = localStorage.getItem("skycast_country");
     const savedUseDevice = localStorage.getItem("skycast_use_device_location");
 
-    // If user previously chose device location, use it
     if (savedUseDevice === "true") {
       setUseDeviceLocation(true);
       getDeviceLocation();
     }
-    // If user previously searched for a city, use that
     else if (savedLocation) {
       setCurrentLocation(savedLocation);
+      setCurrentCity(savedCity || savedLocation.split(",")[0] || savedLocation);
+      setCurrentCountry(savedCountry || "");
       setIsLoadingLocation(false);
     }
-    // Otherwise, auto-detect location
     else {
       autoDetectLocation();
     }
@@ -141,9 +156,13 @@ export const LocationProvider = ({ children }) => {
 
   const updateLocation = (location) => {
     setCurrentLocation(location);
+    setCurrentCity(location);
+    setCurrentCountry("");
     setUseDeviceLocation(false);
     setCoordinates(null);
     localStorage.setItem("skycast_location", location);
+    localStorage.setItem("skycast_city", location);
+    localStorage.setItem("skycast_country", "");
     localStorage.setItem("skycast_use_device_location", "false");
   };
 
@@ -172,14 +191,20 @@ export const LocationProvider = ({ children }) => {
   };
 
   const selectLocation = (locationData) => {
-    const locationString =
-      locationData.displayName ||
-      `${locationData.name}, ${locationData.country}`;
+    const cityName = locationData.name;
+    const countryName = locationData.country;
+    const locationString = locationData.displayName || 
+      `${cityName}, ${countryName}`;
+    
     setCurrentLocation(locationString);
+    setCurrentCity(cityName);
+    setCurrentCountry(countryName);
     setCoordinates({ lat: locationData.lat, lon: locationData.lon });
     setUseDeviceLocation(false);
     setSearchResults([]);
     localStorage.setItem("skycast_location", locationString);
+    localStorage.setItem("skycast_city", cityName);
+    localStorage.setItem("skycast_country", countryName);
     localStorage.setItem("skycast_use_device_location", "false");
     return locationString;
   };
@@ -203,6 +228,8 @@ export const LocationProvider = ({ children }) => {
     <LocationContext.Provider
       value={{
         currentLocation,
+        currentCity,
+        currentCountry,
         coordinates,
         useDeviceLocation,
         searchResults,
