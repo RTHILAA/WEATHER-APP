@@ -20,8 +20,9 @@ function App() {
             <Sidebar />
             <div className="main-content">
               <Routes>
-                <Route path="/" element={<Overview />} />
+                <Route path="/" element={<CurrentWeather />} />
                 <Route path="/current-weather" element={<CurrentWeather />} />
+                <Route path="/overview" element={<Overview />} />
                 <Route path="/forecast" element={<Forecast />} />
                 <Route path="/map" element={<Map />} />
                 <Route path="/settings" element={<Settings />} />
