@@ -26,14 +26,13 @@ import {
   Moon,
   Navigation,
   Gauge,
-  Loader,
 } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
 import LoadingSpinner from "../../components/common/LoadingSpinner/LoadingSpinner";
 import { useWeather } from "../../hooks/useWeather";
-import { useLocation as useAppLocation } from "../../context/LocationContext";
+import { useLocation } from "../../context/LocationContext";
 
-// Fix Leaflet default icon issue - More robust fix
+// Fix Leaflet default icon issue
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -61,33 +60,58 @@ const createWeatherIcon = () => {
   });
 };
 
-// Map control component to handle zoom and center changes
-function MapController({ center, zoom, onZoomChange, mapRef }) {
+// Safe MapController component with error handling
+function MapController({ center, zoom, onZoomChange, mapRef, isReady }) {
   const map = useMap();
+  const isMounted = useRef(true);
 
   useEffect(() => {
-    if (map && !mapRef.current) {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (map && isReady && !mapRef.current && isMounted.current) {
       mapRef.current = map;
     }
-  }, [map, mapRef]);
+  }, [map, mapRef, isReady]);
 
   useEffect(() => {
-    if (center && map) {
-      map.setView(center, zoom);
+    if (center && map && isReady && isMounted.current) {
+      try {
+        map.setView(center, zoom);
+      } catch (error) {
+        console.warn("Error setting map view:", error);
+      }
     }
-  }, [center, zoom, map]);
+  }, [center, zoom, map, isReady]);
 
   useEffect(() => {
+    if (!map || !isReady || !isMounted.current) return;
+
     const handleZoomEnd = () => {
-      onZoomChange(map.getZoom());
+      try {
+        onZoomChange(map.getZoom());
+      } catch (error) {
+        console.warn("Error getting zoom:", error);
+      }
     };
 
-    map.on("zoomend", handleZoomEnd);
+    try {
+      map.on("zoomend", handleZoomEnd);
+    } catch (error) {
+      console.warn("Error attaching zoom event:", error);
+    }
 
     return () => {
-      map.off("zoomend", handleZoomEnd);
+      try {
+        map.off("zoomend", handleZoomEnd);
+      } catch (error) {
+        console.warn("Error removing zoom event:", error);
+      }
     };
-  }, [map, onZoomChange]);
+  }, [map, onZoomChange, isReady]);
 
   return null;
 }
@@ -95,118 +119,111 @@ function MapController({ center, zoom, onZoomChange, mapRef }) {
 function Map() {
   const [mapLayer, setMapLayer] = useState("temperature");
   const [zoom, setZoom] = useState(12);
-  const [isLoading, setIsLoading] = useState(true);
   const [mapError, setMapError] = useState(null);
-  const [center, setCenter] = useState({ lat: 40.7128, lng: -74.006 }); // Default NYC
   const [isMapReady, setIsMapReady] = useState(false);
-
-  // Track previous location to detect city changes
-  const [previousLocation, setPreviousLocation] = useState(null);
-  const [isUserLocationRequest, setIsUserLocationRequest] = useState(false);
+  const [mapKey, setMapKey] = useState(0);
 
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const invalidateTimeoutRef = useRef(null);
+  const isMounted = useRef(true);
   const { isDarkMode, toggleTheme } = useTheme();
+  
   const {
     currentWeather,
-    coordinates: weatherCoords,
+    uvIndex,
     isLoading: weatherLoading,
+    error: weatherError,
+    location: weatherLocation,
+    coords: weatherCoords,
+    unit,
+    refreshWeather,
   } = useWeather();
-  const { currentLocation, coordinates: locationCoords } = useAppLocation();
+  
+  const {
+    currentLocation,
+    currentCity,
+    currentCountry,
+    coordinates: locationCoords,
+    useDeviceLocation,
+    isLoadingLocation,
+  } = useLocation();
 
-  // Handle ResizeObserver errors
-  useEffect(() => {
-    const handleResizeObserverError = (e) => {
-      if (
-        e.message ===
-        "ResizeObserver loop completed with undelivered notifications."
-      ) {
-        const resizeObserver = e.target;
-        if (resizeObserver && resizeObserver.disconnect) {
-          resizeObserver.disconnect();
-        }
-        e.stopImmediatePropagation();
-        return;
-      }
-    };
-
-    window.addEventListener("error", handleResizeObserverError);
-
-    return () => {
-      window.removeEventListener("error", handleResizeObserverError);
-    };
-  }, []);
-
-  // Get current coordinates for map centering
+  // Get current coordinates safely
   const getCurrentCoords = useCallback(() => {
-    // First priority: coordinates from weather data
-    if (weatherCoords && weatherCoords.lat && weatherCoords.lon) {
-      return { lat: weatherCoords.lat, lng: weatherCoords.lon };
+    try {
+      if (weatherCoords && weatherCoords.lat && weatherCoords.lon) {
+        return { lat: weatherCoords.lat, lng: weatherCoords.lon };
+      }
+      if (locationCoords && locationCoords.lat && locationCoords.lon) {
+        return { lat: locationCoords.lat, lng: locationCoords.lon };
+      }
+      if (currentWeather?.coord?.lat && currentWeather?.coord?.lon) {
+        return { lat: currentWeather.coord.lat, lng: currentWeather.coord.lon };
+      }
+      return { lat: 33.5731, lng: -7.5898 };
+    } catch (error) {
+      console.warn("Error getting coordinates:", error);
+      return { lat: 33.5731, lng: -7.5898 };
     }
-    // Second priority: coordinates from location context
-    if (locationCoords && locationCoords.lat && locationCoords.lon) {
-      return { lat: locationCoords.lat, lng: locationCoords.lon };
-    }
-    // Third priority: try to get from currentWeather
-    if (currentWeather?.coord?.lat && currentWeather?.coord?.lon) {
-      return { lat: currentWeather.coord.lat, lng: currentWeather.coord.lon };
-    }
-    // Default: Rabat City coordinates
-    return { lat: 34.0209, lng: -6.8416 };
   }, [weatherCoords, locationCoords, currentWeather]);
 
-  // Get display location name
-  const getDisplayLocation = useCallback(() => {
-    if (currentWeather?.name) {
-      return `${currentWeather.name}, ${currentWeather.sys?.country || ""}`;
+  const getDisplayCity = useCallback(() => {
+    try {
+      if (currentCity) return currentCity;
+      if (weatherLocation) return weatherLocation;
+      if (currentLocation) return currentLocation.split(",")[0];
+      return "Loading location...";
+    } catch (error) {
+      return "Location unavailable";
     }
-    if (currentLocation) {
-      return currentLocation;
-    }
-    return "Current Location";
-  }, [currentWeather, currentLocation]);
+  }, [currentCity, weatherLocation, currentLocation]);
 
-  // Update center and detect city changes
-  useEffect(() => {
-    if (!weatherLoading) {
-      const newCoords = getCurrentCoords();
-      const newLocation = getDisplayLocation();
-
-      // Check if city has changed
-      const cityChanged =
-        previousLocation !== null && previousLocation !== newLocation;
-
-      // Set zoom based on what triggered the change - both use level 12
-      if (cityChanged) {
-        // City changed via search - zoom to 12
-        setZoom(12);
-        console.log("City changed, setting zoom to 12");
-      } else if (isUserLocationRequest) {
-        // User clicked location button - zoom to 12
-        setZoom(12);
-        console.log("User location requested, setting zoom to 12");
-        setIsUserLocationRequest(false); // Reset the flag
+  const getDisplayCountry = useCallback(() => {
+    try {
+      if (currentCountry) return currentCountry;
+      if (currentLocation && currentLocation.includes(",")) {
+        const parts = currentLocation.split(",");
+        if (parts.length > 1) {
+          return parts[parts.length - 1].trim();
+        }
       }
-
-      setCenter(newCoords);
-      setPreviousLocation(newLocation);
-
-      // Reset loading state after coordinates are set
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 500);
+      return "";
+    } catch (error) {
+      return "";
     }
-  }, [
-    getCurrentCoords,
-    getDisplayLocation,
-    currentWeather,
-    weatherCoords,
-    locationCoords,
-    weatherLoading,
-    previousLocation,
-    isUserLocationRequest,
-  ]);
+  }, [currentCountry, currentLocation]);
+
+  const [center, setCenter] = useState(() => getCurrentCoords());
+
+  // Update center when coordinates change
+  useEffect(() => {
+    const newCoords = getCurrentCoords();
+    setCenter(newCoords);
+    setMapKey(prev => prev + 1);
+  }, [getCurrentCoords]);
+
+  // Cleanup on unmount - fixed ref warning
+  useEffect(() => {
+    isMounted.current = true;
+    
+    const currentInvalidateTimeout = invalidateTimeoutRef.current;
+    const currentMapInstance = mapInstanceRef.current;
+    
+    return () => {
+      isMounted.current = false;
+      if (currentInvalidateTimeout) {
+        clearTimeout(currentInvalidateTimeout);
+      }
+      if (currentMapInstance) {
+        try {
+          currentMapInstance.remove();
+        } catch (error) {
+          // Ignore cleanup errors
+        }
+      }
+    };
+  }, []);
 
   const layers = [
     {
@@ -242,22 +259,27 @@ function Map() {
   const currentLayer = layers.find((l) => l.id === mapLayer);
   const LayerIcon = currentLayer?.icon || Thermometer;
 
-  // Get weather info for popup
   const getWeatherInfo = () => {
     if (!currentWeather) return null;
-    return {
-      temp: Math.round(currentWeather.main.temp),
-      feelsLike: Math.round(currentWeather.main.feels_like),
-      condition: currentWeather.weather[0].description,
-      humidity: currentWeather.main.humidity,
-      windSpeed: Math.round(currentWeather.wind.speed),
-      pressure: currentWeather.main.pressure,
-    };
+    try {
+      const isMetric = unit === "celsius";
+      return {
+        temp: Math.round(currentWeather.main.temp),
+        feelsLike: Math.round(currentWeather.main.feels_like),
+        condition: currentWeather.weather[0].description,
+        humidity: currentWeather.main.humidity,
+        windSpeed: Math.round(currentWeather.wind.speed),
+        pressure: currentWeather.main.pressure,
+        tempUnit: isMetric ? "°C" : "°F",
+        windUnit: isMetric ? "m/s" : "mph",
+      };
+    } catch (error) {
+      return null;
+    }
   };
 
   const weatherInfo = getWeatherInfo();
 
-  // Get circle color based on layer and temperature
   const getCircleColor = () => {
     if (mapLayer === "temperature" && weatherInfo) {
       const temp = weatherInfo.temp;
@@ -279,98 +301,86 @@ function Map() {
 
   const handleZoomIn = () => {
     const map = mapInstanceRef.current;
-
-    if (!map) return;
-
+    if (!map || !isMapReady) return;
     try {
       map.zoomIn();
       setZoom(map.getZoom());
     } catch (error) {
-      console.error("Zoom in error:", error);
+      console.warn("Zoom in error:", error);
     }
   };
 
   const handleZoomOut = () => {
     const map = mapInstanceRef.current;
-
-    if (!map) return;
-
+    if (!map || !isMapReady) return;
     try {
       map.zoomOut();
       setZoom(map.getZoom());
     } catch (error) {
-      console.error("Zoom out error:", error);
+      console.warn("Zoom out error:", error);
     }
   };
 
   const handleRefresh = () => {
     const map = mapInstanceRef.current;
-
-    if (!map) return;
-
     const coords = getCurrentCoords();
 
     try {
       setCenter(coords);
-
-      map.flyTo(coords, 12, {
-        animate: true,
-        duration: 1.5,
-      });
-
+      if (map && isMapReady) {
+        map.flyTo(coords, 12, {
+          animate: true,
+          duration: 1.5,
+        });
+      }
       setZoom(12);
+      refreshWeather();
 
       setTimeout(() => {
-        map.invalidateSize();
+        if (map && isMapReady && map.invalidateSize) {
+          try {
+            map.invalidateSize();
+          } catch (error) {
+            console.warn("Error invalidating map size:", error);
+          }
+        }
       }, 200);
     } catch (error) {
-      console.error("Refresh error:", error);
+      console.warn("Refresh error:", error);
     }
   };
 
-  // Get user's current location
   const getUserLocation = () => {
     if (navigator.geolocation) {
-      // Set flag to indicate this is a user location request
-      setIsUserLocationRequest(true);
-
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async (position) => {
+          if (!isMounted.current) return;
           const userCoords = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
+          
           setCenter(userCoords);
-          setTimeout(() => {
-            const mapInstance = mapInstanceRef.current;
-            if (
-              mapInstance &&
-              mapInstance._container &&
-              mapInstance._initialized
-            ) {
-              try {
-                mapInstance.setView(userCoords, 12);
-                setZoom(12);
-              } catch (error) {
-                console.error("Error setting map view:", error);
-              }
-            }
-          }, 150);
+          refreshWeather();
         },
         (error) => {
           console.error("Error getting location:", error);
-          setMapError("Unable to get your location. Please check permissions.");
-          setIsUserLocationRequest(false);
-          setTimeout(() => setMapError(null), 5000);
-        },
+          if (isMounted.current) {
+            setMapError("Unable to get your location. Please check permissions.");
+            setTimeout(() => {
+              if (isMounted.current) setMapError(null);
+            }, 5000);
+          }
+        }
       );
     } else {
       setMapError("Geolocation is not supported by your browser.");
-      setTimeout(() => setMapError(null), 5000);
+      setTimeout(() => {
+        if (isMounted.current) setMapError(null);
+      }, 5000);
     }
   };
 
-  // Get tile layer URL based on theme
   const getTileLayer = () => {
     if (isDarkMode) {
       return "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
@@ -382,69 +392,18 @@ function Map() {
     return '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
   };
 
-  // Listen for location changes from sidebar search
-  useEffect(() => {
-    const handleLocationChange = () => {
-      // This will trigger the city change detection in the main useEffect
-      console.log("Location change detected from sidebar");
-    };
-
-    window.addEventListener("locationChanged", handleLocationChange);
-    return () => {
-      window.removeEventListener("locationChanged", handleLocationChange);
-    };
-  }, []);
-
-  // Force map to invalidate size when visible - but with safety checks
-  useEffect(() => {
-    const mapInstance = mapInstanceRef.current;
-    if (
-      mapInstance &&
-      isMapReady &&
-      mapInstance._container &&
-      mapInstance._initialized
-    ) {
-      // Clear any existing timeout
-      if (invalidateTimeoutRef.current) {
-        clearTimeout(invalidateTimeoutRef.current);
-      }
-
-      invalidateTimeoutRef.current = setTimeout(() => {
-        const currentMap = mapInstanceRef.current;
-        if (
-          currentMap &&
-          currentMap._container &&
-          currentMap._initialized &&
-          currentMap.invalidateSize
-        ) {
-          try {
-            currentMap.invalidateSize();
-          } catch (error) {
-            console.error("Error invalidating map size:", error);
-          }
-        }
-      }, 200);
+  const getUvIndexValue = () => {
+    if (!uvIndex) return null;
+    if (typeof uvIndex === 'object' && uvIndex.value !== undefined) {
+      return uvIndex.value;
     }
+    return uvIndex;
+  };
 
-    return () => {
-      if (invalidateTimeoutRef.current) {
-        clearTimeout(invalidateTimeoutRef.current);
-      }
-    };
-  }, [isMapReady]);
+  const uvIndexValue = getUvIndexValue();
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (invalidateTimeoutRef.current) {
-        clearTimeout(invalidateTimeoutRef.current);
-      }
-      mapInstanceRef.current = null;
-    };
-  }, []);
-
-  // Show loading while weather data is being fetched
-  if (weatherLoading) {
+  // Loading state
+  if (weatherLoading || isLoadingLocation) {
     return (
       <div className="page-container">
         <div className="page-header">
@@ -459,6 +418,30 @@ function Map() {
         </div>
         <div className="page-content">
           <LoadingSpinner size="large" message="Loading weather data..." />
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (weatherError && !currentWeather) {
+    return (
+      <div className="page-container">
+        <div className="page-header">
+          <span className="page-title">
+            <MapIcon size={18} />
+            Weather Map
+          </span>
+          <button className="header-theme-toggle" onClick={toggleTheme}>
+            {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
+            <span>{isDarkMode ? "Light Mode" : "Dark Mode"}</span>
+          </button>
+        </div>
+        <div className="page-content">
+          <div className="map-error-state">
+            <p>Error loading weather data: {weatherError}</p>
+            <button onClick={refreshWeather}>Retry</button>
+          </div>
         </div>
       </div>
     );
@@ -495,11 +478,18 @@ function Map() {
             <div className="weather-map" ref={mapContainerRef}>
               <div className="map-location-info">
                 <MapPin size={14} />
-                <span>{getDisplayLocation()}</span>
+                <div className="map-location-details">
+                  <span className="map-location-city">{getDisplayCity()}</span>
+                  {getDisplayCountry() && (
+                    <span className="map-location-country">, {getDisplayCountry()}</span>
+                  )}
+                </div>
                 <span className="map-zoom-info">Zoom: {zoom}</span>
+                {useDeviceLocation && (
+                  <span className="location-badge">📍 Device Location</span>
+                )}
               </div>
 
-              {/* Map Control Buttons - Now inside the map */}
               <div className="map-overlay-controls">
                 <button
                   className="map-overlay-btn"
@@ -536,16 +526,9 @@ function Map() {
                   <span>{mapError}</span>
                   <button onClick={handleRefresh}>Retry</button>
                 </div>
-              ) : isLoading ? (
-                <div className="map-loading-overlay">
-                  <div className="spin">
-                    <Loader size={32} />
-                  </div>
-                  <span>Loading map data for {getDisplayLocation()}...</span>
-                </div>
               ) : (
                 <MapContainer
-                  key="weather-map"
+                  key={`map-${mapKey}-${center.lat}-${center.lng}`}
                   center={center}
                   zoom={zoom}
                   zoomControl={false}
@@ -555,15 +538,19 @@ function Map() {
                     borderRadius: "12px",
                   }}
                   whenReady={() => {
-                    setIsLoading(false);
-                    setIsMapReady(true);
-                    // Force resize observer to settle
-                    setTimeout(() => {
-                      const map = mapInstanceRef.current;
-                      if (map && map.invalidateSize) {
-                        map.invalidateSize();
-                      }
-                    }, 100);
+                    if (isMounted.current) {
+                      setIsMapReady(true);
+                      setTimeout(() => {
+                        const map = mapInstanceRef.current;
+                        if (map && map.invalidateSize && isMounted.current) {
+                          try {
+                            map.invalidateSize();
+                          } catch (error) {
+                            console.warn("Error invalidating map size:", error);
+                          }
+                        }
+                      }, 100);
+                    }
                   }}
                 >
                   <TileLayer
@@ -576,10 +563,10 @@ function Map() {
                     zoom={zoom}
                     onZoomChange={setZoom}
                     mapRef={mapInstanceRef}
+                    isReady={isMapReady}
                   />
 
-                  {/* Weather layer circle */}
-                  {center && (
+                  {center && isMapReady && (
                     <Circle
                       center={center}
                       radius={getCircleRadius()}
@@ -592,19 +579,23 @@ function Map() {
                     />
                   )}
 
-                  {/* Main location marker */}
-                  {center && (
+                  {center && isMapReady && (
                     <Marker position={center} icon={createWeatherIcon()}>
                       <Popup>
                         <div className="city-popup-content">
-                          <h4>{getDisplayLocation()}</h4>
+                          <h4>
+                            {getDisplayCity()}
+                            {getDisplayCountry() && (
+                              <span className="popup-country">, {getDisplayCountry()}</span>
+                            )}
+                          </h4>
                           {weatherInfo && (
                             <div className="city-popup-details">
                               <div className="popup-detail">
                                 <Thermometer size={14} />
                                 <span>
-                                  {weatherInfo.temp}°C (Feels like{" "}
-                                  {weatherInfo.feelsLike}°C)
+                                  {weatherInfo.temp}{weatherInfo.tempUnit} 
+                                  (Feels like {weatherInfo.feelsLike}{weatherInfo.tempUnit})
                                 </span>
                               </div>
                               <div className="popup-detail">
@@ -617,7 +608,7 @@ function Map() {
                               </div>
                               <div className="popup-detail">
                                 <Wind size={14} />
-                                <span>{weatherInfo.windSpeed} m/s Wind</span>
+                                <span>{weatherInfo.windSpeed} {weatherInfo.windUnit} Wind</span>
                               </div>
                               <div className="popup-detail">
                                 <Gauge size={14} />
@@ -659,19 +650,22 @@ function Map() {
                 </div>
                 <div className="legend-description">
                   <small>
-                    {currentLayer?.description} for {getDisplayLocation()}
+                    {currentLayer?.description} for {getDisplayCity()}
+                    {getDisplayCountry() && `, ${getDisplayCountry()}`}
                   </small>
                 </div>
                 <div className="current-weather-info">
                   {weatherInfo && (
                     <>
-                      <div className="weather-temp">{weatherInfo.temp}°C</div>
+                      <div className="weather-temp">
+                        {weatherInfo.temp}{weatherInfo.tempUnit}
+                      </div>
                       <div className="weather-condition">
                         {weatherInfo.condition}
                       </div>
                       <div className="weather-details">
                         Humidity: {weatherInfo.humidity}% | Wind:{" "}
-                        {weatherInfo.windSpeed} m/s
+                        {weatherInfo.windSpeed} {weatherInfo.windUnit}
                       </div>
                     </>
                   )}
@@ -687,19 +681,29 @@ function Map() {
                 </div>
                 <p>
                   This map shows real-time weather data for{" "}
-                  <strong>{getDisplayLocation()}</strong>. Switch between
-                  different layers to view temperature, precipitation, wind
-                  speed, and cloud cover.
+                  <strong>
+                    {getDisplayCity()}
+                    {getDisplayCountry() && `, ${getDisplayCountry()}`}
+                  </strong>
+                  . Switch between different layers to view temperature, 
+                  precipitation, wind speed, and cloud cover.
                 </p>
                 <div className="feature-stats">
                   <span className="stat-item">
                     <MapPin size={14} />
-                    Current: {getDisplayLocation()}
+                    Current: {getDisplayCity()}
+                    {getDisplayCountry() && `, ${getDisplayCountry()}`}
                   </span>
                   <span className="stat-item">
                     <ZoomIn size={14} />
                     Zoom level: {zoom}
                   </span>
+                  {uvIndexValue && (
+                    <span className="stat-item">
+                      <Sun size={14} />
+                      UV Index: {uvIndexValue}
+                    </span>
+                  )}
                 </div>
               </div>
               <div className="feature-card">
@@ -722,7 +726,8 @@ function Map() {
                   <strong className="current-layer">
                     {currentLayer?.name}
                   </strong>{" "}
-                  for {getDisplayLocation()}
+                  for {getDisplayCity()}
+                  {getDisplayCountry() && `, ${getDisplayCountry()}`}
                 </div>
               </div>
             </div>

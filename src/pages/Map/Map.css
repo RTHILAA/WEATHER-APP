@@ -182,7 +182,7 @@ body.dark-mode .weather-map {
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
 }
 
-/* Map Location Info */
+/* Map Location Info - Enhanced with city/country display */
 .map-location-info {
   position: absolute;
   top: 15px;
@@ -200,10 +200,38 @@ body.dark-mode .weather-map {
   pointer-events: none;
 }
 
+.map-location-details {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.map-location-city {
+  font-weight: 600;
+  color: white;
+}
+
+.map-location-country {
+  font-weight: 400;
+  opacity: 0.85;
+  color: white;
+}
+
 .map-zoom-info {
   margin-left: 8px;
   padding-left: 8px;
   border-left: 1px solid rgba(255, 255, 255, 0.3);
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.location-badge {
+  margin-left: 8px;
+  padding-left: 8px;
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  font-size: 10px;
+  opacity: 0.9;
 }
 
 /* Map Overlay Controls - Positioned inside the map */
@@ -498,6 +526,17 @@ body.dark-mode .feature-stats {
   padding-bottom: 8px;
 }
 
+.popup-country {
+  font-weight: 400;
+  opacity: 0.7;
+  font-size: 13px;
+  color: #64748b;
+}
+
+body.dark-mode .popup-country {
+  color: #94a3b8;
+}
+
 body.dark-mode .city-popup-content h4 {
   color: #f1f5f9;
   border-bottom-color: #334155;
@@ -703,6 +742,11 @@ body.dark-mode .map-location-info {
   background: rgba(0, 0, 0, 0.8);
 }
 
+body.dark-mode .map-location-city,
+body.dark-mode .map-location-country {
+  color: white;
+}
+
 /* Loading spinner overlay for map */
 .map-loading-overlay {
   position: absolute;
@@ -773,6 +817,10 @@ body.dark-mode .map-location-info {
     font-size: 11px;
     top: 10px;
     left: 10px;
+  }
+
+  .map-location-details {
+    max-width: 200px;
   }
 
   .layer-selector {
@@ -877,6 +925,15 @@ body.dark-mode .map-location-info {
     padding: 4px 8px;
     top: 8px;
     left: 8px;
+  }
+
+  .map-location-details {
+    max-width: 120px;
+  }
+
+  .map-location-city,
+  .map-location-country {
+    font-size: 9px;
   }
 
   .map-zoom-info {
