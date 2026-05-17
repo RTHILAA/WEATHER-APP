@@ -35,7 +35,6 @@ const MobileSearchModal = ({ isOpen, onClose, onCitySelect }) => {
     }
   }, [isOpen]);
 
-  // Close modal on escape key
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === "Escape" && isOpen) {
@@ -45,7 +44,6 @@ const MobileSearchModal = ({ isOpen, onClose, onCitySelect }) => {
 
     if (isOpen) {
       document.addEventListener("keydown", handleEscape);
-      // Prevent body scroll when modal is open
       document.body.style.overflow = "hidden";
     }
 
@@ -193,17 +191,20 @@ const MobileSearchModal = ({ isOpen, onClose, onCitySelect }) => {
 function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [activeItem, setActiveItem] = useState("");
+  const [activeItem, setActiveItem] = useState("current-weather");
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [isMobileOrTablet, setIsMobileOrTablet] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const searchRef = useRef(null);
+  const searchInputRef = useRef(null);
 
   const { isDarkMode } = useTheme();
   const {
     currentLocation,
+    currentCity,
+    currentCountry,
     searchLocation,
     searchResults,
     isSearching,
@@ -212,7 +213,6 @@ function Sidebar() {
     clearSearch,
   } = useAppLocation();
 
-  // Check if device is mobile or tablet
   useEffect(() => {
     const checkDevice = () => {
       const width = window.innerWidth;
@@ -225,7 +225,6 @@ function Sidebar() {
     return () => window.removeEventListener("resize", checkDevice);
   }, []);
 
-  // Auto-collapse sidebar on mobile/tablet
   useEffect(() => {
     if (isMobileOrTablet) {
       setIsCollapsed(true);
@@ -234,20 +233,21 @@ function Sidebar() {
 
   useEffect(() => {
     const path = location.pathname;
-    if (path === "/") {
+    const currentPath = path.substring(1) || "current-weather";
+    
+    if (currentPath === "overview" || currentPath === "") {
       setActiveItem("overview");
-    } else if (path === "/current-weather") {
+    } else if (currentPath === "current-weather") {
       setActiveItem("current-weather");
-    } else if (path === "/forecast") {
+    } else if (currentPath === "forecast") {
       setActiveItem("forecast");
-    } else if (path === "/map") {
+    } else if (currentPath === "map") {
       setActiveItem("map");
-    } else if (path === "/settings") {
+    } else if (currentPath === "settings") {
       setActiveItem("settings");
     }
   }, [location]);
 
-  // Click outside handler for search results (desktop only)
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -257,6 +257,7 @@ function Sidebar() {
       ) {
         setShowSearchResults(false);
         clearSearch();
+        setSearchQuery("");
       }
     };
 
@@ -291,40 +292,67 @@ function Sidebar() {
     setShowSearchResults(false);
     clearSearch();
 
-    // Refresh the current page to show new location data
     window.dispatchEvent(
       new CustomEvent("locationChanged", {
         detail: { location: selectedCity },
       }),
     );
 
-    // Navigate to current weather page to show the new location
     navigate("/current-weather");
   };
 
   const handleMobileCitySelect = (city) => {
     const selectedCity = selectLocation(city);
-    // Refresh the current page to show new location data
     window.dispatchEvent(
       new CustomEvent("locationChanged", {
         detail: { location: selectedCity },
       }),
     );
-    // Navigate to current weather page to show the new location
     navigate("/current-weather");
   };
 
-  // Extract the main city name for display
   const getDisplayCity = () => {
-    if (currentLocation.includes(",")) {
+    if (currentCity) {
+      return currentCity;
+    }
+    if (currentLocation && currentLocation.includes(",")) {
       return currentLocation.split(",")[0];
     }
     return currentLocation;
   };
 
-  // Handle mobile search click
+  const getDisplayCountry = () => {
+    if (currentCountry) {
+      return currentCountry;
+    }
+    if (currentLocation && currentLocation.includes(",")) {
+      const parts = currentLocation.split(",");
+      if (parts.length > 1) {
+        return parts[parts.length - 1].trim();
+      }
+    }
+    return "";
+  };
+
   const handleMobileSearchClick = () => {
     setShowMobileSearch(true);
+  };
+
+  const handleSearchFocus = () => {
+    if (searchQuery.trim().length >= 2 && searchResults.length > 0) {
+      setShowSearchResults(true);
+    }
+  };
+
+  const handleSearchKeyDown = (e) => {
+    if (e.key === "Escape") {
+      setShowSearchResults(false);
+      clearSearch();
+      setSearchQuery("");
+      if (searchInputRef.current) {
+        searchInputRef.current.blur();
+      }
+    }
   };
 
   return (
@@ -334,92 +362,106 @@ function Sidebar() {
       >
         <div className="sidebar-content">
           <div className="sidebar-top">
-            <div className="sidebar-content-header">
+            <div 
+              className="sidebar-content-header"
+              onClick={() => navigate("/current-weather")}
+              style={{ cursor: "pointer" }}
+            >
               <img src={LOGO} className="sidebar-logo-img" alt="Logo" />
               {!isCollapsed && <span className="sidebar-title">SkyCast</span>}
             </div>
 
-            {/* Desktop Search Section - Only show on desktop (non-mobile/tablet) */}
-            {!isMobileOrTablet && !isCollapsed && (
-              <div className="search-container" ref={searchRef}>
-                <form
-                  onSubmit={(e) => e.preventDefault()}
-                  className="search-form"
-                >
-                  <div className="search-input-wrapper">
-                    <Search size={16} className="search-icon" />
-                    <input
-                      type="text"
-                      placeholder="Search for a city..."
-                      value={searchQuery}
-                      onChange={handleSearchInput}
-                      onFocus={() =>
-                        searchQuery.trim().length >= 2 &&
-                        setShowSearchResults(true)
-                      }
-                      className="search-input"
-                      autoComplete="off"
-                    />
-                  </div>
-                </form>
+            {!isMobileOrTablet && (
+              <>
+                {!isCollapsed && (
+                  <div className="search-container" ref={searchRef}>
+                    <form
+                      onSubmit={(e) => e.preventDefault()}
+                      className="search-form"
+                    >
+                      <div className="search-input-wrapper">
+                        <Search size={16} className="search-icon" />
+                        <input
+                          ref={searchInputRef}
+                          type="text"
+                          placeholder="Search for a city..."
+                          value={searchQuery}
+                          onChange={handleSearchInput}
+                          onFocus={handleSearchFocus}
+                          onKeyDown={handleSearchKeyDown}
+                          className="search-input"
+                          autoComplete="off"
+                        />
+                      </div>
+                    </form>
 
-                {/* Search Results Dropdown (Desktop) */}
-                {showSearchResults && (
-                  <div className="search-results-dropdown">
-                    {isSearching ? (
-                      <div className="search-loading">
-                        <Loader size={20} className="spin" />
-                        <span>Searching for cities...</span>
-                      </div>
-                    ) : searchError ? (
-                      <div className="search-error">
-                        <span>{searchError}</span>
-                      </div>
-                    ) : searchResults.length > 0 ? (
-                      <div className="search-results-list">
-                        {searchResults.map((city, index) => (
-                          <button
-                            key={`${city.name}-${city.country}-${city.lat}-${city.lon}-${index}`}
-                            className="search-result-item"
-                            onClick={() => handleCitySelect(city)}
-                          >
-                            <MapPin size={16} className="result-pin" />
-                            <div className="result-info">
-                              <div className="result-name">{city.name}</div>
-                              <div className="result-location">
-                                {city.state && (
-                                  <span className="result-state">
-                                    {city.state}
-                                  </span>
-                                )}
-                                {city.state && city.country && (
-                                  <span className="result-separator">, </span>
-                                )}
-                                <span className="result-country">
-                                  {city.country}
-                                </span>
-                              </div>
+                    {showSearchResults && (
+                      <div className="search-results-dropdown">
+                        {isSearching ? (
+                          <div className="search-loading">
+                            <Loader size={20} className="spin" />
+                            <span>Searching for cities...</span>
+                          </div>
+                        ) : searchError ? (
+                          <div className="search-error">
+                            <span>{searchError}</span>
+                          </div>
+                        ) : searchResults.length > 0 ? (
+                          <div className="search-results-list">
+                            {searchResults.map((city, index) => (
+                              <button
+                                key={`${city.name}-${city.country}-${city.lat}-${city.lon}-${index}`}
+                                className="search-result-item"
+                                onClick={() => handleCitySelect(city)}
+                              >
+                                <MapPin size={16} className="result-pin" />
+                                <div className="result-info">
+                                  <div className="result-name">{city.name}</div>
+                                  <div className="result-location">
+                                    {city.state && (
+                                      <span className="result-state">
+                                        {city.state}
+                                      </span>
+                                    )}
+                                    {city.state && city.country && (
+                                      <span className="result-separator">, </span>
+                                    )}
+                                    <span className="result-country">
+                                      {city.country}
+                                    </span>
+                                  </div>
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        ) : (
+                          searchQuery.trim().length >= 2 && (
+                            <div className="search-no-results">
+                              <span>No cities found for "{searchQuery}"</span>
+                              <small>
+                                Try checking the spelling or try another city name
+                              </small>
                             </div>
-                          </button>
-                        ))}
+                          )
+                        )}
                       </div>
-                    ) : (
-                      searchQuery.trim().length >= 2 && (
-                        <div className="search-no-results">
-                          <span>No cities found for "{searchQuery}"</span>
-                          <small>
-                            Try checking the spelling or try another city name
-                          </small>
-                        </div>
-                      )
                     )}
                   </div>
                 )}
-              </div>
+
+                {isCollapsed && (
+                  <div
+                    className="search-collapsed"
+                    title="Search location"
+                    onClick={handleMobileSearchClick}
+                  >
+                    <Search size={16} />
+                  </div>
+                )}
+              </>
             )}
 
-            {/* Collapsed Search Icon - For mobile/tablet OR collapsed desktop */}
-            {(isMobileOrTablet || isCollapsed) && (
+            {isMobileOrTablet && (
               <div
                 className="search-collapsed"
                 title="Search location"
@@ -432,22 +474,22 @@ function Sidebar() {
             <ul>
               <li>
                 <Link
-                  to="/"
-                  className={activeItem === "overview" ? "active" : ""}
-                  onClick={() => handleItemClick("overview")}
-                >
-                  <LayoutDashboard size={18} />
-                  {!isCollapsed && <span>Overview</span>}
-                </Link>
-              </li>
-              <li>
-                <Link
                   to="/current-weather"
                   className={activeItem === "current-weather" ? "active" : ""}
                   onClick={() => handleItemClick("current-weather")}
                 >
                   <Sun size={18} />
                   {!isCollapsed && <span>Current Weather</span>}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/overview"
+                  className={activeItem === "overview" ? "active" : ""}
+                  onClick={() => handleItemClick("overview")}
+                >
+                  <LayoutDashboard size={18} />
+                  {!isCollapsed && <span>Overview</span>}
                 </Link>
               </li>
               <li>
@@ -490,19 +532,18 @@ function Sidebar() {
                 </div>
                 <div className="location-text">
                   <span className="location-city">{getDisplayCity()}</span>
-                  <span className="location-label">Current location</span>
+                  <span className="location-label">{getDisplayCountry()}</span>
                 </div>
               </div>
             )}
             {isCollapsed && (
               <div
                 className="current-location-collapsed"
-                title={getDisplayCity()}
+                title={`${getDisplayCity()}, ${getDisplayCountry()}`}
               >
                 <div className="location-icon">
                   <MapPin size={18} />
                 </div>
-                {/* Display city name on mobile/tablet */}
                 {isMobileOrTablet && (
                   <div className="location-text-collapsed">
                     <span className="location-city-collapsed">
@@ -513,7 +554,6 @@ function Sidebar() {
               </div>
             )}
 
-            {/* Only show collapse button on PC (width > 949px) */}
             {!isMobileOrTablet && (
               <span className="collapse" onClick={toggleCollapse}>
                 {isCollapsed ? (
@@ -528,7 +568,6 @@ function Sidebar() {
         </div>
       </div>
 
-      {/* Mobile Search Modal */}
       <MobileSearchModal
         isOpen={showMobileSearch}
         onClose={() => setShowMobileSearch(false)}
