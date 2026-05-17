@@ -9,37 +9,6 @@
   box-sizing: border-box;
 }
 
-html {
-  scroll-behavior: smooth;
-  overflow-x: hidden;
-  width: 100%;
-  height: 100%;
-  scrollbar-width: thin;
-  scrollbar-color: #f97316 #f1f5f9;
-}
-
-/* Custom scrollbar styling */
-html::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-html::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 10px;
-}
-
-html::-webkit-scrollbar-thumb {
-  background: #f97316;
-  border-radius: 10px;
-  transition: background 0.3s ease;
-}
-
-html::-webkit-scrollbar-thumb:hover {
-  background: #ea580c;
-}
-
-
 body {
   font-family: "Montserrat", sans-serif;
   background-color: #f8fafc;
@@ -54,28 +23,11 @@ body.dark-mode {
   background-color: #0f172a;
 }
 
-/* Dark mode scrollbar */
-body.dark-mode html::-webkit-scrollbar-track {
-  background: #1e293b;
-}
-
-body.dark-mode html::-webkit-scrollbar-thumb {
-  background: #f97316;
-}
-
-body.dark-mode html::-webkit-scrollbar-thumb:hover {
-  background: #ea580c;
-}
-
-body.dark-mode html {
-  scrollbar-color: #f97316 #1e293b;
-}
-
 /* ============================================
    APP CONTAINER - Creates the overall layout
    ============================================ */
 .app-container {
-display: flex;
+  display: flex;
   min-height: 100vh;
   width: 100%;
   overflow: hidden;
@@ -107,21 +59,17 @@ display: flex;
    PAGE HEADER - Fixed at top, offset for sidebar
    ============================================ */
 .page-header {
-   position: fixed;
+  position: fixed;
   top: 0;
   left: 250px;
   right: 0;
-
   height: 75px;
   padding: 20px;
-
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   background: #f8fafc;
   border-bottom: 1px solid #e2e8f0;
-
   z-index: 1500; /* أقل من sidebar */
 }
 
@@ -141,7 +89,7 @@ body.dark-mode .page-header {
    Places content below the fixed header
    ============================================ */
 .page-content {
-   margin-top: 75px;
+  margin-top: 75px;
   padding: 20px;
 }
 
@@ -153,21 +101,15 @@ body.dark-mode .page-header {
   position: fixed;
   top: 0;
   left: 0;
-
   width: 250px;
   height: 100dvh; /* FIX mobile vh issue */
-
   background: #f8fafc;
   border-right: 1px solid #e2e8f0;
-
   z-index: 2000; /* أعلى من header */
-
   display: flex;
   flex-direction: column;
-
   overflow-y: auto;
   overflow-x: hidden;
-
   transition: width 0.3s ease;
 }
 
@@ -179,20 +121,6 @@ body.dark-mode .page-header {
 .sidebar.dark {
   background-color: #1e293b;
   border-right-color: #334155;
-}
-
-/* Hide sidebar scrollbar when not needed (optional) */
-.sidebar::-webkit-scrollbar {
-  width: 4px;
-}
-
-.sidebar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-  background: #f97316;
-  border-radius: 4px;
 }
 
 /* ============================================
@@ -363,6 +291,150 @@ body.dark-mode .refresh-btn:hover {
 }
 
 /* ============================================
+   CUSTOM SCROLLBAR STYLES
+   ============================================ */
+
+/* WebKit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #e2e8f0;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #f97316;
+}
+
+::-webkit-scrollbar-corner {
+  background: #e2e8f0;
+}
+
+/* Dark Mode Scrollbar */
+body.dark-mode ::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: #f97316;
+}
+
+body.dark-mode ::-webkit-scrollbar-corner {
+  background: #1e293b;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #e2e8f0;
+}
+
+body.dark-mode * {
+  scrollbar-color: #334155 #1e293b;
+}
+
+/* Sidebar specific scrollbar */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #f97316;
+}
+
+body.dark-mode .sidebar::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+body.dark-mode .sidebar::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+body.dark-mode .sidebar::-webkit-scrollbar-thumb:hover {
+  background: #f97316;
+}
+
+/* Main content scrollbar */
+.main-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.main-content::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.main-content::-webkit-scrollbar-thumb:hover {
+  background: #f97316;
+}
+
+body.dark-mode .main-content::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+body.dark-mode .main-content::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+body.dark-mode .main-content::-webkit-scrollbar-thumb:hover {
+  background: #f97316;
+}
+
+/* Page content scrollbar */
+.page-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.page-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.page-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.page-content::-webkit-scrollbar-thumb:hover {
+  background: #f97316;
+}
+
+body.dark-mode .page-content::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+body.dark-mode .page-content::-webkit-scrollbar-thumb:hover {
+  background: #f97316;
+}
+
+/* ============================================
    Prevent ResizeObserver errors
    ============================================ */
 .leaflet-container,
@@ -431,7 +503,6 @@ iframe {
     justify-content: space-between;
     gap: 8px;
     min-height: 55px;
-    left: 70px;
   }
 
   .page-header > div {
@@ -442,11 +513,6 @@ iframe {
     flex-wrap: wrap;
     width: auto;
     justify-content: flex-end;
-  }
-
-  .main-content {
-    margin-left: 70px !important;
-    width: calc(100% - 70px) !important;
   }
 
   .page-title {
@@ -467,11 +533,12 @@ iframe {
 
   /* Hide text on buttons for mobile */
   .header-theme-toggle span,
-  .refresh-btn span,
   .map-control-btn span,
-  .nav-btn span {
+  .nav-btn span,
+  .refresh-btn {
     display: none !important;
   }
+
 
   /* Keep text on toggle buttons */
   .toggle-btn span {
