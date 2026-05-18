@@ -24,7 +24,6 @@ import {
   Cloud,
   Sun,
   Moon,
-  Navigation,
   Gauge,
 } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
@@ -119,7 +118,6 @@ function MapController({ center, zoom, onZoomChange, mapRef, isReady }) {
 function Map() {
   const [mapLayer, setMapLayer] = useState("temperature");
   const [zoom, setZoom] = useState(12);
-  const [mapError, setMapError] = useState(null);
   const [isMapReady, setIsMapReady] = useState(false);
   const [mapKey, setMapKey] = useState(0);
 
@@ -203,7 +201,7 @@ function Map() {
     setMapKey(prev => prev + 1);
   }, [getCurrentCoords]);
 
-  // Cleanup on unmount - fixed ref warning
+  // Cleanup on unmount
   useEffect(() => {
     isMounted.current = true;
     
@@ -350,37 +348,6 @@ function Map() {
     }
   };
 
-  const getUserLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          if (!isMounted.current) return;
-          const userCoords = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-          
-          setCenter(userCoords);
-          refreshWeather();
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-          if (isMounted.current) {
-            setMapError("Unable to get your location. Please check permissions.");
-            setTimeout(() => {
-              if (isMounted.current) setMapError(null);
-            }, 5000);
-          }
-        }
-      );
-    } else {
-      setMapError("Geolocation is not supported by your browser.");
-      setTimeout(() => {
-        if (isMounted.current) setMapError(null);
-      }, 5000);
-    }
-  };
-
   const getTileLayer = () => {
     if (isDarkMode) {
       return "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
@@ -486,7 +453,7 @@ function Map() {
                 </div>
                 <span className="map-zoom-info">Zoom: {zoom}</span>
                 {useDeviceLocation && (
-                  <span className="location-badge">📍 Device Location</span>
+                  <span className="location-badge">Device Location</span>
                 )}
               </div>
 
@@ -507,13 +474,6 @@ function Map() {
                 </button>
                 <button
                   className="map-overlay-btn"
-                  onClick={getUserLocation}
-                  title="My Location"
-                >
-                  <Navigation size={18} />
-                </button>
-                <button
-                  className="map-overlay-btn"
                   onClick={handleRefresh}
                   title="Refresh"
                 >
@@ -521,107 +481,100 @@ function Map() {
                 </button>
               </div>
 
-              {mapError ? (
-                <div className="map-error-overlay">
-                  <span>{mapError}</span>
-                  <button onClick={handleRefresh}>Retry</button>
-                </div>
-              ) : (
-                <MapContainer
-                  key={`map-${mapKey}-${center.lat}-${center.lng}`}
+              <MapContainer
+                key={`map-${mapKey}-${center.lat}-${center.lng}`}
+                center={center}
+                zoom={zoom}
+                zoomControl={false}
+                style={{
+                  height: "500px",
+                  width: "100%",
+                  borderRadius: "12px",
+                }}
+                whenReady={() => {
+                  if (isMounted.current) {
+                    setIsMapReady(true);
+                    setTimeout(() => {
+                      const map = mapInstanceRef.current;
+                      if (map && map.invalidateSize && isMounted.current) {
+                        try {
+                          map.invalidateSize();
+                        } catch (error) {
+                          console.warn("Error invalidating map size:", error);
+                        }
+                      }
+                    }, 100);
+                  }
+                }}
+              >
+                <TileLayer
+                  url={getTileLayer()}
+                  attribution={getTileAttribution()}
+                />
+                <ZoomControl position="bottomright" />
+                <MapController
                   center={center}
                   zoom={zoom}
-                  zoomControl={false}
-                  style={{
-                    height: "500px",
-                    width: "100%",
-                    borderRadius: "12px",
-                  }}
-                  whenReady={() => {
-                    if (isMounted.current) {
-                      setIsMapReady(true);
-                      setTimeout(() => {
-                        const map = mapInstanceRef.current;
-                        if (map && map.invalidateSize && isMounted.current) {
-                          try {
-                            map.invalidateSize();
-                          } catch (error) {
-                            console.warn("Error invalidating map size:", error);
-                          }
-                        }
-                      }, 100);
-                    }
-                  }}
-                >
-                  <TileLayer
-                    url={getTileLayer()}
-                    attribution={getTileAttribution()}
-                  />
-                  <ZoomControl position="bottomright" />
-                  <MapController
+                  onZoomChange={setZoom}
+                  mapRef={mapInstanceRef}
+                  isReady={isMapReady}
+                />
+
+                {center && isMapReady && (
+                  <Circle
                     center={center}
-                    zoom={zoom}
-                    onZoomChange={setZoom}
-                    mapRef={mapInstanceRef}
-                    isReady={isMapReady}
+                    radius={getCircleRadius()}
+                    pathOptions={{
+                      color: getCircleColor(),
+                      fillColor: getCircleColor(),
+                      fillOpacity: 0.2,
+                      weight: 2,
+                    }}
                   />
+                )}
 
-                  {center && isMapReady && (
-                    <Circle
-                      center={center}
-                      radius={getCircleRadius()}
-                      pathOptions={{
-                        color: getCircleColor(),
-                        fillColor: getCircleColor(),
-                        fillOpacity: 0.2,
-                        weight: 2,
-                      }}
-                    />
-                  )}
-
-                  {center && isMapReady && (
-                    <Marker position={center} icon={createWeatherIcon()}>
-                      <Popup>
-                        <div className="city-popup-content">
-                          <h4>
-                            {getDisplayCity()}
-                            {getDisplayCountry() && (
-                              <span className="popup-country">, {getDisplayCountry()}</span>
-                            )}
-                          </h4>
-                          {weatherInfo && (
-                            <div className="city-popup-details">
-                              <div className="popup-detail">
-                                <Thermometer size={14} />
-                                <span>
-                                  {weatherInfo.temp}{weatherInfo.tempUnit} 
-                                  (Feels like {weatherInfo.feelsLike}{weatherInfo.tempUnit})
-                                </span>
-                              </div>
-                              <div className="popup-detail">
-                                <Cloud size={14} />
-                                <span>{weatherInfo.condition}</span>
-                              </div>
-                              <div className="popup-detail">
-                                <Droplets size={14} />
-                                <span>{weatherInfo.humidity}% Humidity</span>
-                              </div>
-                              <div className="popup-detail">
-                                <Wind size={14} />
-                                <span>{weatherInfo.windSpeed} {weatherInfo.windUnit} Wind</span>
-                              </div>
-                              <div className="popup-detail">
-                                <Gauge size={14} />
-                                <span>{weatherInfo.pressure} hPa Pressure</span>
-                              </div>
-                            </div>
+                {center && isMapReady && (
+                  <Marker position={center} icon={createWeatherIcon()}>
+                    <Popup>
+                      <div className="city-popup-content">
+                        <h4>
+                          {getDisplayCity()}
+                          {getDisplayCountry() && (
+                            <span className="popup-country">, {getDisplayCountry()}</span>
                           )}
-                        </div>
-                      </Popup>
-                    </Marker>
-                  )}
-                </MapContainer>
-              )}
+                        </h4>
+                        {weatherInfo && (
+                          <div className="city-popup-details">
+                            <div className="popup-detail">
+                              <Thermometer size={14} />
+                              <span>
+                                {weatherInfo.temp}{weatherInfo.tempUnit} 
+                                (Feels like {weatherInfo.feelsLike}{weatherInfo.tempUnit})
+                              </span>
+                            </div>
+                            <div className="popup-detail">
+                              <Cloud size={14} />
+                              <span>{weatherInfo.condition}</span>
+                            </div>
+                            <div className="popup-detail">
+                              <Droplets size={14} />
+                              <span>{weatherInfo.humidity}% Humidity</span>
+                            </div>
+                            <div className="popup-detail">
+                              <Wind size={14} />
+                              <span>{weatherInfo.windSpeed} {weatherInfo.windUnit} Wind</span>
+                            </div>
+                            <div className="popup-detail">
+                              <Gauge size={14} />
+                              <span>{weatherInfo.pressure} hPa Pressure</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </Popup>
+                  </Marker>
+                )}
+              </MapContainer>
 
               <div className="map-legend">
                 <div className="legend-title">
