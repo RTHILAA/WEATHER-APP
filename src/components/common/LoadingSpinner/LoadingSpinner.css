@@ -79,7 +79,6 @@ body.dark-mode .loading-message {
   color: #94a3b8;
 }
 
-/* Size variations - can be overridden by inline styles */
 .loading-spinner.small {
   width: 24px;
   height: 24px;
