@@ -64,6 +64,53 @@ export const LocationProvider = ({ children }) => {
     setIsLoadingLocation(false);
   }, []);
 
+  const getDeviceLocation = useCallback(() => {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        const error = new Error("Geolocation is not supported by your browser");
+        reject(error);
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const coords = {
+            lat: position.coords.latitude,
+            lon: position.coords.longitude,
+          };
+          setCoordinates(coords);
+
+          const locationInfo = await getCityFromCoordsWithDetails(
+            coords.lat,
+            coords.lon,
+          );
+          if (locationInfo) {
+            setCurrentLocation(locationInfo.displayName);
+            setCurrentCity(locationInfo.city);
+            setCurrentCountry(locationInfo.country);
+            setUseDeviceLocation(true);
+            localStorage.setItem("skycast_location", locationInfo.displayName);
+            localStorage.setItem("skycast_city", locationInfo.city);
+            localStorage.setItem("skycast_country", locationInfo.country);
+            localStorage.setItem("skycast_use_device_location", "true");
+            resolve(locationInfo);
+          } else {
+            reject(new Error("Could not get location details"));
+          }
+        },
+        (error) => {
+          console.warn("Geolocation error:", error.message);
+          reject(error);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
+        },
+      );
+    });
+  }, []);
+
   const autoDetectLocation = useCallback(async () => {
     setIsLoadingLocation(true);
     setLocationError(null);
@@ -77,7 +124,10 @@ export const LocationProvider = ({ children }) => {
           };
           setCoordinates(coords);
 
-          const locationInfo = await getCityFromCoordsWithDetails(coords.lat, coords.lon);
+          const locationInfo = await getCityFromCoordsWithDetails(
+            coords.lat,
+            coords.lon,
+          );
           if (locationInfo) {
             setCurrentLocation(locationInfo.displayName);
             setCurrentCity(locationInfo.city);
@@ -96,42 +146,16 @@ export const LocationProvider = ({ children }) => {
           console.warn("Geolocation error:", error.message);
           fallbackToIPLocation();
         },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
+        },
       );
     } else {
       fallbackToIPLocation();
     }
   }, [fallbackToIPLocation]);
-
-  const getDeviceLocation = useCallback(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const coords = {
-            lat: position.coords.latitude,
-            lon: position.coords.longitude,
-          };
-          setCoordinates(coords);
-
-          const locationInfo = await getCityFromCoordsWithDetails(coords.lat, coords.lon);
-          if (locationInfo) {
-            setCurrentLocation(locationInfo.displayName);
-            setCurrentCity(locationInfo.city);
-            setCurrentCountry(locationInfo.country);
-            localStorage.setItem("skycast_location", locationInfo.displayName);
-            localStorage.setItem("skycast_city", locationInfo.city);
-            localStorage.setItem("skycast_country", locationInfo.country);
-          }
-
-          localStorage.setItem("skycast_use_device_location", "true");
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-          setUseDeviceLocation(false);
-          localStorage.setItem("skycast_use_device_location", "false");
-        },
-      );
-    }
-  }, []);
 
   useEffect(() => {
     const savedLocation = localStorage.getItem("skycast_location");
@@ -141,15 +165,25 @@ export const LocationProvider = ({ children }) => {
 
     if (savedUseDevice === "true") {
       setUseDeviceLocation(true);
-      getDeviceLocation();
-    }
-    else if (savedLocation) {
+      getDeviceLocation().catch(() => {
+        // If device location fails, fall back to saved or IP location
+        if (savedLocation) {
+          setCurrentLocation(savedLocation);
+          setCurrentCity(
+            savedCity || savedLocation.split(",")[0] || savedLocation,
+          );
+          setCurrentCountry(savedCountry || "");
+          setIsLoadingLocation(false);
+        } else {
+          autoDetectLocation();
+        }
+      });
+    } else if (savedLocation) {
       setCurrentLocation(savedLocation);
       setCurrentCity(savedCity || savedLocation.split(",")[0] || savedLocation);
       setCurrentCountry(savedCountry || "");
       setIsLoadingLocation(false);
-    }
-    else {
+    } else {
       autoDetectLocation();
     }
   }, [autoDetectLocation, getDeviceLocation]);
@@ -193,9 +227,9 @@ export const LocationProvider = ({ children }) => {
   const selectLocation = (locationData) => {
     const cityName = locationData.name;
     const countryName = locationData.country;
-    const locationString = locationData.displayName || 
-      `${cityName}, ${countryName}`;
-    
+    const locationString =
+      locationData.displayName || `${cityName}, ${countryName}`;
+
     setCurrentLocation(locationString);
     setCurrentCity(cityName);
     setCurrentCountry(countryName);
@@ -216,7 +250,11 @@ export const LocationProvider = ({ children }) => {
 
   const toggleDeviceLocation = () => {
     if (!useDeviceLocation) {
-      getDeviceLocation();
+      getDeviceLocation().catch((error) => {
+        console.error("Failed to get device location:", error);
+        setLocationError(error.message);
+        setTimeout(() => setLocationError(null), 5000);
+      });
     } else {
       setUseDeviceLocation(false);
       setCoordinates(null);
@@ -242,6 +280,7 @@ export const LocationProvider = ({ children }) => {
         searchLocation,
         selectLocation,
         clearSearch,
+        getDeviceLocation,
       }}
     >
       {children}
