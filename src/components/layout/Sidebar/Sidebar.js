@@ -234,7 +234,7 @@ function Sidebar() {
   useEffect(() => {
     const path = location.pathname;
     const currentPath = path.substring(1) || "current-weather";
-    
+
     if (currentPath === "overview" || currentPath === "") {
       setActiveItem("overview");
     } else if (currentPath === "current-weather") {
@@ -362,7 +362,7 @@ function Sidebar() {
       >
         <div className="sidebar-content">
           <div className="sidebar-top">
-            <div 
+            <div
               className="sidebar-content-header"
               onClick={() => navigate("/current-weather")}
               style={{ cursor: "pointer" }}
@@ -424,7 +424,9 @@ function Sidebar() {
                                       </span>
                                     )}
                                     {city.state && city.country && (
-                                      <span className="result-separator">, </span>
+                                      <span className="result-separator">
+                                        ,{" "}
+                                      </span>
                                     )}
                                     <span className="result-country">
                                       {city.country}
@@ -439,7 +441,8 @@ function Sidebar() {
                             <div className="search-no-results">
                               <span>No cities found for "{searchQuery}"</span>
                               <small>
-                                Try checking the spelling or try another city name
+                                Try checking the spelling or try another city
+                                name
                               </small>
                             </div>
                           )
